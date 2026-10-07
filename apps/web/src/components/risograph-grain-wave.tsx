@@ -29,13 +29,13 @@ export function RisographGrainWave({
   className = "",
   showGrain = true,
   showVignette = true,
-  speed = 0.14,
-  noise = 0.42,
-  softness = 0.7,
-  intensity = 0.6,
-  scale = 0.8,
-  offsetY = 0.3,
-  offsetX = -0.15,
+  speed = 0.12,
+  noise = 0.35,
+  softness = 0.85,
+  intensity = 0.55,
+  scale = 1.1,
+  offsetY = 0,
+  offsetX = 0,
 }: RisographGrainWaveProps) {
   const [mounted, setMounted] = useState(false);
   const [maxPixels, setMaxPixels] = useState(1920 * 1080 * 1.5);
@@ -56,6 +56,9 @@ export function RisographGrainWave({
 
     updateMaxPixels();
 
+    // Mark shader loaded smoothly to unmount fallback
+    const timer = setTimeout(() => setShaderLoaded(true), 250);
+
     let resizeTimer: NodeJS.Timeout;
     const handleResize = () => {
       clearTimeout(resizeTimer);
@@ -64,6 +67,7 @@ export function RisographGrainWave({
 
     window.addEventListener("resize", handleResize);
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("resize", handleResize);
       clearTimeout(resizeTimer);
     };
@@ -74,28 +78,22 @@ export function RisographGrainWave({
       aria-hidden="true"
       className={`absolute inset-0 pointer-events-none overflow-hidden select-none bg-[#180505] ${className}`}
     >
-      {/* 1. Fast CSS fallback gradient during SSR / initialization */}
-      <div
-        className="absolute inset-0 transition-opacity duration-1000 ease-out"
-        style={{
-          opacity: shaderLoaded ? 0 : 1,
-          background: `
-            radial-gradient(ellipse at 50% 35%, #FF5A36 0%, #C23A1C 30%, #6B1408 55%, #180505 85%),
-            linear-gradient(180deg, #180505 0%, #6B1408 45%, #FF8A6B 75%, #FFE9E4 100%)
-          `,
-          backgroundBlendMode: "screen",
-        }}
-      />
-
-      {/* 2. WebGL GrainGradient Shader Canvas */}
-      {mounted && (
+      {/* 1. Fast CSS fallback during SSR / early mount */}
+      {!shaderLoaded && (
         <div
-          className="absolute inset-0 w-full h-full transition-opacity duration-1000 ease-out"
-          style={{ opacity: shaderLoaded ? 1 : 0.85 }}
-          onAnimationEnd={() => setShaderLoaded(true)}
-        >
+          className="absolute inset-0 transition-opacity duration-700 ease-out"
+          style={{
+            background: `radial-gradient(ellipse at 50% 50%, #C23A1C 0%, #6B1408 45%, #180505 80%)`,
+          }}
+        />
+      )}
+
+      {/* 2. WebGL GrainGradient Shader Canvas - Bleeds beyond edges to guarantee zero cutoff */}
+      {mounted && (
+        <div className="absolute -inset-x-0 -top-16 -bottom-20 w-full h-[calc(100%+9rem)]">
           <GrainGradient
             shape="wave"
+            fit="cover"
             colorBack={BASE_COLOR}
             colors={PALETTE_COLORS}
             softness={softness}
@@ -112,9 +110,9 @@ export function RisographGrainWave({
         </div>
       )}
 
-      {/* 3. Subtle Risograph Analog Dither & Grain Texture Overlay */}
+      {/* 3. Subtle Risograph Analog Dither Overlay */}
       {showGrain && (
-        <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-25">
+        <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-20">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <filter id={`grain-${filterId}`}>
               <feTurbulence
@@ -130,18 +128,21 @@ export function RisographGrainWave({
         </div>
       )}
 
-      {/* 4. Vignette Gradients to maintain contrast for Hero typography and cards */}
+      {/* 4. Natural Eased Edge Blends (Multi-stop smooth transitions into surrounding sections) */}
       {showVignette && (
         <>
-          {/* Top navigation edge blend */}
-          <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#180505] via-[#180505]/70 to-transparent" />
-          {/* Bottom section boundary blend */}
-          <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#180505] via-[#180505]/80 to-transparent" />
-          {/* Radial depth focus */}
+          {/* Top navigation soft fade (prevents harsh line under sticky header) */}
           <div
-            className="absolute inset-0 opacity-40"
+            className="absolute inset-x-0 top-0 h-28 pointer-events-none"
             style={{
-              background: "radial-gradient(circle at 50% 40%, transparent 45%, #180505 100%)",
+              background: `linear-gradient(to bottom, #180505 0%, rgba(24, 5, 5, 0.7) 35%, rgba(24, 5, 5, 0.2) 70%, transparent 100%)`,
+            }}
+          />
+          {/* Bottom section seamless ease-in (completely eliminates bottom cutoff midway) */}
+          <div
+            className="absolute inset-x-0 bottom-0 h-44 md:h-56 pointer-events-none"
+            style={{
+              background: `linear-gradient(to top, #180505 0%, rgba(24, 5, 5, 0.85) 30%, rgba(24, 5, 5, 0.45) 65%, transparent 100%)`,
             }}
           />
         </>

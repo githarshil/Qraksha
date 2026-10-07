@@ -326,12 +326,6 @@ export default function HomePage() {
         {/* Animated risograph grain wave gradient background */}
         <RisographGrainWave />
 
-        {/* Ambient brand glow */}
-        <div
-          aria-hidden="true"
-          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand/10 rounded-full blur-[140px] pointer-events-none"
-        />
-
         <div className="relative max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col items-center text-center">
           {/* Hero H1 */}
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium tracking-tight text-text max-w-4xl leading-[1.08] mb-3 md:mb-4">
