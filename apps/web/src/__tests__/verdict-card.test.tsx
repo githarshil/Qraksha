@@ -119,7 +119,7 @@ describe("Phase 5 — Verdict Card Component Tests (All 3 Tiers & Evidence Rows)
       expect(html).not.toContain("border-l-brand");
       expect(html).not.toContain("text-brand");
       // The card container background badge must not be brand
-      expect(html).toContain("bg-danger/15 text-[#FF546B] border-danger/40");
+      expect(html).toContain("bg-danger/15 text-[#FF6B81] border-danger/40");
     });
   });
 

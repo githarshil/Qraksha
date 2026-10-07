@@ -52,6 +52,76 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Animation utilities */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes scanline {
+  0% {
+    top: 0%;
+    opacity: 0.3;
+  }
+  50% {
+    top: 96%;
+    opacity: 1;
+  }
+  100% {
+    top: 0%;
+    opacity: 0.3;
+  }
+}
+
+.animate-scanline {
+  animation: scanline 4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes verdictReveal {
+  0% {
+    transform: translateY(12px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-verdict-reveal {
+  animation: verdictReveal 500ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes shieldResolve {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-shield-resolve {
+  animation: shieldResolve 600ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -59,5 +129,22 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+  .animate-marquee {
+    animation: none !important;
+    transform: none !important;
+  }
+  .animate-scanline {
+    animation: none !important;
+  }
+  .animate-verdict-reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .animate-shield-resolve {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

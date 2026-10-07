@@ -261,15 +261,15 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ## Phase 6 — Polish
 
-- [ ] Build the public landing page (`/`) matching `DESIGN.md` Section 8 exactly (10-section sequence, alternating dark/peach rhythm, Three.js cube-built QR slab hero visual over vertical-bar gradient, ticker bar, 1200px max width; see note below on `qraksha-hero-three.html`)
+- [x] Build the public landing page (`/`) matching `DESIGN.md` Section 8 exactly (10-section sequence, alternating dark/peach rhythm, Three.js cube-built QR slab hero visual over vertical-bar gradient, ticker bar, 1200px max width; see note below on `qraksha-hero-three.html`)
   > Note on hero visual asset: The Three.js cube-built QR slab asset `qraksha-hero-three.html` referenced in `DESIGN.md` is not currently in this repo and must be added to the project (location to be decided). Do not create, generate, or stub this file in the meantime.
-- [ ] Responsive pass across the mobile/tablet/desktop breakpoints defined in `DESIGN.md` Section 9 and `PRD.md` Section 6
-- [ ] Confirm every feature's loading/empty/success/error/disabled/permission-denied/offline states are implemented, not just the happy path
-- [ ] Add the verdict-reveal animation with `prefers-reduced-motion` handling (see `DESIGN.md` Section 7)
-- [ ] Accessibility fixes from the Phase 5 audit (see `DESIGN.md` Section 9)
-- [ ] Performance pass against the targets in `ARCHITECTURE.md` Section 11 (measure, don't guess)
-- [ ] Basic SEO/meta tags on the public landing (`/`) and `/verify/:credentialId` pages only (the rest of the app is behind auth or camera-first, where SEO doesn't apply)
-- [ ] Final UX copy review for plain language (target: understandable by Persona 1/2 from `PRD.md`, low technical sophistication)
+- [x] Responsive pass across the mobile/tablet/desktop breakpoints defined in `DESIGN.md` Section 9 and `PRD.md` Section 6
+- [x] Confirm every feature's loading/empty/success/error/disabled/permission-denied/offline states are implemented, not just the happy path
+- [x] Add the verdict-reveal animation with `prefers-reduced-motion` handling (see `DESIGN.md` Section 7)
+- [x] Accessibility fixes from the Phase 5 audit (see `DESIGN.md` Section 9)
+- [x] Performance pass against the targets in `ARCHITECTURE.md` Section 11 (measure, don't guess)
+- [x] Basic SEO/meta tags on the public landing (`/`) and `/verify/:credentialId` pages only (the rest of the app is behind auth or camera-first, where SEO doesn't apply)
+- [x] Final UX copy review for plain language (target: understandable by Persona 1/2 from `PRD.md`, low technical sophistication)
 
 ## Phase 7 — Production Readiness
 

@@ -11,6 +11,23 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
     apple: "/icon.svg",
   },
+  openGraph: {
+    title: "QRaksha — Physical UPI QR Tamper Defense",
+    description:
+      "Detect when a physical UPI QR sticker has been swapped, cloned, or relocated using AI and public blockchain anchoring.",
+    type: "website",
+    siteName: "QRaksha",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "QRaksha — Physical UPI QR Tamper Defense",
+    description:
+      "Detect when a physical UPI QR sticker has been swapped, cloned, or relocated using AI and public blockchain anchoring.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export const viewport: Viewport = {
@@ -22,8 +39,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-ink text-text flex flex-col items-center">
-        <div className="w-full max-w-[480px] min-h-screen flex flex-col bg-ink relative pb-16">
+      <body className="min-h-screen bg-ink text-text flex flex-col items-center w-full">
+        <div className="w-full min-h-screen flex flex-col bg-ink relative">
           {children}
           <BottomNav />
         </div>

@@ -39,7 +39,7 @@ export function VerdictCard({
   } else if (verdict === "WARNING") {
     borderColor = "border-l-danger";
     textColor = "text-danger";
-    bgBadge = "bg-danger/15 text-[#FF546B] border-danger/40";
+    bgBadge = "bg-danger/15 text-[#FF6B81] border-danger/40";
     ShieldIcon = ShieldAlert;
     verdictDisplayLabel = "WARNING";
   } else {
@@ -56,7 +56,7 @@ export function VerdictCard({
     (agentOutputs?.context?.metadata?.missingLocation ? "skipped" : "pass");
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-[480px] mx-auto animate-fade-in">
+    <div className="flex flex-col gap-4 w-full max-w-[480px] mx-auto animate-verdict-reveal">
       {/* Full-screen Takeover Header */}
       <div className="flex items-center justify-between">
         <span className="text-xs font-mono uppercase tracking-wider text-muted">{title}</span>
@@ -91,7 +91,9 @@ export function VerdictCard({
               )}
             </div>
           </div>
-          <div className={`p-2.5 rounded-[4px] bg-ink border border-border ${textColor}`}>
+          <div
+            className={`p-2.5 rounded-[4px] bg-ink border border-border ${textColor} animate-shield-resolve`}
+          >
             <ShieldIcon className="w-7 h-7" />
           </div>
         </div>
@@ -123,7 +125,7 @@ export function VerdictCard({
                 <Check className="w-3 h-3" /> PASS
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-danger border border-danger/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-[#FF6B81] border border-danger/30">
                 <X className="w-3 h-3" /> FLAG
               </span>
             )}
@@ -171,7 +173,7 @@ export function VerdictCard({
                 <Check className="w-3 h-3" /> PASS
               </span>
             ) : contextStatus === "fail" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-danger border border-danger/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-[#FF6B81] border border-danger/30">
                 <X className="w-3 h-3" /> RELOCATED
               </span>
             ) : (
@@ -189,7 +191,7 @@ export function VerdictCard({
           <button
             type="button"
             onClick={onReset}
-            className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-xs flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
+            className="h-10 px-4 rounded-[4px] bg-brand text-black font-semibold text-xs flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
           >
             <span>Scan Another QR Sticker</span>
           </button>

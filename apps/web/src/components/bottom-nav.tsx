@@ -7,8 +7,8 @@ import { Home, QrCode, History, Settings } from "lucide-react";
 export function BottomNav() {
   const pathname = usePathname();
 
-  // Hide bottom nav on admin routes
-  if (pathname.startsWith("/admin")) {
+  // Hide bottom nav on admin routes and landing page
+  if (pathname.startsWith("/admin") || pathname === "/") {
     return null;
   }
 
