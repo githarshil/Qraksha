@@ -6,7 +6,6 @@ import { GrainGradient } from "@paper-design/shaders-react";
 interface RisographGrainWaveProps {
   className?: string;
   showGrain?: boolean;
-  showVignette?: boolean;
   speed?: number;
   noise?: number;
   softness?: number;
@@ -18,24 +17,23 @@ interface RisographGrainWaveProps {
 
 const BASE_COLOR = "#180505";
 const PALETTE_COLORS = [
-  "#6B1408", // maroon-mid
-  "#C23A1C", // ember
-  "#FF5A36", // radiant crest accent
-  "#FF8A6B", // soft terracotta
-  "#FFE9E4", // warm risograph cream
+  "#6B1408", // 1. Maroon-mid
+  "#C23A1C", // 2. Ember
+  "#FF5A36", // 3. Radiant crest accent
+  "#FF8A6B", // 4. Soft terracotta
+  "#FFE9E4", // 5. Warm risograph cream at the base
 ];
 
 export function RisographGrainWave({
   className = "",
   showGrain = true,
-  showVignette = true,
-  speed = 0.12,
-  noise = 0.35,
-  softness = 0.85,
-  intensity = 0.55,
-  scale = 1.1,
-  offsetY = 0,
-  offsetX = 0,
+  speed = 0.14,
+  noise = 0.42,
+  softness = 0.7,
+  intensity = 0.6,
+  scale = 0.8,
+  offsetY = 0.3,
+  offsetX = -0.15,
 }: RisographGrainWaveProps) {
   const [mounted, setMounted] = useState(false);
   const [maxPixels, setMaxPixels] = useState(1920 * 1080 * 1.5);
@@ -56,7 +54,7 @@ export function RisographGrainWave({
 
     updateMaxPixels();
 
-    // Mark shader loaded smoothly to unmount fallback
+    // Mark shader loaded to dismiss fallback
     const timer = setTimeout(() => setShaderLoaded(true), 250);
 
     let resizeTimer: NodeJS.Timeout;
@@ -78,22 +76,21 @@ export function RisographGrainWave({
       aria-hidden="true"
       className={`absolute inset-0 pointer-events-none overflow-hidden select-none bg-[#180505] ${className}`}
     >
-      {/* 1. Fast CSS fallback during SSR / early mount */}
+      {/* 1. Fast CSS fallback during SSR / early mount (white tint at bottom) */}
       {!shaderLoaded && (
         <div
           className="absolute inset-0 transition-opacity duration-700 ease-out"
           style={{
-            background: `radial-gradient(ellipse at 50% 50%, #C23A1C 0%, #6B1408 45%, #180505 80%)`,
+            background: `radial-gradient(ellipse at 50% 100%, #FFE9E4 0%, #FF8A6B 20%, #FF5A36 40%, #C23A1C 60%, #6B1408 80%, #180505 100%)`,
           }}
         />
       )}
 
-      {/* 2. WebGL GrainGradient Shader Canvas - Bleeds beyond edges to guarantee zero cutoff */}
+      {/* 2. WebGL GrainGradient Shader Canvas - Sticks flush to bottom */}
       {mounted && (
-        <div className="absolute -inset-x-0 -top-16 -bottom-20 w-full h-[calc(100%+9rem)]">
+        <div className="absolute inset-0 w-full h-full">
           <GrainGradient
             shape="wave"
-            fit="cover"
             colorBack={BASE_COLOR}
             colors={PALETTE_COLORS}
             softness={softness}
@@ -112,7 +109,7 @@ export function RisographGrainWave({
 
       {/* 3. Subtle Risograph Analog Dither Overlay */}
       {showGrain && (
-        <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-20">
+        <div className="absolute inset-0 pointer-events-none mix-blend-overlay opacity-25">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <filter id={`grain-${filterId}`}>
               <feTurbulence
@@ -126,26 +123,6 @@ export function RisographGrainWave({
             <rect width="100%" height="100%" filter={`url(#grain-${filterId})`} />
           </svg>
         </div>
-      )}
-
-      {/* 4. Natural Eased Edge Blends (Multi-stop smooth transitions into surrounding sections) */}
-      {showVignette && (
-        <>
-          {/* Top navigation soft fade (prevents harsh line under sticky header) */}
-          <div
-            className="absolute inset-x-0 top-0 h-28 pointer-events-none"
-            style={{
-              background: `linear-gradient(to bottom, #180505 0%, rgba(24, 5, 5, 0.7) 35%, rgba(24, 5, 5, 0.2) 70%, transparent 100%)`,
-            }}
-          />
-          {/* Bottom section seamless ease-in (completely eliminates bottom cutoff midway) */}
-          <div
-            className="absolute inset-x-0 bottom-0 h-44 md:h-56 pointer-events-none"
-            style={{
-              background: `linear-gradient(to top, #180505 0%, rgba(24, 5, 5, 0.85) 30%, rgba(24, 5, 5, 0.45) 65%, transparent 100%)`,
-            }}
-          />
-        </>
       )}
     </div>
   );
