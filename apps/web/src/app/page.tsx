@@ -26,6 +26,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { VerdictCard } from "@/components/verdict-card";
+import { RisographGrainWave } from "@/components/risograph-grain-wave";
 import { AuditResult } from "@/lib/api";
 
 export default function HomePage() {
@@ -350,23 +351,8 @@ export default function HomePage() {
 
       {/* SECTION 1: HERO (Dark: --bg-ink) */}
       <section className="relative w-full overflow-hidden pt-16 md:pt-28 pb-20 md:pb-32 bg-ink border-b border-border">
-        {/* Waveform vertical bars gradient background */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none flex justify-center items-end opacity-15 overflow-hidden"
-        >
-          <div className="flex items-end gap-2 md:gap-3 h-full max-w-[1200px] w-full px-4">
-            {[45, 65, 30, 85, 55, 95, 70, 40, 80, 60, 90, 75, 50, 85, 65, 95, 40, 70, 55, 80].map(
-              (height, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t-sm bg-gradient-to-t from-brand via-brand/40 to-transparent"
-                  style={{ height: `${height}%` }}
-                />
-              ),
-            )}
-          </div>
-        </div>
+        {/* Animated risograph grain wave gradient background */}
+        <RisographGrainWave />
 
         {/* Ambient brand glow */}
         <div
