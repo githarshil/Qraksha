@@ -3,25 +3,33 @@
 @tailwind utilities;
 
 :root {
-  --primary: #1b4d8c;
-  --secondary: #0f172a;
-  --background: #f8fafc;
-  --surface: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-}
+  --bg-ink: #120907;
+  --bg-ink-2: #1c0f0b;
+  --bg-peach: #ffede6;
+  --bg-peach-2: #ffddd0;
+  --brand: #ff4b1f;
+  --brand-soft: #ff8a66;
+  --brand-deep: #b7280a;
+  --text-on-dark: #f6e9e3;
+  --text-on-dark-muted: #b79e94;
+  --text-on-light: #1a0d09;
+  --text-on-light-muted: #5e4036;
+  --line-dark: rgba(255, 75, 31, 0.35);
+  --line-light: rgba(26, 13, 9, 0.15);
+  --ok: #2fbf71;
+  --warn: #f2b531;
+  --danger: #e5384f;
+  --radius: 4px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #5b9bd5;
-    --secondary: #e2e8f0;
-    --background: #0b1220;
-    --surface: #111827;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-    --border: #1f2937;
-  }
+  /* Semantic UI mappings */
+  --primary: var(--brand);
+  --secondary: var(--text-on-dark);
+  --background: var(--bg-ink);
+  --surface: var(--bg-ink-2);
+  --text: var(--text-on-dark);
+  --muted: var(--text-on-dark-muted);
+  --border: var(--line-dark);
 }
 
 body {

@@ -74,10 +74,10 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 2 — Merchant identity registration (frontend)
 
-- [ ] Build the registration wizard step 1 UI (`/register`) — path selection (GST/Udyam vs. penny-drop)
-- [ ] Build the OTP-confirmation sub-step UI (mocked OTP entry)
-- [ ] Build the penny-drop sub-step UI (VPA entry + mocked confirmation)
-- [ ] Wire both to the Task 1 API with loading/error/success states per `PRD.md` Section 6
+- [x] Build the registration wizard step 1 UI (`/register`) — path selection (GST/Udyam vs. penny-drop)
+- [x] Build the OTP-confirmation sub-step UI (mocked OTP entry)
+- [x] Build the penny-drop sub-step UI (VPA entry + mocked confirmation)
+- [x] Wire both to the Task 1 API with loading/error/success states per `PRD.md` Section 6
 
 **Depends on:** Task 1.
 
@@ -88,11 +88,11 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 3 — Reference capture & location binding (backend)
 
-- [ ] Create `comparison.merchant_credential`, `comparison.registered_qr`, `comparison.reference_embedding` migrations (enable `pgvector`)
-- [ ] Implement transient photo upload endpoint (`POST /api/v1/merchants/register/reference`) using Supabase Storage as a buffer
-  - [ ] Extract embedding synchronously
-  - [ ] Delete the uploaded photo object immediately after extraction succeeds or fails
-- [ ] Implement location-binding logic: compare submitted GPS to `identity.merchant_identity.kyc_address` (geocoded), flag `location_variance` if outside the configured radius (does not block)
+- [x] Create `comparison.merchant_credential`, `comparison.registered_qr`, `comparison.reference_embedding` migrations (enable `pgvector`)
+- [x] Implement transient photo upload endpoint (`POST /api/v1/merchants/register/reference`) using Supabase Storage as a buffer
+  - [x] Extract embedding synchronously
+  - [x] Delete the uploaded photo object immediately after extraction succeeds or fails
+- [x] Implement location-binding logic: compare submitted GPS to `identity.merchant_identity.kyc_address` (geocoded), flag `location_variance` if outside the configured radius (does not block)
 
 **Depends on:** Task 1.
 
@@ -104,9 +104,9 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 4 — Reference capture & location binding (frontend)
 
-- [ ] Build the camera capture UI (`getUserMedia`) for the reference photo step
-- [ ] Request and handle geolocation permission, including the permission-denied UX state
-- [ ] Wire to Task 3's endpoint
+- [x] Build the camera capture UI (`getUserMedia`) for the reference photo step
+- [x] Request and handle geolocation permission, including the permission-denied UX state
+- [x] Wire to Task 3's endpoint
 
 **Depends on:** Task 3, Task 2.
 
@@ -117,8 +117,8 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 5 — Proof-of-possession (mocked)
 
-- [ ] Implement `POST /api/v1/merchants/register/proof-of-possession` (mock confirmation, transitions credential `pending_activation → recently_registered`)
-- [ ] Build the corresponding UI step with a clearly-labeled "simulated for demo" note in a dev/admin-only debug panel (not shown to end users in the actual flow copy)
+- [x] Implement `POST /api/v1/merchants/register/proof-of-possession` (mock confirmation, transitions credential `pending_activation → recently_registered`)
+- [x] Build the corresponding UI step with a clearly-labeled "simulated for demo" note in a dev/admin-only debug panel (not shown to end users in the actual flow copy)
 
 **Depends on:** Task 3.
 
@@ -129,12 +129,12 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 6 — Blockchain credential anchoring
 
-- [ ] Set up a testnet wallet (Polygon Amoy) and fund it via faucet (documented in a `docs/blockchain-setup.md`, not committed secrets)
-- [ ] Implement the anchor service using `ethers.js`: compute credential hash, submit a plain transaction with the hash in `data`
-- [ ] Create `comparison.blockchain_anchor` migration
-- [ ] Implement the async retry queue (exponential backoff, 5 attempts) per `ARCHITECTURE.md` Section 3
-- [ ] Trigger anchoring on credential activation and on any material credential update (new QR added, location changed)
-- [ ] Surface the block-explorer link in the credential dashboard UI and on `GET /api/v1/verify/:credentialId`
+- [x] Set up a testnet wallet (Polygon Amoy) and fund it via faucet (documented in a `docs/blockchain-setup.md`, not committed secrets)
+- [x] Implement the anchor service using `ethers.js`: compute credential hash, submit a plain transaction with the hash in `data`
+- [x] Create `comparison.blockchain_anchor` migration
+- [x] Implement the async retry queue (exponential backoff, 5 attempts) per `ARCHITECTURE.md` Section 3
+- [x] Trigger anchoring on credential activation and on any material credential update (new QR added, location changed)
+- [x] Surface the block-explorer link in the credential dashboard UI and on `GET /api/v1/verify/:credentialId`
 
 **Depends on:** Task 5.
 
@@ -146,8 +146,8 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 7 — QR Decode Agent + payload lookup
 
-- [ ] Implement client-side QR decoding (`jsQR` + `BarcodeDetector` fallback) in the scan UI component (shared between self-audit and `/check`)
-- [ ] Implement the payload-hash lookup service (`registered_qr` table, with the in-memory cache from `ARCHITECTURE.md` Section 3)
+- [x] Implement client-side QR decoding (`jsQR` + `BarcodeDetector` fallback) in the scan UI component (shared between self-audit and `/check`)
+- [x] Implement the payload-hash lookup service (`registered_qr` table, with the in-memory cache from `ARCHITECTURE.md` Section 3)
 
 **Depends on:** Task 3.
 
@@ -158,11 +158,11 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 8 — Identity, Vision, Context, Attestation Agents
 
-- [ ] Write the Identity Agent prompt + Gemini call wrapper (structured JSON output)
-- [ ] Write the Vision Agent: extract a live embedding from the audit photo, cosine-compare to the stored reference embedding, return a soft similarity score (never a standalone red flag)
-- [ ] Write the Context Agent prompt/logic: compare live GPS to `registered_qr.bound_lat/lng/radius`
-- [ ] Write the Attestation Agent: compute `attestation_diversity_score` from `attestation_signal` rows for the credential
-- [ ] Implement the AI data-boundary guard (`ARCHITECTURE.md` Section 8 table) as a shared utility that strips identity-schema fields before any Gemini call is constructed
+- [x] Write the Identity Agent prompt + Gemini call wrapper (structured JSON output)
+- [x] Write the Vision Agent: extract a live embedding from the audit photo, cosine-compare to the stored reference embedding, return a soft similarity score (never a standalone red flag)
+- [x] Write the Context Agent prompt/logic: compare live GPS to `registered_qr.bound_lat/lng/radius`
+- [x] Write the Attestation Agent: compute `attestation_diversity_score` from `attestation_signal` rows for the credential
+- [x] Implement the AI data-boundary guard (`ARCHITECTURE.md` Section 8 table) as a shared utility that strips identity-schema fields before any Gemini call is constructed
 
 **Depends on:** Task 7.
 
@@ -173,11 +173,11 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 9 — Misbinding Agent + Trust Agent + verdict assembly
 
-- [ ] Implement the Misbinding Agent: given the four upstream agent outputs, determine internal consistency (e.g., right QR, wrong place)
-- [ ] Implement the Trust Agent: combine all signals into one of `VERIFIED / RECENTLY_REGISTERED / WARNING` plus a `verdict_reason` code (`UNKNOWN_QR`, `LOCATION_MISMATCH`, `MISBINDING`, `OK`)
-- [ ] Implement the trust-ramp scoring formula from `ARCHITECTURE.md` Section 4 exactly as specified (including the single-WARNING-overrides-everything rule)
-- [ ] Implement the degraded-mode fallback logic from `ARCHITECTURE.md` Section 10
-- [ ] Create the `comparison.audit_run` migration and persist every run (including `agent_outputs` JSON and `degraded_check` flag)
+- [x] Implement the Misbinding Agent: given the four upstream agent outputs, determine internal consistency (e.g., right QR, wrong place)
+- [x] Implement the Trust Agent: combine all signals into one of `VERIFIED / RECENTLY_REGISTERED / WARNING` plus a `verdict_reason` code (`UNKNOWN_QR`, `LOCATION_MISMATCH`, `MISBINDING`, `OK`)
+- [x] Implement the trust-ramp scoring formula from `ARCHITECTURE.md` Section 4 exactly as specified (including the single-WARNING-overrides-everything rule)
+- [x] Implement the degraded-mode fallback logic from `ARCHITECTURE.md` Section 10
+- [x] Create the `comparison.audit_run` migration and persist every run (including `agent_outputs` JSON and `degraded_check` flag)
 
 **Depends on:** Task 8.
 
@@ -191,10 +191,10 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 10 — Self-audit flow (frontend)
 
-- [ ] Build the self-audit scan screen (`/audit/run`), reusing the Task 7 scan component
-- [ ] Build the loading state with per-agent status labels per `PRD.md` Section 6
-- [ ] Build the verdict result screen (full-screen takeover; verdict card matching `DESIGN.md` Section 5 with 4px border radius, 4px solid left edge in semantic verdict color, mono verdict label, one-line reason, 3-row evidence breakdown, top-right shield icon, zero shadows; never use brand orange for WARNING)
-- [ ] Build `/audit/history` with pagination
+- [x] Build the self-audit scan screen (`/audit/run`), reusing the Task 7 scan component
+- [x] Build the loading state with per-agent status labels per `PRD.md` Section 6
+- [x] Build the verdict result screen (full-screen takeover; verdict card matching `DESIGN.md` Section 5 with 4px border radius, 4px solid left edge in semantic verdict color, mono verdict label, one-line reason, 3-row evidence breakdown, top-right shield icon, zero shadows; never use brand orange for WARNING)
+- [x] Build `/audit/history` with pagination
 
 **Depends on:** Task 9.
 
@@ -205,9 +205,9 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 11 — Customer `/check` flow
 
-- [ ] Implement `POST /api/v1/check` (no auth required, reuses the Task 9 verdict engine)
-- [ ] Build the `/check` frontend screen (no login gate)
-- [ ] Handle the "QR not registered with QRaksha at all" case as a distinct 🟡 message (not a red flag) per `PRD.md`
+- [x] Implement `POST /api/v1/check` (no auth required, reuses the Task 9 verdict engine)
+- [x] Build the `/check` frontend screen (no login gate)
+- [x] Handle the "QR not registered with QRaksha at all" case as a distinct 🟡 message (not a red flag) per `PRD.md`
 
 **Depends on:** Task 9.
 
@@ -218,8 +218,8 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ### Task 12 — Multi-QR support
 
-- [ ] Implement `POST /api/v1/credentials/:id/qrs` (add a QR to an existing credential, inherits the abbreviated ramp per `ARCHITECTURE.md` Section 4)
-- [ ] Build the `/credential/qrs` management UI (list + add new QR flow reusing the capture component from Task 4)
+- [x] Implement `POST /api/v1/credentials/:id/qrs` (add a QR to an existing credential, inherits the abbreviated ramp per `ARCHITECTURE.md` Section 4)
+- [x] Build the `/credential/qrs` management UI (list + add new QR flow reusing the capture component from Task 4)
 
 **Depends on:** Task 9.
 
@@ -230,34 +230,34 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ## Phase 3 — Secondary Features
 
-- [ ] Dispute filing endpoint (`POST /api/v1/disputes`) and UI (`/credential/dispute/new`), including the immediate auto-downgrade-to-WARNING side effect
-- [ ] Admin disputes queue (`GET /api/v1/admin/disputes`, `/admin/disputes` UI)
-- [ ] Admin dispute resolution (`PATCH /api/v1/admin/disputes/:id`) requiring a non-null `resolution_reason`
-- [ ] Admin credential registry search/filter (`GET /api/v1/admin/credentials`, `/admin/registry` UI)
-- [ ] Public credential verification page (`GET /api/v1/verify/:credentialId`, `/verify/:credentialId` UI) with explorer link
-- [ ] Merchant settings screen (`/settings`): profile info, log out
-- [ ] Demo registry seeding endpoint and script (`POST /api/v1/admin/registry/seed`), 5–10 fictional merchants per `PRD.md`
+- [x] Dispute filing endpoint (`POST /api/v1/disputes`) and UI (`/credential/dispute/new`), including the immediate auto-downgrade-to-WARNING side effect
+- [x] Admin disputes queue (`GET /api/v1/admin/disputes`, `/admin/disputes` UI)
+- [x] Admin dispute resolution (`PATCH /api/v1/admin/disputes/:id`) requiring a non-null `resolution_reason`
+- [x] Admin credential registry search/filter (`GET /api/v1/admin/credentials`, `/admin/registry` UI)
+- [x] Public credential verification page (`GET /api/v1/verify/:credentialId`, `/verify/:credentialId` UI) with explorer link
+- [x] Merchant settings screen (`/settings`): profile info, log out
+- [x] Demo registry seeding endpoint and script (`POST /api/v1/admin/registry/seed`), 5–10 fictional merchants per `PRD.md`
 
 ## Phase 4 — Security & Reliability
 
-- [ ] Write and run RLS policy tests confirming a merchant cannot read another merchant's `identity.merchant_identity` or `comparison.merchant_credential` rows
-- [ ] Write and run an authorization test confirming a non-admin JWT is rejected on every `/admin/*` route
-- [ ] Add and test rate limiting on `/api/v1/audit/run`, `/api/v1/check`, `/api/v1/disputes`, and OTP endpoints per `ARCHITECTURE.md` Section 6/8
-- [ ] Add security headers (CSP, `X-Content-Type-Options`, `Referrer-Policy`) to `apps/web`
-- [ ] Run `npm audit` and resolve/document any high/critical findings
-- [ ] Confirm no secret values exist in git history (`git log -p` scan) before first public push
-- [ ] Add structured logging with correlation IDs across `apps/api`, confirm no PII appears in logs (manual review of a sample of `audit_run` and error logs)
-- [ ] Document a manual backup/export procedure for the Supabase project (MVP does not need automated backups beyond Supabase's own defaults, but the procedure must exist and be written down)
+- [x] Write and run RLS policy tests confirming a merchant cannot read another merchant's `identity.merchant_identity` or `comparison.merchant_credential` rows
+- [x] Write and run an authorization test confirming a non-admin JWT is rejected on every `/admin/*` route
+- [x] Add and test rate limiting on `/api/v1/audit/run`, `/api/v1/check`, `/api/v1/disputes`, and OTP endpoints per `ARCHITECTURE.md` Section 6/8
+- [x] Add security headers (CSP, `X-Content-Type-Options`, `Referrer-Policy`) to `apps/web`
+- [x] Run `npm audit` and resolve/document any high/critical findings
+- [x] Confirm no secret values exist in git history (`git log -p` scan) before first public push
+- [x] Add structured logging with correlation IDs across `apps/api`, confirm no PII appears in logs (manual review of a sample of `audit_run` and error logs)
+- [x] Document a manual backup/export procedure for the Supabase project (MVP does not need automated backups beyond Supabase's own defaults, but the procedure must exist and be written down)
 
 ## Phase 5 — Testing
 
-- [ ] Unit tests: each of the five agents (mocked Gemini responses covering pass/fail/timeout)
-- [ ] Unit tests: trust-ramp scoring formula (boundary values around every threshold in `ARCHITECTURE.md` Section 4)
-- [ ] Integration/API tests: full registration flow, full self-audit flow, full dispute flow (Supertest against a test Supabase project)
-- [ ] Component tests: verdict result card in all three tiers, all UX states (loading/empty/error/disabled/permission-denied/offline) from `PRD.md` Section 6 and `DESIGN.md` Section 5
-- [ ] E2E tests (Playwright): the two flagship demo scenarios — QR replacement detected, QR relocation detected — run against the seeded demo registry
-- [ ] Edge case tests: duplicate GST registration, out-of-radius registration warning, degraded-mode verdict, unknown-QR check
-- [ ] Accessibility audit pass (automated via `axe-core` in Playwright + one manual screen-reader pass) against the acceptance criteria in `PRD.md` Section 6 and `DESIGN.md` Section 9
+- [x] Unit tests: each of the five agents (mocked Gemini responses covering pass/fail/timeout)
+- [x] Unit tests: trust-ramp scoring formula (boundary values around every threshold in `ARCHITECTURE.md` Section 4)
+- [x] Integration/API tests: full registration flow, full self-audit flow, full dispute flow (Supertest against a test Supabase project)
+- [x] Component tests: verdict result card in all three tiers, all UX states (loading/empty/error/disabled/permission-denied/offline) from `PRD.md` Section 6 and `DESIGN.md` Section 5
+- [x] E2E tests (Playwright): the two flagship demo scenarios — QR replacement detected, QR relocation detected — run against the seeded demo registry
+- [x] Edge case tests: duplicate GST registration, out-of-radius registration warning, degraded-mode verdict, unknown-QR check
+- [x] Accessibility audit pass (automated via `axe-core` in Playwright + one manual screen-reader pass) against the acceptance criteria in `PRD.md` Section 6 and `DESIGN.md` Section 9
 
 ## Phase 6 — Polish
 

@@ -1,4 +1,4 @@
-import { IdentityTier, TrustTier } from "@qraksha/shared";
+import type { IdentityTier, TrustTier } from "@qraksha/shared";
 
 export interface TrustCalculationInput {
   identityTier: IdentityTier;

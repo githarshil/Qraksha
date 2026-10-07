@@ -21,6 +21,7 @@ export const RegisterIdentitySchema = z.discriminatedUnion("type", [
 export type RegisterIdentityInput = z.infer<typeof RegisterIdentitySchema>;
 
 export const RegisterReferenceSchema = z.object({
+  merchantId: z.string().uuid().optional(),
   qrPayload: z.string().min(1).max(2048),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),

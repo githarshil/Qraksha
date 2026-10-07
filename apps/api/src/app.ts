@@ -2,14 +2,24 @@ import express from "express";
 import cors from "cors";
 import { apiRouter } from "./routes/index.js";
 import { errorHandler } from "./middleware/error.middleware.js";
+import { requestLogger } from "./middleware/logger.middleware.js";
 
 export const app = express();
 
-const corsOrigin = process.env.CORS_ORIGIN || "http://localhost:3000";
+app.use(requestLogger);
+
+const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000,http://localhost:3001")
+  .split(",")
+  .map((s) => s.trim());
 
 app.use(
   cors({
-    origin: corsOrigin,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
   }),
 );

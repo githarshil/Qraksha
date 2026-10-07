@@ -14,18 +14,16 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1B4D8C",
+  themeColor: "#FF4B1F",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-background text-text flex flex-col items-center">
-        <div className="w-full max-w-[480px] min-h-screen flex flex-col bg-surface shadow-sm relative pb-16">
+      <body className="min-h-screen bg-ink text-text flex flex-col items-center">
+        <div className="w-full max-w-[480px] min-h-screen flex flex-col bg-ink relative pb-16">
           {children}
           <BottomNav />
         </div>

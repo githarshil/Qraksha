@@ -1,0 +1,200 @@
+"use client";
+
+import React from "react";
+import { ShieldCheck, ShieldAlert, Shield, Check, AlertTriangle, X } from "lucide-react";
+import { AuditResult } from "../lib/api";
+
+export interface VerdictCardProps {
+  result: AuditResult;
+  onReset?: () => void;
+  title?: string;
+  isCustomerView?: boolean;
+}
+
+export function VerdictCard({
+  result,
+  onReset,
+  title = "Audit Verdict",
+  isCustomerView = false,
+}: VerdictCardProps) {
+  const { verdict, reason, message, agentOutputs, degradedCheck, isUnregistered } = result;
+
+  // Semantic verdict tokens per DESIGN.md Section 2
+  // VERIFIED: --ok (#2FBF71)
+  // RECENTLY_REGISTERED / UNVERIFIED: --warn (#F2B531)
+  // WARNING: --danger (#E5384F)
+  // Rule: Brand orange is NEVER used for WARNING!
+  let borderColor = "border-l-warn";
+  let textColor = "text-warn";
+  let bgBadge = "bg-warn/10 text-warn border-warn/30";
+  let ShieldIcon = Shield;
+  let verdictDisplayLabel = "RECENTLY REGISTERED";
+
+  if (verdict === "VERIFIED") {
+    borderColor = "border-l-ok";
+    textColor = "text-ok";
+    bgBadge = "bg-ok/10 text-ok border-ok/30";
+    ShieldIcon = ShieldCheck;
+    verdictDisplayLabel = "VERIFIED";
+  } else if (verdict === "WARNING") {
+    borderColor = "border-l-danger";
+    textColor = "text-danger";
+    bgBadge = "bg-danger/15 text-[#FF546B] border-danger/40";
+    ShieldIcon = ShieldAlert;
+    verdictDisplayLabel = "WARNING";
+  } else {
+    // RECENTLY_REGISTERED / UNVERIFIED
+    verdictDisplayLabel = isUnregistered ? "NOT ENROLLED" : "BUILDING TRUST";
+  }
+
+  // Evidence breakdown extraction
+  const identityStatus = agentOutputs?.identity?.status || "pass";
+  const visionStatus =
+    agentOutputs?.vision?.status || (agentOutputs?.vision?.metadata?.skipped ? "skipped" : "pass");
+  const contextStatus =
+    agentOutputs?.context?.status ||
+    (agentOutputs?.context?.metadata?.missingLocation ? "skipped" : "pass");
+
+  return (
+    <div className="flex flex-col gap-4 w-full max-w-[480px] mx-auto animate-fade-in">
+      {/* Full-screen Takeover Header */}
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-mono uppercase tracking-wider text-muted">{title}</span>
+        {degradedCheck && (
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-warn/10 text-warn border border-warn/30">
+            DEGRADED CHECK
+          </span>
+        )}
+      </div>
+
+      {/* Main Verdict Card per DESIGN.md Section 5 */}
+      <div
+        className={`p-6 rounded-[4px] bg-ink-2 border-t border-r border-b border-border border-l-4 ${borderColor} flex flex-col gap-5`}
+      >
+        {/* Top: Verdict Name & Shield Icon */}
+        <div className="flex items-start justify-between">
+          <div>
+            <span className="text-[10px] font-mono text-muted uppercase tracking-wider">
+              {isCustomerView ? "Merchant Status" : "Security State"}
+            </span>
+            <h2 className={`text-2xl font-mono font-medium tracking-tight mt-0.5 ${textColor}`}>
+              {verdictDisplayLabel}
+            </h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ${bgBadge}`}>
+                REASON // {reason}
+              </span>
+              {result.auditRunId && (
+                <span className="text-[10px] font-mono text-muted">
+                  ID: {result.auditRunId.slice(0, 8)}
+                </span>
+              )}
+            </div>
+          </div>
+          <div className={`p-2.5 rounded-[4px] bg-ink border border-border ${textColor}`}>
+            <ShieldIcon className="w-7 h-7" />
+          </div>
+        </div>
+
+        {/* Plain Language Message */}
+        <p className="text-xs text-text leading-relaxed font-sans border-t border-border/60 pt-3">
+          {message}
+        </p>
+
+        {/* 3-Row Evidence Breakdown (Identity, Vision, Context) per DESIGN.md Section 5 */}
+        <div className="flex flex-col gap-2 pt-2 border-t border-border/60">
+          <span className="text-[10px] font-mono uppercase text-muted tracking-wider">
+            Multi-Agent Evidence Breakdown
+          </span>
+
+          {/* Row 1: Identity Agent */}
+          <div className="p-2.5 rounded-[4px] bg-ink border border-border/80 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-muted font-mono text-[11px]">01</span>
+              <div>
+                <p className="font-medium text-text">Identity Agent</p>
+                <p className="text-[10px] text-muted truncate max-w-[220px]">
+                  {agentOutputs?.identity?.reason || "Payload matched registered credential"}
+                </p>
+              </div>
+            </div>
+            {identityStatus === "pass" ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
+                <Check className="w-3 h-3" /> PASS
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-danger border border-danger/30">
+                <X className="w-3 h-3" /> FLAG
+              </span>
+            )}
+          </div>
+
+          {/* Row 2: Vision Agent */}
+          <div className="p-2.5 rounded-[4px] bg-ink border border-border/80 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-muted font-mono text-[11px]">02</span>
+              <div>
+                <p className="font-medium text-text">Vision Agent</p>
+                <p className="text-[10px] text-muted truncate max-w-[220px]">
+                  {agentOutputs?.vision?.reason || "Visual embedding compared"}
+                </p>
+              </div>
+            </div>
+            {visionStatus === "pass" ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
+                <Check className="w-3 h-3" /> PASS
+              </span>
+            ) : visionStatus === "warn" ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-warn/10 text-warn border border-warn/30">
+                <AlertTriangle className="w-3 h-3" /> SOFT WARN
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-muted/10 text-muted border border-border">
+                SKIPPED
+              </span>
+            )}
+          </div>
+
+          {/* Row 3: Context Agent */}
+          <div className="p-2.5 rounded-[4px] bg-ink border border-border/80 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-muted font-mono text-[11px]">03</span>
+              <div>
+                <p className="font-medium text-text">Context Agent</p>
+                <p className="text-[10px] text-muted truncate max-w-[220px]">
+                  {agentOutputs?.context?.reason || "GPS proximity verified"}
+                </p>
+              </div>
+            </div>
+            {contextStatus === "pass" ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
+                <Check className="w-3 h-3" /> PASS
+              </span>
+            ) : contextStatus === "fail" ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-danger border border-danger/30">
+                <X className="w-3 h-3" /> RELOCATED
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-warn/10 text-warn border border-warn/30">
+                NO GPS
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      {onReset && (
+        <div className="flex flex-col gap-2 mt-2">
+          <button
+            type="button"
+            onClick={onReset}
+            className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-xs flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
+          >
+            <span>Scan Another QR Sticker</span>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}

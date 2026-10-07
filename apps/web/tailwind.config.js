@@ -1,68 +1,107 @@
+const path = require("path");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: "media",
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    path.join(__dirname, "src/**/*.{js,ts,jsx,tsx,mdx}"),
+    "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    "./apps/web/src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
+        ink: {
+          DEFAULT: "var(--bg-ink)",
+          2: "var(--bg-ink-2)",
+        },
+        peach: {
+          DEFAULT: "var(--bg-peach)",
+          2: "var(--bg-peach-2)",
+        },
+        brand: {
+          DEFAULT: "var(--brand)",
+          soft: "var(--brand-soft)",
+          deep: "var(--brand-deep)",
+        },
         primary: {
-          DEFAULT: "#1B4D8C",
-          dark: "#5B9BD5",
+          DEFAULT: "var(--brand)",
+          dark: "var(--brand-soft)",
         },
         secondary: {
-          DEFAULT: "#0F172A",
-          dark: "#E2E8F0",
+          DEFAULT: "var(--text-on-dark)",
+          dark: "var(--text-on-dark)",
         },
         background: {
-          DEFAULT: "#F8FAFC",
-          dark: "#0B1220",
+          DEFAULT: "var(--bg-ink)",
+          dark: "var(--bg-ink)",
         },
         surface: {
-          DEFAULT: "#FFFFFF",
-          dark: "#111827",
+          DEFAULT: "var(--bg-ink-2)",
+          dark: "var(--bg-ink-2)",
         },
         text: {
-          DEFAULT: "#0F172A",
-          dark: "#F1F5F9",
+          DEFAULT: "var(--text-on-dark)",
+          dark: "var(--text-on-dark)",
         },
         muted: {
-          DEFAULT: "#64748B",
-          dark: "#94A3B8",
+          DEFAULT: "var(--text-on-dark-muted)",
+          dark: "var(--text-on-dark-muted)",
         },
         border: {
-          DEFAULT: "#E2E8F0",
-          dark: "#1F2937",
+          DEFAULT: "var(--line-dark)",
+          dark: "var(--line-dark)",
         },
+        verdict: {
+          ok: "var(--ok)",
+          warn: "var(--warn)",
+          danger: "var(--danger)",
+        },
+        ok: "var(--ok)",
+        warn: "var(--warn)",
+        danger: "var(--danger)",
         tier: {
           verified: {
-            DEFAULT: "#16A34A",
-            dark: "#22C55E",
-            bg: "#F0FDF4",
-            "bg-dark": "#052e16",
+            DEFAULT: "var(--ok)",
+            bg: "rgba(47, 191, 113, 0.15)",
           },
           unverified: {
-            DEFAULT: "#CA8A04",
-            dark: "#EAB308",
-            bg: "#FEFCE8",
-            "bg-dark": "#422006",
+            DEFAULT: "var(--warn)",
+            bg: "rgba(242, 181, 49, 0.15)",
           },
           warning: {
-            DEFAULT: "#DC2626",
-            dark: "#EF4444",
-            bg: "#FEF2F2",
-            "bg-dark": "#450a0a",
+            DEFAULT: "var(--danger)",
+            bg: "rgba(229, 56, 79, 0.15)",
           },
           info: {
-            DEFAULT: "#2563EB",
-            dark: "#60A5FA",
-            bg: "#EFF6FF",
-            "bg-dark": "#172554",
+            DEFAULT: "var(--brand)",
+            bg: "rgba(255, 75, 31, 0.15)",
           },
         },
+      },
+      borderRadius: {
+        DEFAULT: "var(--radius)",
+        sm: "2px",
+        md: "var(--radius)",
+        lg: "var(--radius)",
+        xl: "var(--radius)",
+        "2xl": "var(--radius)",
+        "3xl": "var(--radius)",
+        full: "9999px",
+      },
+      fontFamily: {
+        sans: [
+          '"Inter Tight"',
+          "Geist",
+          '"General Sans"',
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          "sans-serif",
+        ],
+        mono: ['"JetBrains Mono"', '"Geist Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
   },

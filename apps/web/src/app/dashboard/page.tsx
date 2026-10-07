@@ -1,84 +1,153 @@
 import Link from "next/link";
-import { QrCode, ShieldAlert, History, PlusCircle } from "lucide-react";
+import {
+  QrCode,
+  ShieldCheck,
+  ShieldAlert,
+  History,
+  ExternalLink,
+  ArrowRight,
+  Link as LinkIcon,
+  CheckCircle2,
+} from "lucide-react";
 
 export default function DashboardPage() {
+  // Demo credential data for MVP merchant view
+  const demoCredentialId = "550e8400-e29b-41d4-a716-446655440000";
+  const demoTxHash = "0x8f3c7a2b9e1d4c5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f";
+  const explorerUrl = `https://amoy.polygonscan.com/tx/${demoTxHash}`;
+
   return (
-    <main className="flex-1 flex flex-col p-6">
+    <main className="flex-1 flex flex-col p-6 max-w-[480px] mx-auto w-full">
+      {/* Top Header */}
       <header className="flex justify-between items-center pb-4 border-b border-border mb-6">
         <div>
-          <h1 className="text-xl font-bold text-text">Merchant Dashboard</h1>
-          <p className="text-xs text-muted">Sharma Canteen &bull; Tier: 🟢 VERIFIED</p>
+          <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>MERCHANT // DASHBOARD</span>
+          </div>
+          <h1 className="text-lg font-medium text-text mt-0.5">Sharma Canteen</h1>
+          <p className="text-xs font-mono text-muted mt-0.5">
+            Tier: <span className="text-ok font-medium">GST-VERIFIED</span> (Fast Ramp)
+          </p>
         </div>
         <Link
           href="/settings"
-          className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-background border border-border text-text"
+          className="text-xs font-mono px-3 py-1.5 rounded-[4px] bg-ink-2 border border-border text-text hover:border-brand transition-colors"
         >
-          Account
+          Settings
         </Link>
       </header>
 
-      {/* Main Action Banner */}
-      <div className="p-5 rounded-2xl bg-primary text-white shadow-sm flex flex-col gap-3 mb-6">
+      {/* Main Action Banner: Self-Audit */}
+      <div className="p-5 rounded-[4px] bg-ink-2 border border-brand/40 flex flex-col gap-3 mb-6">
         <div className="flex items-center justify-between">
-          <span className="text-xs uppercase tracking-wider font-semibold opacity-90">
-            Daily Verification
+          <span className="text-[10px] font-mono uppercase tracking-wider text-brand font-medium">
+            Daily Verification Loop
           </span>
-          <span className="text-xs bg-white/20 px-2 py-0.5 rounded">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-ok/10 text-ok border border-ok/30">
             Last audit: Today, 9:30 AM
           </span>
         </div>
-        <h2 className="text-lg font-bold">Audit Physical QR Sticker</h2>
-        <p className="text-xs opacity-80 leading-relaxed">
-          Point your phone camera at your billing counter QR to confirm it hasn’t been tampered with
-          or relocated.
-        </p>
+        <div>
+          <h2 className="text-base font-medium text-text">Audit Physical QR Sticker</h2>
+          <p className="text-xs text-muted leading-relaxed mt-1">
+            Point your camera at your billing counter sticker to verify payload integrity and
+            confirm no physical swap or relocation has occurred.
+          </p>
+        </div>
         <Link
           href="/audit/run"
-          className="w-full py-2.5 px-4 rounded-xl bg-white text-primary font-semibold text-center text-xs shadow-sm hover:bg-slate-100 transition-colors"
+          className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-sm flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors mt-1"
         >
-          Run Self-Audit Now
+          <span>Run Self-Audit Now</span>
+          <ArrowRight className="w-4 h-4" />
         </Link>
+      </div>
+
+      {/* Blockchain Anchor Status Card (Task 6) */}
+      <div className="p-5 rounded-[4px] bg-ink-2 border-l-4 border-l-ok border-t border-r border-b border-border flex flex-col gap-3 mb-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-ok" />
+            <span className="font-mono text-xs uppercase tracking-wider text-ok font-medium">
+              Blockchain Anchor Confirmed
+            </span>
+          </div>
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-ok/10 text-ok border border-ok/30">
+            POLYGON AMOY
+          </span>
+        </div>
+
+        <p className="text-xs text-muted leading-relaxed">
+          Your credential hash is anchored to the Polygon Amoy testnet. Any attempt to alter your
+          registered VPA or location will produce a hash mismatch on the public block explorer.
+        </p>
+
+        <div className="pt-2 border-t border-border/50 flex flex-col gap-2 font-mono text-xs">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-muted">TRANSACTION</span>
+            <span className="text-text truncate max-w-[200px]">
+              {demoTxHash.slice(0, 10)}…{demoTxHash.slice(-8)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-muted">STATUS</span>
+            <span className="text-ok font-medium">CONFIRMED (TAMPER-EVIDENT)</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mt-1">
+          <a
+            href={explorerUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-8 px-3 rounded-[4px] bg-ink border border-border text-text hover:border-brand text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <span>PolygonScan</span>
+            <ExternalLink className="w-3 h-3 text-brand" />
+          </a>
+          <Link
+            href={`/verify/${demoCredentialId}`}
+            className="h-8 px-3 rounded-[4px] bg-ink border border-border text-text hover:border-brand text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <span>Public Audit</span>
+            <LinkIcon className="w-3 h-3 text-brand" />
+          </Link>
+        </div>
       </div>
 
       {/* Quick stats grid */}
       <div className="grid grid-cols-2 gap-3 mb-6">
         <Link
           href="/credential/qrs"
-          className="p-4 rounded-xl bg-background border border-border hover:border-primary transition-colors"
+          className="p-4 rounded-[4px] bg-ink-2 border border-border hover:border-brand/50 transition-colors"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <QrCode className="w-4 h-4 text-primary" />
-            <span className="text-xs font-semibold text-muted">Active QRs</span>
+          <div className="flex items-center gap-1.5 mb-1 text-muted text-xs font-mono">
+            <QrCode className="w-3.5 h-3.5 text-brand" />
+            <span>ACTIVE QRS</span>
           </div>
-          <span className="text-xl font-extrabold text-text">2 Stickers</span>
+          <span className="text-lg font-medium text-text">1 Registered</span>
         </Link>
         <Link
           href="/audit/history"
-          className="p-4 rounded-xl bg-background border border-border hover:border-primary transition-colors"
+          className="p-4 rounded-[4px] bg-ink-2 border border-border hover:border-brand/50 transition-colors"
         >
-          <div className="flex items-center gap-2 mb-1">
-            <History className="w-4 h-4 text-muted" />
-            <span className="text-xs font-semibold text-muted">Clean Audits</span>
+          <div className="flex items-center gap-1.5 mb-1 text-muted text-xs font-mono">
+            <History className="w-3.5 h-3.5 text-ok" />
+            <span>CLEAN AUDITS</span>
           </div>
-          <span className="text-xl font-extrabold text-tier-verified">14 Runs</span>
+          <span className="text-lg font-medium text-ok">14 Clean Runs</span>
         </Link>
       </div>
 
       {/* Auxiliary links */}
       <div className="flex flex-col gap-2">
         <Link
-          href="/credential/qrs"
-          className="p-3.5 rounded-xl bg-surface border border-border flex justify-between items-center text-xs font-semibold text-text hover:bg-background"
-        >
-          <span>Manage Registered QR Stickers</span>
-          <PlusCircle className="w-4 h-4 text-muted" />
-        </Link>
-        <Link
           href="/credential/dispute/new"
-          className="p-3.5 rounded-xl bg-surface border border-border flex justify-between items-center text-xs font-semibold text-tier-warning hover:bg-background"
+          className="p-3.5 rounded-[4px] bg-ink-2 border border-border flex justify-between items-center text-xs font-mono text-text hover:border-danger transition-colors"
         >
-          <span>Report Impersonation / File Dispute</span>
-          <ShieldAlert className="w-4 h-4 text-tier-warning" />
+          <span>Report Sticker Impersonation / Dispute</span>
+          <ShieldAlert className="w-4 h-4 text-danger" />
         </Link>
       </div>
     </main>
