@@ -174,35 +174,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-ink text-text flex flex-col w-full selection:bg-brand selection:text-ink">
-      {/* 1. Ticker bar (Top of page) */}
-      <aside
-        aria-label="Real-time protocol notice"
-        className="w-full h-8 bg-brand text-ink flex items-center overflow-hidden border-b border-brand-deep select-none"
-      >
-        <div className="animate-marquee whitespace-nowrap flex items-center text-xs font-mono font-medium tracking-wider">
-          <span className="mx-6">UPI CONFIRMS WHO GETS PAID. QRAKSHA CONFIRMS THE QR IS REAL.</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">5-AGENT AI PIPELINE</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">POLYGON AMOY PUBLIC ANCHOR</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">ZERO SEED PHRASE</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">SUB-SECOND SCAN VERDICT</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">UPI CONFIRMS WHO GETS PAID. QRAKSHA CONFIRMS THE QR IS REAL.</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">5-AGENT AI PIPELINE</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">POLYGON AMOY PUBLIC ANCHOR</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">ZERO SEED PHRASE</span>
-          <span className="mx-2">•</span>
-          <span className="mx-6">SUB-SECOND SCAN VERDICT</span>
-        </div>
-      </aside>
-
-      {/* 2. Sticky Nav */}
+      {/* 1. Sticky Nav */}
       <header className="sticky top-0 z-50 w-full bg-ink/90 backdrop-blur-md border-b border-border">
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3 group">
@@ -350,7 +322,7 @@ export default function HomePage() {
       </header>
 
       {/* SECTION 1: HERO (Dark: --bg-ink) */}
-      <section className="relative w-full overflow-hidden pt-16 md:pt-28 pb-20 md:pb-32 bg-ink border-b border-border">
+      <section className="relative w-full overflow-hidden pt-6 md:pt-8 lg:pt-10 pb-8 md:pb-10 bg-ink border-b border-border flex flex-col justify-center min-h-[calc(100vh-4rem)]">
         {/* Animated risograph grain wave gradient background */}
         <RisographGrainWave />
 
@@ -361,67 +333,61 @@ export default function HomePage() {
         />
 
         <div className="relative max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col items-center text-center">
-          {/* Eyebrow */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] text-xs font-mono uppercase bg-brand/10 text-brand border border-brand/30 mb-6">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>PHYSICAL-TO-MERCHANT UPI TAMPER DEFENSE</span>
-          </div>
-
           {/* Hero H1 */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-medium tracking-tight text-text max-w-4xl leading-[1.1] mb-6">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium tracking-tight text-text max-w-4xl leading-[1.08] mb-3 md:mb-4">
             Know the QR is real before you pay.
           </h1>
 
           {/* Subtitle */}
-          <p className="text-base md:text-lg text-muted max-w-2xl leading-relaxed mb-10 font-sans">
+          <p className="text-sm md:text-base text-muted max-w-2xl leading-relaxed mb-5 md:mb-6 font-sans">
             A merchant self-audit tool that detects when a physical UPI QR sticker has been swapped,
             cloned, or relocated, using a five-agent AI pipeline and a public blockchain anchor.
           </p>
 
           {/* Hero CTAs */}
-          <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full sm:w-auto mb-16">
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-6 md:mb-8">
             <a
               href="#demo"
-              className="w-full sm:w-auto h-11 px-7 rounded-[4px] bg-brand text-ink text-sm font-mono font-semibold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-brand-soft hover:shadow-[0_0_24px_rgba(255,75,31,0.5)] transition-all"
+              className="w-full sm:w-auto h-10 px-6 rounded-[4px] bg-brand text-ink text-xs md:text-sm font-mono font-semibold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-brand-soft hover:shadow-[0_0_24px_rgba(255,75,31,0.5)] transition-all"
             >
               <Terminal className="w-4 h-4" />
               <span>Try The Demo</span>
             </a>
             <Link
               href="/audit/run"
-              className="w-full sm:w-auto h-11 px-6 rounded-[4px] bg-ink-2 border border-brand/40 text-text text-sm font-mono font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:border-brand hover:text-brand transition-colors"
+              className="w-full sm:w-auto h-10 px-5 rounded-[4px] bg-ink-2 border border-brand/40 text-text text-xs md:text-sm font-mono font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:border-brand hover:text-brand transition-colors"
             >
               <QrCode className="w-4 h-4 text-brand" />
               <span>Run Merchant Audit</span>
             </Link>
             <Link
               href="/check"
-              className="w-full sm:w-auto h-11 px-5 rounded-[4px] border border-border text-muted hover:text-text hover:border-border/80 text-sm font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
+              className="w-full sm:w-auto h-10 px-4 rounded-[4px] border border-border text-muted hover:text-text hover:border-border/80 text-xs md:text-sm font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
             >
               <span>Customer Scan →</span>
             </Link>
           </div>
 
           {/* Technical Drawing Hero Visual (QR Slab representation) */}
-          <div className="w-full max-w-3xl relative p-6 md:p-8 rounded-[4px] bg-ink-2 border border-border shadow-2xl overflow-hidden text-left">
+          <div className="w-full max-w-3xl relative p-4 md:p-5 rounded-[4px] bg-ink-2 border border-border shadow-2xl overflow-hidden text-left">
             {/* Technical corner coordinate brackets */}
-            <div className="absolute top-3 left-3 text-[10px] font-mono text-muted tracking-widest flex items-center gap-1.5">
+            <div className="absolute top-2.5 left-3 text-[10px] font-mono text-muted tracking-widest flex items-center gap-1.5">
               <span className="text-brand">TRACK ▸</span>
               <span>FIG. 01 // PHYSICAL QR SLAB</span>
             </div>
-            <div className="absolute top-3 right-3 text-[10px] font-mono text-muted tracking-widest">
+            <div className="absolute top-2.5 right-3 text-[10px] font-mono text-muted tracking-widest">
               <span>BOUND RADIUS: 25M</span>
             </div>
-            <div className="absolute bottom-3 left-3 text-[10px] font-mono text-muted tracking-widest">
+            <div className="absolute bottom-2.5 left-3 text-[10px] font-mono text-muted tracking-widest">
               <span>LAT: 12.9716° N // LNG: 77.5946° E</span>
             </div>
-            <div className="absolute bottom-3 right-3 text-[10px] font-mono text-ok tracking-widest flex items-center gap-1">
+            <div className="absolute bottom-2.5 right-3 text-[10px] font-mono text-ok tracking-widest flex items-center gap-1">
               <span className="w-1.5 h-1.5 rounded-full bg-ok animate-pulse" />
               <span>SENSOR PIPELINE ACTIVE</span>
             </div>
 
             {/* Simulated QR Slab Surface */}
-            <div className="mt-6 mb-6 p-6 rounded-[4px] bg-ink border border-border/80 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="mt-4 mb-4 p-4 md:p-5 rounded-[4px] bg-ink border border-border/80 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-5">
               {/* Scanline beam sweep */}
               <div
                 aria-hidden="true"
@@ -430,20 +396,20 @@ export default function HomePage() {
 
               {/* QR Schematic Left */}
               <div className="flex items-center gap-4">
-                <div className="w-24 h-24 rounded-[4px] bg-ink-2 border-2 border-brand/60 p-2 flex flex-col justify-between shrink-0 relative">
+                <div className="w-20 h-20 md:w-22 md:h-22 rounded-[4px] bg-ink-2 border-2 border-brand/60 p-2 flex flex-col justify-between shrink-0 relative">
                   <div className="flex justify-between">
-                    <div className="w-5 h-5 border-2 border-brand flex items-center justify-center">
-                      <div className="w-2 h-2 bg-brand" />
+                    <div className="w-4 h-4 border-2 border-brand flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-brand" />
                     </div>
-                    <div className="w-5 h-5 border-2 border-brand flex items-center justify-center">
-                      <div className="w-2 h-2 bg-brand" />
+                    <div className="w-4 h-4 border-2 border-brand flex items-center justify-center">
+                      <div className="w-1.5 h-1.5 bg-brand" />
                     </div>
                   </div>
-                  <div className="w-5 h-5 border-2 border-brand flex items-center justify-center">
-                    <div className="w-2 h-2 bg-brand" />
+                  <div className="w-4 h-4 border-2 border-brand flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-brand" />
                   </div>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <ShieldCheck className="w-6 h-6 text-ok opacity-80" />
+                    <ShieldCheck className="w-5 h-5 text-ok opacity-80" />
                   </div>
                 </div>
 
@@ -452,7 +418,9 @@ export default function HomePage() {
                     <Check className="w-3 h-3" />
                     <span>AUTHENTIC PHYSICAL PATINA</span>
                   </div>
-                  <h2 className="text-base font-medium text-text">Sharma Canteen • Counter 01</h2>
+                  <h2 className="text-sm md:text-base font-medium text-text">
+                    Sharma Canteen • Counter 01
+                  </h2>
                   <p className="text-xs font-mono text-muted mt-0.5">
                     UPI: sharmacanteen@okaxis • KYC Geocoded
                   </p>
@@ -460,33 +428,61 @@ export default function HomePage() {
               </div>
 
               {/* Telemetry Chips Right */}
-              <div className="flex flex-col gap-2 w-full md:w-auto font-mono text-xs">
-                <div className="flex items-center justify-between gap-4 p-2 rounded-[2px] bg-ink-2 border border-border">
-                  <span className="text-muted flex items-center gap-1.5">
+              <div className="flex flex-col gap-1.5 w-full md:w-auto font-mono text-xs">
+                <div className="flex items-center justify-between gap-4 py-1.5 px-2.5 rounded-[2px] bg-ink-2 border border-border">
+                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
                     <Eye className="w-3.5 h-3.5 text-brand" />
                     Vision Agent:
                   </span>
-                  <span className="text-ok font-medium">96% Surface Match</span>
+                  <span className="text-ok font-medium text-[11px]">96% Surface Match</span>
                 </div>
-                <div className="flex items-center justify-between gap-4 p-2 rounded-[2px] bg-ink-2 border border-border">
-                  <span className="text-muted flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-4 py-1.5 px-2.5 rounded-[2px] bg-ink-2 border border-border">
+                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
                     <Compass className="w-3.5 h-3.5 text-brand" />
                     Context Agent:
                   </span>
-                  <span className="text-ok font-medium">0.004km (Within 25m)</span>
+                  <span className="text-ok font-medium text-[11px]">0.004km (Within 25m)</span>
                 </div>
-                <div className="flex items-center justify-between gap-4 p-2 rounded-[2px] bg-ink-2 border border-border">
-                  <span className="text-muted flex items-center gap-1.5">
+                <div className="flex items-center justify-between gap-4 py-1.5 px-2.5 rounded-[2px] bg-ink-2 border border-border">
+                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
                     <Lock className="w-3.5 h-3.5 text-brand" />
                     Chain Proof:
                   </span>
-                  <span className="text-brand font-medium">Polygon Amoy #482910</span>
+                  <span className="text-brand font-medium text-[11px]">Polygon Amoy #482910</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Marquee Ticker Bar */}
+      <aside
+        aria-label="Real-time protocol notice"
+        className="w-full h-8 bg-brand text-ink flex items-center overflow-hidden border-b border-brand-deep select-none"
+      >
+        <div className="animate-marquee whitespace-nowrap flex items-center text-xs font-mono font-medium tracking-wider">
+          <span className="mx-6">UPI CONFIRMS WHO GETS PAID. QRAKSHA CONFIRMS THE QR IS REAL.</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">5-AGENT AI PIPELINE</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">POLYGON AMOY PUBLIC ANCHOR</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">ZERO SEED PHRASE</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">SUB-SECOND SCAN VERDICT</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">UPI CONFIRMS WHO GETS PAID. QRAKSHA CONFIRMS THE QR IS REAL.</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">5-AGENT AI PIPELINE</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">POLYGON AMOY PUBLIC ANCHOR</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">ZERO SEED PHRASE</span>
+          <span className="mx-2">•</span>
+          <span className="mx-6">SUB-SECOND SCAN VERDICT</span>
+        </div>
+      </aside>
 
       {/* SECTION 2: TRUST STRIP (Dark: --bg-ink) */}
       <aside
