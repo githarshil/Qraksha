@@ -1,7 +1,7 @@
 import { roundGpsForAi } from "@qraksha/shared";
 import type { AuditVerdict, VerdictReason, PipelineAgentOutputs } from "@qraksha/shared";
 
-import { supabaseAdmin } from "../db/client.js";
+import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 import { ServiceUnavailableError } from "../middleware/error.middleware.js";
 import { payloadLookupService } from "../services/payload-lookup.service.js";
 import { logger } from "../middleware/logger.middleware.js";
@@ -194,7 +194,7 @@ export async function runAgentPipeline(
   // 5. Step 5: Persist to comparison.audit_run
   let auditRunId: string | undefined;
   try {
-    if (db) {
+    if (db && isSupabaseConfigured()) {
       const { data: insertedRun } = await db
         .schema("comparison")
         .from("audit_run")

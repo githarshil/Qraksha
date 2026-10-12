@@ -4,33 +4,31 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
   ShieldCheck,
-  ShieldAlert,
+  ShieldWarning,
   QrCode,
-  AlertTriangle,
+  Warning,
   Check,
   Lock,
   ArrowRight,
   Cpu,
   Terminal,
   Copy,
-  ExternalLink,
-  Menu,
-  X,
-  Layers,
+  ArrowSquareOut,
+  Stack,
   Compass,
   Eye,
   MapPin,
-  AlertCircle,
-  CheckCircle2,
-  ChevronRight,
-  Sparkles,
-} from "lucide-react";
+  WarningCircle,
+  CheckCircle,
+  CaretRight,
+  Sparkle,
+} from "@phosphor-icons/react";
+import { Navbar } from "@/components/navbar";
 import { VerdictCard } from "@/components/verdict-card";
 import { RisographGrainWave } from "@/components/risograph-grain-wave";
 import { AuditResult } from "@/lib/api";
 
 export default function HomePage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [copiedHash, setCopiedHash] = useState(false);
   const [activeDemoTab, setActiveDemoTab] = useState<"replacement" | "relocation" | "genuine">(
     "relocation",
@@ -174,155 +172,11 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-ink text-text flex flex-col w-full selection:bg-brand selection:text-ink">
-      {/* 1. Sticky Nav */}
-      <header className="sticky top-0 z-50 w-full bg-ink/90 backdrop-blur-md border-b border-border">
-        <div className="max-w-[1200px] mx-auto px-6 md:px-12 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-8 h-8 rounded-[4px] bg-brand flex items-center justify-center text-ink font-mono font-bold text-base shadow-[0_0_12px_rgba(255,75,31,0.4)] group-hover:bg-brand-soft transition-colors">
-              Q
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base font-medium tracking-tight text-text leading-none group-hover:text-brand transition-colors">
-                QRaksha
-              </span>
-              <span className="text-[10px] font-mono text-muted tracking-wider uppercase mt-1">
-                Physical Tamper Defense
-              </span>
-            </div>
-          </Link>
-
-          {/* Desktop Links */}
-          <nav aria-label="Main menu" className="hidden lg:flex items-center space-x-8 text-sm">
-            <a href="#problem" className="text-muted hover:text-text transition-colors font-medium">
-              The Problem
-            </a>
-            <a
-              href="#solution"
-              className="text-muted hover:text-text transition-colors font-medium"
-            >
-              Solution
-            </a>
-            <a
-              href="#pipeline"
-              className="text-muted hover:text-text transition-colors font-medium"
-            >
-              How It Works
-            </a>
-            <a
-              href="#threat-model"
-              className="text-muted hover:text-text transition-colors font-medium"
-            >
-              Threats
-            </a>
-            <a
-              href="#verdicts"
-              className="text-muted hover:text-text transition-colors font-medium"
-            >
-              Verdicts
-            </a>
-            <a
-              href="#demo"
-              className="text-muted hover:text-brand transition-colors font-medium font-mono"
-            >
-              [DEMO]
-            </a>
-          </nav>
-
-          {/* Nav CTAs */}
-          <div className="hidden sm:flex items-center space-x-3">
-            <Link
-              href="/check"
-              className="h-9 px-3.5 rounded-[4px] border border-border text-xs font-mono uppercase tracking-wider text-muted hover:text-text hover:border-brand transition-colors flex items-center gap-1.5"
-            >
-              <QrCode className="w-3.5 h-3.5 text-brand" />
-              <span>Customer Check</span>
-            </Link>
-            <Link
-              href="/audit/run"
-              className="h-9 px-4 rounded-[4px] bg-brand text-ink text-xs font-mono font-semibold uppercase tracking-wider hover:bg-brand-soft hover:shadow-[0_0_20px_rgba(255,75,31,0.4)] transition-all flex items-center gap-1.5"
-            >
-              <span>Run Self-Audit</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          {/* Mobile Menu Trigger */}
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden p-2 rounded-[4px] border border-border text-muted hover:text-text focus:outline-none focus:ring-2 focus:ring-brand"
-            aria-label="Toggle Navigation Menu"
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
-        </div>
-
-        {/* Mobile Dropdown */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden bg-ink-2 border-b border-border px-6 py-6 flex flex-col space-y-4">
-            <a
-              href="#problem"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-mono uppercase text-muted hover:text-brand"
-            >
-              01 // The Problem
-            </a>
-            <a
-              href="#solution"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-mono uppercase text-muted hover:text-brand"
-            >
-              02 // Two-Sided Defense
-            </a>
-            <a
-              href="#pipeline"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-mono uppercase text-muted hover:text-brand"
-            >
-              03 // Agent Pipeline
-            </a>
-            <a
-              href="#threat-model"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-mono uppercase text-muted hover:text-brand"
-            >
-              04 // Attacks Covered
-            </a>
-            <a
-              href="#verdicts"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-mono uppercase text-muted hover:text-brand"
-            >
-              05 // Verdicts
-            </a>
-            <a
-              href="#demo"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-sm font-mono uppercase text-brand"
-            >
-              06 // Interactive Demo
-            </a>
-            <div className="pt-4 border-t border-border flex flex-col space-y-2.5">
-              <Link
-                href="/audit/run"
-                className="h-10 rounded-[4px] bg-brand text-ink font-mono text-xs font-semibold uppercase flex items-center justify-center gap-2"
-              >
-                <QrCode className="w-4 h-4" />
-                <span>Run Merchant Self-Audit</span>
-              </Link>
-              <Link
-                href="/check"
-                className="h-10 rounded-[4px] border border-border text-text font-mono text-xs font-semibold uppercase flex items-center justify-center gap-2"
-              >
-                <span>Customer Pre-Payment Check</span>
-              </Link>
-            </div>
-          </div>
-        )}
-      </header>
+      {/* Floating Capsule Navbar */}
+      <Navbar />
 
       {/* SECTION 1: HERO (Dark: --bg-ink) */}
-      <section className="relative w-full overflow-hidden pt-6 md:pt-8 lg:pt-10 pb-8 md:pb-10 bg-ink border-b border-border flex flex-col justify-center min-h-[calc(100vh-4rem)]">
+      <section className="relative w-full overflow-hidden pt-28 md:pt-36 lg:pt-40 pb-8 md:pb-10 bg-ink border-b border-border flex flex-col justify-center min-h-[calc(100vh-4rem)]">
         {/* Animated risograph grain wave gradient background */}
         <RisographGrainWave />
 
@@ -332,126 +186,22 @@ export default function HomePage() {
           className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-brand/10 rounded-full blur-[140px] pointer-events-none"
         />
 
-        <div className="relative max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col items-center text-center">
+        <div className="relative w-full flex-1 max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col items-center text-center">
           {/* Hero H1 */}
-          <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium tracking-tight text-text max-w-4xl leading-[1.08] mb-3 md:mb-4">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-medium tracking-tight text-text max-w-4xl leading-[1.08] mb-8 md:mb-12">
             Know the QR is real before you pay.
           </h1>
 
-          {/* Subtitle */}
-          <p className="text-sm md:text-base text-muted max-w-2xl leading-relaxed mb-5 md:mb-6 font-sans">
-            A merchant self-audit tool that detects when a physical UPI QR sticker has been swapped,
-            cloned, or relocated, using a five-agent AI pipeline and a public blockchain anchor.
-          </p>
-
-          {/* Hero CTAs */}
-          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto mb-6 md:mb-8">
-            <a
-              href="#demo"
-              className="w-full sm:w-auto h-10 px-6 rounded-[4px] bg-brand text-ink text-xs md:text-sm font-mono font-semibold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-brand-soft hover:shadow-[0_0_24px_rgba(255,75,31,0.5)] transition-all"
-            >
-              <Terminal className="w-4 h-4" />
-              <span>Try The Demo</span>
-            </a>
-            <Link
-              href="/audit/run"
-              className="w-full sm:w-auto h-10 px-5 rounded-[4px] bg-ink-2 border border-brand/40 text-text text-xs md:text-sm font-mono font-medium uppercase tracking-wider flex items-center justify-center gap-2 hover:border-brand hover:text-brand transition-colors"
-            >
-              <QrCode className="w-4 h-4 text-brand" />
-              <span>Run Merchant Audit</span>
-            </Link>
-            <Link
-              href="/check"
-              className="w-full sm:w-auto h-10 px-4 rounded-[4px] border border-border text-muted hover:text-text hover:border-border/80 text-xs md:text-sm font-mono uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors"
-            >
-              <span>Customer Scan →</span>
-            </Link>
-          </div>
-
-          {/* Technical Drawing Hero Visual (QR Slab representation) */}
-          <div className="w-full max-w-3xl relative p-4 md:p-5 rounded-[4px] bg-ink-2 border border-border shadow-2xl overflow-hidden text-left">
-            {/* Technical corner coordinate brackets */}
-            <div className="absolute top-2.5 left-3 text-[10px] font-mono text-muted tracking-widest flex items-center gap-1.5">
-              <span className="text-brand">TRACK ▸</span>
-              <span>FIG. 01 // PHYSICAL QR SLAB</span>
-            </div>
-            <div className="absolute top-2.5 right-3 text-[10px] font-mono text-muted tracking-widest">
-              <span>BOUND RADIUS: 25M</span>
-            </div>
-            <div className="absolute bottom-2.5 left-3 text-[10px] font-mono text-muted tracking-widest">
-              <span>LAT: 12.9716° N // LNG: 77.5946° E</span>
-            </div>
-            <div className="absolute bottom-2.5 right-3 text-[10px] font-mono text-ok tracking-widest flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-ok animate-pulse" />
-              <span>SENSOR PIPELINE ACTIVE</span>
-            </div>
-
-            {/* Simulated QR Slab Surface */}
-            <div className="mt-4 mb-4 p-4 md:p-5 rounded-[4px] bg-ink border border-border/80 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-5">
-              {/* Scanline beam sweep */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-brand to-transparent animate-scanline pointer-events-none"
-              />
-
-              {/* QR Schematic Left */}
-              <div className="flex items-center gap-4">
-                <div className="w-20 h-20 md:w-22 md:h-22 rounded-[4px] bg-ink-2 border-2 border-brand/60 p-2 flex flex-col justify-between shrink-0 relative">
-                  <div className="flex justify-between">
-                    <div className="w-4 h-4 border-2 border-brand flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 bg-brand" />
-                    </div>
-                    <div className="w-4 h-4 border-2 border-brand flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 bg-brand" />
-                    </div>
-                  </div>
-                  <div className="w-4 h-4 border-2 border-brand flex items-center justify-center">
-                    <div className="w-1.5 h-1.5 bg-brand" />
-                  </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ShieldCheck className="w-5 h-5 text-ok opacity-80" />
-                  </div>
-                </div>
-
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30 text-[10px] font-mono uppercase mb-1">
-                    <Check className="w-3 h-3" />
-                    <span>AUTHENTIC PHYSICAL PATINA</span>
-                  </div>
-                  <h2 className="text-sm md:text-base font-medium text-text">
-                    Sharma Canteen • Counter 01
-                  </h2>
-                  <p className="text-xs font-mono text-muted mt-0.5">
-                    UPI: sharmacanteen@okaxis • KYC Geocoded
-                  </p>
-                </div>
-              </div>
-
-              {/* Telemetry Chips Right */}
-              <div className="flex flex-col gap-1.5 w-full md:w-auto font-mono text-xs">
-                <div className="flex items-center justify-between gap-4 py-1.5 px-2.5 rounded-[2px] bg-ink-2 border border-border">
-                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
-                    <Eye className="w-3.5 h-3.5 text-brand" />
-                    Vision Agent:
-                  </span>
-                  <span className="text-ok font-medium text-[11px]">96% Surface Match</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 py-1.5 px-2.5 rounded-[2px] bg-ink-2 border border-border">
-                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
-                    <Compass className="w-3.5 h-3.5 text-brand" />
-                    Context Agent:
-                  </span>
-                  <span className="text-ok font-medium text-[11px]">0.004km (Within 25m)</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 py-1.5 px-2.5 rounded-[2px] bg-ink-2 border border-border">
-                  <span className="text-muted flex items-center gap-1.5 text-[11px]">
-                    <Lock className="w-3.5 h-3.5 text-brand" />
-                    Chain Proof:
-                  </span>
-                  <span className="text-brand font-medium text-[11px]">Polygon Amoy #482910</span>
-                </div>
-              </div>
-            </div>
+          {/* Hero visual: final, fixed asset — rendered as-is (no filters/masks). mt-auto + negative
+              bottom margin (equal to the section's pb) pin it flush to the hero's bottom edge so the
+              phone bleeds off; the section's overflow-hidden does the clipping. */}
+          <div className="mt-auto -mb-8 md:-mb-10 w-full flex justify-center">
+            <img
+              src="/hero-phone.png"
+              alt="QRaksha scanner verifying a physical UPI QR sticker"
+              className="block w-full max-w-[680px] h-auto animate-hero-float"
+              fetchPriority="high"
+            />
           </div>
         </div>
       </section>
@@ -522,7 +272,7 @@ export default function HomePage() {
           {/* Left Text (5 cols) */}
           <div className="lg:col-span-5 flex flex-col">
             <div className="inline-flex items-center gap-2 text-xs font-mono uppercase text-brand-deep tracking-widest mb-4">
-              <AlertCircle className="w-4 h-4 text-brand-deep" />
+              <WarningCircle className="w-4 h-4 text-brand-deep" weight="duotone" />
               <span>THE PROBLEM</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-ink leading-tight mb-5">
@@ -546,7 +296,7 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-mono text-xs text-brand-deep font-semibold">01</span>
-                  <AlertTriangle className="w-4 h-4 text-brand-deep" />
+                  <Warning className="w-4 h-4 text-brand-deep" weight="duotone" />
                 </div>
                 <h3 className="text-lg font-medium text-ink mb-2">Swapped Sticker</h3>
                 <p className="text-xs text-[#5E4036] leading-relaxed">
@@ -563,7 +313,7 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-mono text-xs text-brand-deep font-semibold">02</span>
-                  <MapPin className="w-4 h-4 text-brand-deep" />
+                  <MapPin className="w-4 h-4 text-brand-deep" weight="duotone" />
                 </div>
                 <h3 className="text-lg font-medium text-ink mb-2">Relocated Stand</h3>
                 <p className="text-xs text-[#5E4036] leading-relaxed">
@@ -580,7 +330,7 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-mono text-xs text-brand-deep font-semibold">03</span>
-                  <Layers className="w-4 h-4 text-brand-deep" />
+                  <Stack className="w-4 h-4 text-brand-deep" weight="duotone" />
                 </div>
                 <h3 className="text-lg font-medium text-ink mb-2">Cloned Counter</h3>
                 <p className="text-xs text-[#5E4036] leading-relaxed">
@@ -605,7 +355,7 @@ export default function HomePage() {
           {/* Left Text (5 cols) */}
           <div className="lg:col-span-5 flex flex-col">
             <div className="inline-flex items-center gap-2 text-xs font-mono uppercase text-brand tracking-widest mb-4">
-              <ShieldCheck className="w-4 h-4 text-brand" />
+              <ShieldCheck className="w-4 h-4 text-brand" weight="duotone" />
               <span>THE TWO-SIDED DEFENSE</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-text leading-tight mb-5">
@@ -648,7 +398,7 @@ export default function HomePage() {
           <div className="lg:col-span-7 p-6 md:p-8 rounded-[4px] bg-ink-2 border border-border relative overflow-hidden">
             <div className="flex items-center justify-between border-b border-border pb-4 mb-6 text-xs font-mono">
               <span className="text-text font-medium flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-brand" />
+                <ShieldCheck className="w-4 h-4 text-brand" weight="duotone" />
                 SYSTEM ARCHITECTURE // TWO-SIDED VERIFICATION
               </span>
               <span className="text-brand uppercase">[Zero-Knowledge Proof]</span>
@@ -657,24 +407,24 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="p-5 rounded-[4px] bg-ink border border-border">
                 <div className="flex items-center gap-2 text-brand font-mono text-xs uppercase mb-3">
-                  <QrCode className="w-4 h-4" />
+                  <QrCode className="w-4 h-4" weight="duotone" />
                   <span>Merchant Side</span>
                 </div>
                 <ul className="space-y-2 text-xs text-muted font-sans">
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>GSTIN / Udyam verified identity</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>Geocoded storefront boundary (25m)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>Daily multi-agent visual patina audit</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>₹1 proof-of-possession micro-transaction</span>
                   </li>
                 </ul>
@@ -682,24 +432,24 @@ export default function HomePage() {
 
               <div className="p-5 rounded-[4px] bg-ink border border-border">
                 <div className="flex items-center gap-2 text-ok font-mono text-xs uppercase mb-3">
-                  <Eye className="w-4 h-4" />
+                  <Eye className="w-4 h-4" weight="duotone" />
                   <span>Customer Side</span>
                 </div>
                 <ul className="space-y-2 text-xs text-muted font-sans">
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>Open in any mobile web browser</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>Zero app install, zero login needed</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>Instant 1.4s multi-agent verdict</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-ok shrink-0" />
+                    <Check className="w-3.5 h-3.5 text-ok shrink-0" weight="bold" />
                     <span>Cryptographic proof-of-tamper check</span>
                   </li>
                 </ul>
@@ -722,7 +472,7 @@ export default function HomePage() {
       >
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase text-brand-deep tracking-widest mb-4">
-            <Cpu className="w-4 h-4 text-brand-deep" />
+            <Cpu className="w-4 h-4 text-brand-deep" weight="duotone" />
             <span>HOW IT WORKS</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-ink leading-tight mb-4 max-w-2xl">
@@ -814,9 +564,9 @@ export default function HomePage() {
               >
                 <span>0x9f3ac7b4e8832a10d9f0012c8b8712e5699c21e</span>
                 {copiedHash ? (
-                  <Check className="w-3.5 h-3.5 text-ok" />
+                  <Check className="w-3.5 h-3.5 text-ok" weight="bold" />
                 ) : (
-                  <Copy className="w-3.5 h-3.5" />
+                  <Copy className="w-3.5 h-3.5" weight="bold" />
                 )}
               </button>
             </div>
@@ -835,7 +585,7 @@ export default function HomePage() {
       >
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase text-brand tracking-widest mb-4">
-            <Lock className="w-4 h-4 text-brand" />
+            <Lock className="w-4 h-4 text-brand" weight="duotone" />
             <span>THREAT MODEL</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-text leading-tight mb-4 max-w-2xl">
@@ -923,7 +673,7 @@ export default function HomePage() {
       >
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase text-brand-deep tracking-widest mb-4">
-            <CheckCircle2 className="w-4 h-4 text-brand-deep" />
+            <CheckCircle className="w-4 h-4 text-brand-deep" weight="duotone" />
             <span>THREE-TIER VERDICT ENGINE</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-ink leading-tight mb-4 max-w-2xl">
@@ -940,7 +690,7 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="px-2.5 py-1 rounded-[2px] bg-ok/10 text-ok border border-ok/30 font-mono text-xs font-semibold uppercase flex items-center gap-1.5">
-                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
                     <span>🟢 VERIFIED</span>
                   </span>
                   <span className="font-mono text-xs text-muted">TIER 1</span>
@@ -975,7 +725,7 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="px-2.5 py-1 rounded-[2px] bg-warn/15 text-warn border border-warn/40 font-mono text-xs font-semibold uppercase flex items-center gap-1.5">
-                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <Warning className="w-3.5 h-3.5" weight="duotone" />
                     <span>🟡 BUILDING TRUST</span>
                   </span>
                   <span className="font-mono text-xs text-muted">TIER 2</span>
@@ -1010,7 +760,7 @@ export default function HomePage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="px-2.5 py-1 rounded-[2px] bg-danger/15 text-[#FF546B] border border-danger/40 font-mono text-xs font-semibold uppercase flex items-center gap-1.5">
-                    <ShieldAlert className="w-3.5 h-3.5" />
+                    <ShieldWarning className="w-3.5 h-3.5" weight="duotone" />
                     <span>🔴 WARNING</span>
                   </span>
                   <span className="font-mono text-xs text-muted">TIER 3</span>
@@ -1047,7 +797,7 @@ export default function HomePage() {
       <section id="demo" className="w-full bg-ink text-text py-20 md:py-28 border-b border-border">
         <div className="max-w-[1200px] mx-auto px-6 md:px-12 flex flex-col">
           <div className="inline-flex items-center gap-2 text-xs font-mono uppercase text-brand tracking-widest mb-4">
-            <Terminal className="w-4 h-4 text-brand" />
+            <Terminal className="w-4 h-4 text-brand" weight="duotone" />
             <span>INTERACTIVE DEMO</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-medium tracking-tight text-text leading-tight mb-4 max-w-2xl">
@@ -1062,37 +812,37 @@ export default function HomePage() {
           <div className="flex flex-wrap gap-2.5 mb-8 border-b border-border pb-4">
             <button
               onClick={() => setActiveDemoTab("relocation")}
-              className={`h-10 px-5 rounded-[4px] font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
+              className={`h-10 px-5 rounded-[4px] font-medium text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeDemoTab === "relocation"
                   ? "bg-brand text-ink font-semibold shadow-[0_0_16px_rgba(255,75,31,0.4)]"
                   : "bg-ink-2 border border-border text-muted hover:text-text hover:border-brand/40"
               }`}
             >
-              <Compass className="w-4 h-4" />
+              <Compass className="w-4 h-4" weight="bold" />
               <span>Demo 2: QR Relocation (Killer Demo)</span>
             </button>
 
             <button
               onClick={() => setActiveDemoTab("replacement")}
-              className={`h-10 px-5 rounded-[4px] font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
+              className={`h-10 px-5 rounded-[4px] font-medium text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeDemoTab === "replacement"
                   ? "bg-brand text-ink font-semibold shadow-[0_0_16px_rgba(255,75,31,0.4)]"
                   : "bg-ink-2 border border-border text-muted hover:text-text hover:border-brand/40"
               }`}
             >
-              <AlertTriangle className="w-4 h-4" />
+              <Warning className="w-4 h-4" weight="bold" />
               <span>Demo 1: QR Replacement (Sticker Swap)</span>
             </button>
 
             <button
               onClick={() => setActiveDemoTab("genuine")}
-              className={`h-10 px-5 rounded-[4px] font-mono text-xs uppercase tracking-wider transition-all flex items-center gap-2 ${
+              className={`h-10 px-5 rounded-[4px] font-medium text-xs sm:text-sm transition-all flex items-center gap-2 ${
                 activeDemoTab === "genuine"
                   ? "bg-brand text-ink font-semibold shadow-[0_0_16px_rgba(255,75,31,0.4)]"
                   : "bg-ink-2 border border-border text-muted hover:text-text hover:border-brand/40"
               }`}
             >
-              <Check className="w-4 h-4" />
+              <Check className="w-4 h-4" weight="bold" />
               <span>Demo 3: Genuine Scan</span>
             </button>
           </div>
@@ -1166,7 +916,7 @@ export default function HomePage() {
                   className="text-xs font-mono text-brand hover:text-brand-soft flex items-center gap-1.5"
                 >
                   <span>Open live camera viewfinder</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <CaretRight className="w-3.5 h-3.5" weight="bold" />
                 </Link>
                 <span className="text-[10px] font-mono text-muted uppercase">
                   Simulated via Mock Pipeline
@@ -1211,7 +961,7 @@ export default function HomePage() {
           <div className="p-8 md:p-12 rounded-[4px] bg-ink-2 border border-border flex flex-col md:flex-row items-center justify-between gap-8 mb-16">
             <div className="max-w-xl text-center md:text-left">
               <div className="inline-flex items-center gap-2 text-xs font-mono uppercase text-brand mb-2">
-                <Sparkles className="w-3.5 h-3.5" />
+                <Sparkle className="w-3.5 h-3.5" weight="duotone" />
                 <span>PILOT PROGRAM ENROLLMENT</span>
               </div>
               <h2 className="text-2xl md:text-3xl font-medium text-text mb-3">
@@ -1226,14 +976,14 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
               <Link
                 href="/register"
-                className="w-full sm:w-auto h-11 px-6 rounded-[4px] bg-brand text-ink text-sm font-mono font-semibold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-brand-soft hover:shadow-[0_0_20px_rgba(255,75,31,0.5)] transition-all"
+                className="w-full sm:w-auto h-11 px-6 rounded-[4px] bg-brand text-ink text-sm font-semibold flex items-center justify-center gap-2 hover:bg-brand-soft hover:shadow-[0_0_20px_rgba(255,75,31,0.5)] transition-all"
               >
                 <span>Register Credential</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" weight="bold" />
               </Link>
               <Link
                 href="/audit/run"
-                className="w-full sm:w-auto h-11 px-6 rounded-[4px] border border-border text-text hover:border-brand text-sm font-mono uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
+                className="w-full sm:w-auto h-11 px-6 rounded-[4px] border border-border text-text hover:border-brand text-sm font-medium flex items-center justify-center gap-2 transition-colors"
               >
                 <span>Run Self-Audit</span>
               </Link>
@@ -1315,7 +1065,7 @@ export default function HomePage() {
                     className="hover:text-text transition-colors flex items-center gap-1"
                   >
                     <span>Polygon Explorer</span>
-                    <ExternalLink className="w-3 h-3" />
+                    <ArrowSquareOut className="w-3 h-3" weight="bold" />
                   </a>
                 </li>
               </ul>

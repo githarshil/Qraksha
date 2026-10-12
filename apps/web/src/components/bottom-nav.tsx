@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, QrCode, History, Settings } from "lucide-react";
+import { House, QrCode, ClockCounterClockwise, Gear } from "@phosphor-icons/react";
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -13,10 +13,10 @@ export function BottomNav() {
   }
 
   const navItems = [
-    { label: "Home", href: "/dashboard", icon: Home },
+    { label: "Home", href: "/dashboard", icon: House },
     { label: "Self-Audit", href: "/audit/run", icon: QrCode },
-    { label: "History", href: "/audit/history", icon: History },
-    { label: "Settings", href: "/settings", icon: Settings },
+    { label: "History", href: "/audit/history", icon: ClockCounterClockwise },
+    { label: "Settings", href: "/settings", icon: Gear },
   ];
 
   return (
@@ -35,7 +35,7 @@ export function BottomNav() {
               isActive ? "text-primary font-semibold" : "text-muted hover:text-text"
             }`}
           >
-            <Icon className="w-5 h-5 mb-1" />
+            <Icon className="w-5 h-5 mb-1" weight="bold" />
             <span>{item.label}</span>
           </Link>
         );

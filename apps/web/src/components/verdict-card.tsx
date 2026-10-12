@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ShieldCheck, ShieldAlert, Shield, Check, AlertTriangle, X } from "lucide-react";
+import { ShieldCheck, ShieldWarning, Shield, Check, Warning, X } from "@phosphor-icons/react";
 import { AuditResult } from "../lib/api";
 
 export interface VerdictCardProps {
@@ -40,7 +40,7 @@ export function VerdictCard({
     borderColor = "border-l-danger";
     textColor = "text-danger";
     bgBadge = "bg-danger/15 text-[#FF6B81] border-danger/40";
-    ShieldIcon = ShieldAlert;
+    ShieldIcon = ShieldWarning;
     verdictDisplayLabel = "WARNING";
   } else {
     // RECENTLY_REGISTERED / UNVERIFIED
@@ -94,7 +94,7 @@ export function VerdictCard({
           <div
             className={`p-2.5 rounded-[4px] bg-ink border border-border ${textColor} animate-shield-resolve`}
           >
-            <ShieldIcon className="w-7 h-7" />
+            <ShieldIcon className="w-7 h-7" weight="duotone" />
           </div>
         </div>
 
@@ -122,11 +122,11 @@ export function VerdictCard({
             </div>
             {identityStatus === "pass" ? (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
-                <Check className="w-3 h-3" /> PASS
+                <Check className="w-3 h-3" weight="bold" /> PASS
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-[#FF6B81] border border-danger/30">
-                <X className="w-3 h-3" /> FLAG
+                <X className="w-3 h-3" weight="bold" /> FLAG
               </span>
             )}
           </div>
@@ -144,11 +144,11 @@ export function VerdictCard({
             </div>
             {visionStatus === "pass" ? (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
-                <Check className="w-3 h-3" /> PASS
+                <Check className="w-3 h-3" weight="bold" /> PASS
               </span>
             ) : visionStatus === "warn" ? (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-warn/10 text-warn border border-warn/30">
-                <AlertTriangle className="w-3 h-3" /> SOFT WARN
+                <Warning className="w-3 h-3" weight="bold" /> SOFT WARN
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-muted/10 text-muted border border-border">
@@ -170,11 +170,11 @@ export function VerdictCard({
             </div>
             {contextStatus === "pass" ? (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
-                <Check className="w-3 h-3" /> PASS
+                <Check className="w-3 h-3" weight="bold" /> PASS
               </span>
             ) : contextStatus === "fail" ? (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-[#FF6B81] border border-danger/30">
-                <X className="w-3 h-3" /> RELOCATED
+                <X className="w-3 h-3" weight="bold" /> RELOCATED
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-warn/10 text-warn border border-warn/30">

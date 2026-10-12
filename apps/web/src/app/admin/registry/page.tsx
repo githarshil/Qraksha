@@ -5,19 +5,19 @@ import Link from "next/link";
 import {
   Users,
   ArrowLeft,
-  Search,
+  MagnifyingGlass as Search,
   ShieldCheck,
-  ShieldAlert,
-  Loader2,
-  RefreshCw,
-  ExternalLink,
-  Sprout,
-  CheckCircle2,
-  AlertTriangle,
+  ShieldWarning,
+  SpinnerGap as Loader2,
+  ArrowsClockwise as RefreshCw,
+  ArrowSquareOut as ExternalLink,
+  Plant as Sprout,
+  CheckCircle as CheckCircle2,
+  Warning as AlertTriangle,
   QrCode,
-  Building,
+  Buildings as Building,
   Phone,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { getAdminCredentials, seedDemoRegistry, AdminCredentialItem, ApiError } from "@/lib/api";
 
 export default function AdminRegistryPage() {
@@ -111,7 +111,7 @@ export default function AdminRegistryPage() {
             href="/admin/disputes"
             className="h-9 px-3 rounded-[4px] bg-ink-2 border border-border hover:border-brand text-xs font-mono text-text flex items-center gap-1.5 transition-colors"
           >
-            <ShieldAlert className="w-3.5 h-3.5 text-warn" />
+            <ShieldWarning className="w-3.5 h-3.5 text-warn" />
             <span>Disputes Queue</span>
           </Link>
 
@@ -341,7 +341,7 @@ export default function AdminRegistryPage() {
                       className="h-7 px-2.5 rounded-[4px] bg-ink border border-border hover:border-danger text-[11px] font-mono text-muted hover:text-danger flex items-center gap-1 transition-colors"
                       title="File Impersonation Dispute"
                     >
-                      <ShieldAlert className="w-3 h-3 text-warn" />
+                      <ShieldWarning className="w-3 h-3 text-warn" />
                       <span>Dispute</span>
                     </Link>
                   </div>

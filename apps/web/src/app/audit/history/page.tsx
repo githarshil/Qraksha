@@ -5,13 +5,13 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ShieldCheck,
-  ShieldAlert,
+  ShieldWarning,
   Shield,
-  ChevronLeft,
-  ChevronRight,
-  RefreshCw,
+  CaretLeft,
+  CaretRight,
+  ArrowsClockwise,
   Camera,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { getAuditHistory, AuditHistoryItem } from "../../../lib/api";
 
 export default function AuditHistoryPage() {
@@ -98,9 +98,10 @@ export default function AuditHistoryPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
+            aria-label="Back to Dashboard"
             className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-text" />
+            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
           </Link>
           <div>
             <h1 className="text-base font-medium text-text">Audit History</h1>
@@ -112,7 +113,7 @@ export default function AuditHistoryPage() {
           href="/audit/run"
           className="h-8 px-3 rounded-[4px] bg-brand text-ink text-xs font-medium flex items-center gap-1.5 hover:bg-brand-soft transition-colors"
         >
-          <Camera className="w-3.5 h-3.5" />
+          <Camera className="w-3.5 h-3.5" weight="bold" />
           <span>New Audit</span>
         </Link>
       </div>
@@ -123,9 +124,9 @@ export default function AuditHistoryPage() {
         <button
           type="button"
           onClick={() => loadHistory(page)}
-          className="text-brand hover:text-brand-soft flex items-center gap-1"
+          className="text-brand hover:text-brand-soft flex items-center gap-1 font-medium"
         >
-          <RefreshCw className="w-3 h-3" />
+          <ArrowsClockwise className="w-3 h-3" weight="bold" />
           <span>Refresh</span>
         </button>
       </div>
@@ -152,7 +153,7 @@ export default function AuditHistoryPage() {
       {/* Empty State per PRD.md Section 6 */}
       {!isLoading && items.length === 0 && (
         <div className="p-8 rounded-[4px] bg-ink-2 border border-border text-center flex flex-col items-center gap-3">
-          <Shield className="w-10 h-10 text-muted" />
+          <Shield className="w-10 h-10 text-muted" weight="duotone" />
           <div>
             <h2 className="text-sm font-medium text-text">No Audit History Found</h2>
             <p className="text-xs text-muted mt-1 max-w-[240px]">
@@ -163,7 +164,7 @@ export default function AuditHistoryPage() {
             href="/audit/run"
             className="h-9 px-4 rounded-[4px] bg-brand text-ink text-xs font-medium flex items-center gap-1.5 hover:bg-brand-soft transition-colors mt-2"
           >
-            <Camera className="w-3.5 h-3.5" />
+            <Camera className="w-3.5 h-3.5" weight="bold" />
             <span>Run Your First Audit</span>
           </Link>
         </div>
@@ -188,7 +189,7 @@ export default function AuditHistoryPage() {
                 ? "bg-danger/10 text-danger border-danger/30"
                 : "bg-warn/10 text-warn border-warn/30";
 
-            const ShieldComp = isVerified ? ShieldCheck : isWarning ? ShieldAlert : Shield;
+            const ShieldComp = isVerified ? ShieldCheck : isWarning ? ShieldWarning : Shield;
 
             return (
               <div
@@ -208,7 +209,7 @@ export default function AuditHistoryPage() {
                   <span
                     className={`inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] border ${badgeBg}`}
                   >
-                    <ShieldComp className="w-3 h-3" />
+                    <ShieldComp className="w-3 h-3" weight="duotone" />
                     <span>{item.verdict_reason}</span>
                   </span>
                 </div>
@@ -227,18 +228,18 @@ export default function AuditHistoryPage() {
 
       {/* Pagination Controls */}
       {!isLoading && items.length > 0 && (
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-border font-mono text-xs">
+        <div className="flex items-center justify-between mt-6 pt-4 border-t border-border font-medium text-xs">
           <button
             type="button"
             disabled={page <= 1}
             onClick={() => loadHistory(page - 1)}
             className="h-8 px-3 rounded-[4px] bg-ink-2 border border-border text-text disabled:opacity-30 disabled:cursor-not-allowed hover:border-brand flex items-center gap-1 transition-colors"
           >
-            <ChevronLeft className="w-3.5 h-3.5" />
+            <CaretLeft className="w-3.5 h-3.5" weight="bold" />
             <span>Previous</span>
           </button>
 
-          <span className="text-muted text-[11px]">PAGE {page}</span>
+          <span className="text-muted text-[11px] font-mono">PAGE {page}</span>
 
           <button
             type="button"
@@ -247,7 +248,7 @@ export default function AuditHistoryPage() {
             className="h-8 px-3 rounded-[4px] bg-ink-2 border border-border text-text disabled:opacity-30 disabled:cursor-not-allowed hover:border-brand flex items-center gap-1 transition-colors"
           >
             <span>Next</span>
-            <ChevronRight className="w-3.5 h-3.5" />
+            <CaretRight className="w-3.5 h-3.5" weight="bold" />
           </button>
         </div>
       )}

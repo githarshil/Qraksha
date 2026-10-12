@@ -13,3 +13,10 @@ export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
     persistSession: false,
   },
 });
+
+export function isSupabaseConfigured(): boolean {
+  const url = process.env.SUPABASE_URL;
+  if (!url || url.includes("placeholder")) return false;
+  if (process.env.MOCK_DB === "true" || process.env.OFFLINE_MODE === "true") return false;
+  return true;
+}

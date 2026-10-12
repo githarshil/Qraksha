@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowLeft, ShieldAlert, AlertTriangle, Loader2 } from "lucide-react";
+import { ArrowLeft, ShieldWarning, Warning, SpinnerGap } from "@phosphor-icons/react";
 import { fileDispute, FileDisputeResult } from "../../../../lib/api";
 
 function DisputeForm() {
@@ -51,7 +51,7 @@ function DisputeForm() {
     return (
       <div className="flex-1 flex flex-col justify-center items-center text-center py-8">
         <div className="w-12 h-12 rounded-[4px] bg-danger/10 border border-danger/30 flex items-center justify-center text-danger mb-4">
-          <ShieldAlert className="w-6 h-6" />
+          <ShieldWarning className="w-6 h-6" weight="duotone" />
         </div>
 
         <span className="text-[11px] font-mono tracking-widest uppercase px-2 py-0.5 rounded-[4px] bg-danger/10 text-danger border border-danger/30 mb-2">
@@ -95,7 +95,7 @@ function DisputeForm() {
           </Link>
           <Link
             href="/audit/run"
-            className="h-9 px-4 rounded-[4px] bg-transparent border border-border text-muted hover:text-text text-xs font-mono flex items-center justify-center transition-colors"
+            className="h-9 px-4 rounded-[4px] bg-transparent border border-border text-muted hover:text-text text-xs font-medium flex items-center justify-center transition-colors"
           >
             <span>Run Another Audit Scan</span>
           </Link>
@@ -110,9 +110,10 @@ function DisputeForm() {
       <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
         <Link
           href="/dashboard"
+          aria-label="Back to Dashboard"
           className="w-8 h-8 rounded-[4px] bg-ink-2 border border-border flex items-center justify-center text-text hover:border-brand/40 transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4" weight="bold" />
         </Link>
         <div>
           <h1 className="text-base font-medium tracking-tight text-text leading-none">
@@ -126,7 +127,7 @@ function DisputeForm() {
 
       {/* Immediate Downgrade Impact Banner */}
       <div className="p-3.5 rounded-[4px] bg-danger/10 border border-danger/30 mb-6 flex gap-3 items-start">
-        <ShieldAlert className="w-4 h-4 text-danger shrink-0 mt-0.5" />
+        <ShieldWarning className="w-4 h-4 text-danger shrink-0 mt-0.5" weight="duotone" />
         <div className="text-xs leading-relaxed text-text">
           <span className="font-semibold text-danger block mb-0.5 font-mono text-[11px] uppercase tracking-wide">
             Immediate Auto-Downgrade
@@ -139,7 +140,7 @@ function DisputeForm() {
 
       {error && (
         <div className="p-3 rounded-[4px] bg-danger/10 border border-danger/30 text-danger text-xs mb-4 flex items-center gap-2">
-          <AlertTriangle className="w-4 h-4 shrink-0" />
+          <Warning className="w-4 h-4 shrink-0" weight="duotone" />
           <span>{error}</span>
         </div>
       )}
@@ -188,12 +189,12 @@ function DisputeForm() {
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />
               <span>Flagging Target Credential...</span>
             </>
           ) : (
             <>
-              <ShieldAlert className="w-4 h-4" />
+              <ShieldWarning className="w-4 h-4" weight="bold" />
               <span>Submit Dispute & Flag Credential</span>
             </>
           )}

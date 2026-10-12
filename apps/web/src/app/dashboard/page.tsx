@@ -1,14 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import {
   QrCode,
   ShieldCheck,
-  ShieldAlert,
-  History,
-  ExternalLink,
+  ShieldWarning,
+  ClockCounterClockwise,
+  ArrowSquareOut,
   ArrowRight,
-  Link as LinkIcon,
-  CheckCircle2,
-} from "lucide-react";
+  LinkSimple,
+  CheckCircle,
+} from "@phosphor-icons/react";
 
 export default function DashboardPage() {
   // Demo credential data for MVP merchant view
@@ -22,7 +24,7 @@ export default function DashboardPage() {
       <header className="flex justify-between items-center pb-4 border-b border-border mb-6">
         <div>
           <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-            <ShieldCheck className="w-3.5 h-3.5" />
+            <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
             <span>MERCHANT // DASHBOARD</span>
           </div>
           <h1 className="text-lg font-medium text-text mt-0.5">Sharma Canteen</h1>
@@ -60,7 +62,7 @@ export default function DashboardPage() {
           className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-sm flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors mt-1"
         >
           <span>Run Self-Audit Now</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-4 h-4" weight="bold" />
         </Link>
       </div>
 
@@ -68,7 +70,7 @@ export default function DashboardPage() {
       <div className="p-5 rounded-[4px] bg-ink-2 border-l-4 border-l-ok border-t border-r border-b border-border flex flex-col gap-3 mb-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-ok" />
+            <CheckCircle className="w-4 h-4 text-ok" weight="duotone" />
             <span className="font-mono text-xs uppercase tracking-wider text-ok font-medium">
               Blockchain Anchor Confirmed
             </span>
@@ -104,14 +106,14 @@ export default function DashboardPage() {
             className="h-8 px-3 rounded-[4px] bg-ink border border-border text-text hover:border-brand text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
           >
             <span>PolygonScan</span>
-            <ExternalLink className="w-3 h-3 text-brand" />
+            <ArrowSquareOut className="w-3 h-3 text-brand" weight="bold" />
           </a>
           <Link
             href={`/verify/${demoCredentialId}`}
             className="h-8 px-3 rounded-[4px] bg-ink border border-border text-text hover:border-brand text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
           >
             <span>Public Audit</span>
-            <LinkIcon className="w-3 h-3 text-brand" />
+            <LinkSimple className="w-3 h-3 text-brand" weight="bold" />
           </Link>
         </div>
       </div>
@@ -123,7 +125,7 @@ export default function DashboardPage() {
           className="p-4 rounded-[4px] bg-ink-2 border border-border hover:border-brand/50 transition-colors"
         >
           <div className="flex items-center gap-1.5 mb-1 text-muted text-xs font-mono">
-            <QrCode className="w-3.5 h-3.5 text-brand" />
+            <QrCode className="w-3.5 h-3.5 text-brand" weight="duotone" />
             <span>ACTIVE QRS</span>
           </div>
           <span className="text-lg font-medium text-text">1 Registered</span>
@@ -133,7 +135,7 @@ export default function DashboardPage() {
           className="p-4 rounded-[4px] bg-ink-2 border border-border hover:border-brand/50 transition-colors"
         >
           <div className="flex items-center gap-1.5 mb-1 text-muted text-xs font-mono">
-            <History className="w-3.5 h-3.5 text-ok" />
+            <ClockCounterClockwise className="w-3.5 h-3.5 text-ok" weight="duotone" />
             <span>CLEAN AUDITS</span>
           </div>
           <span className="text-lg font-medium text-ok">14 Clean Runs</span>
@@ -147,7 +149,7 @@ export default function DashboardPage() {
           className="p-3.5 rounded-[4px] bg-ink-2 border border-border flex justify-between items-center text-xs font-mono text-text hover:border-danger transition-colors"
         >
           <span>Report Sticker Impersonation / Dispute</span>
-          <ShieldAlert className="w-4 h-4 text-danger" />
+          <ShieldWarning className="w-4 h-4 text-danger" weight="duotone" />
         </Link>
       </div>
     </main>

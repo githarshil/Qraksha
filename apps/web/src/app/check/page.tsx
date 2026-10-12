@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft, Loader2, Info } from "lucide-react";
+import { ArrowLeft, SpinnerGap, Info } from "@phosphor-icons/react";
 import { CameraCapture } from "../../components/camera-capture";
 import { VerdictCard } from "../../components/verdict-card";
 import { runCustomerCheck, AuditResult, ApiError } from "../../lib/api";
@@ -71,7 +71,7 @@ export default function CustomerCheckPage() {
             aria-label="Back to Home"
             className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-text" />
+            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
           </Link>
           <div>
             <h1 className="text-base font-medium text-text">Customer Pre-Pay Check</h1>
@@ -86,7 +86,7 @@ export default function CustomerCheckPage() {
       {/* Explanatory Banner */}
       {!verdictResult && !isVerifying && (
         <div className="mb-4 p-3.5 rounded-[4px] bg-ink-2 border border-border flex items-start gap-2.5 text-xs text-muted leading-relaxed">
-          <Info className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+          <Info className="w-4 h-4 text-brand shrink-0 mt-0.5" weight="duotone" />
           <p>
             Point your camera at the merchant's physical UPI sticker before paying to confirm it has
             not been swapped or relocated. QRaksha never touches your payment.
@@ -101,7 +101,7 @@ export default function CustomerCheckPage() {
           <button
             type="button"
             onClick={resetCheck}
-            className="self-end px-3 py-1 rounded-[4px] bg-danger text-ink font-mono text-[10px]"
+            className="self-end px-3 py-1 rounded-[4px] bg-danger text-ink font-medium text-xs"
           >
             Try Again
           </button>
@@ -111,7 +111,7 @@ export default function CustomerCheckPage() {
       {/* Loading state */}
       {isVerifying && (
         <div className="flex-1 flex flex-col items-center justify-center p-8 rounded-[4px] bg-ink-2 border border-brand/40 text-center gap-4 animate-pulse">
-          <Loader2 className="w-8 h-8 text-brand animate-spin" />
+          <SpinnerGap className="w-8 h-8 text-brand animate-spin" weight="bold" />
           <div>
             <h2 className="text-sm font-medium text-text">Checking Merchant Registry</h2>
             <p className="text-xs font-mono text-brand mt-1">Cross-referencing QR & location…</p>

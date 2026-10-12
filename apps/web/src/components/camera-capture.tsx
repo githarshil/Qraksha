@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Camera, RefreshCw, Upload, AlertCircle, Check, Loader2 } from "lucide-react";
+import {
+  Camera,
+  ArrowsClockwise,
+  UploadSimple,
+  WarningCircle,
+  Check,
+  SpinnerGap,
+} from "@phosphor-icons/react";
 import jsQR from "jsqr";
 
 export interface CameraCaptureProps {
@@ -349,7 +356,7 @@ export function CameraCapture({
           className="p-5 rounded-[4px] bg-danger/10 border border-danger text-text flex flex-col gap-3"
         >
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
+            <WarningCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" weight="duotone" />
             <div className="flex-1">
               <h4 className="text-sm font-medium text-text">Camera Access Required</h4>
               <p className="text-xs text-muted mt-1 leading-relaxed">
@@ -365,16 +372,16 @@ export function CameraCapture({
               onClick={startCamera}
               className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-xs flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
             >
-              <RefreshCw className="w-4 h-4" />
+              <ArrowsClockwise className="w-4 h-4" weight="bold" />
               <span>Retry Camera Permission</span>
             </button>
 
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="h-9 px-4 rounded-[4px] bg-ink-2 border border-border text-muted hover:text-text text-xs font-mono flex items-center justify-center gap-2 transition-colors"
+              className="h-9 px-4 rounded-[4px] bg-ink-2 border border-border text-muted hover:text-text text-xs flex items-center justify-center gap-2 transition-colors"
             >
-              <Upload className="w-3.5 h-3.5" />
+              <UploadSimple className="w-3.5 h-3.5" weight="bold" />
               <span>Upload Photo Instead</span>
             </button>
           </div>
@@ -398,7 +405,7 @@ export function CameraCapture({
           {/* Loading overlay while camera initializes */}
           {!isCameraActive && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink-2 text-muted">
-              <Loader2 className="w-5 h-5 animate-spin text-brand" />
+              <SpinnerGap className="w-5 h-5 animate-spin text-brand" weight="bold" />
               <span className="text-xs font-mono">Initializing camera feed…</span>
             </div>
           )}
@@ -422,7 +429,7 @@ export function CameraCapture({
               onClick={takeSnapshot}
               className="h-11 px-5 rounded-[4px] bg-brand text-ink font-medium text-xs flex items-center justify-center gap-2 shadow-sm hover:bg-brand-soft transition-colors"
             >
-              <Camera className="w-4 h-4" />
+              <Camera className="w-4 h-4" weight="bold" />
               <span>Capture Reference Photo</span>
             </button>
 
@@ -432,7 +439,7 @@ export function CameraCapture({
               aria-label="Upload from files"
               className="h-11 w-11 rounded-[4px] bg-ink/80 backdrop-blur-sm border border-border text-text flex items-center justify-center hover:border-brand transition-colors"
             >
-              <Upload className="w-4 h-4" />
+              <UploadSimple className="w-4 h-4" weight="bold" />
             </button>
           </div>
         </div>
@@ -448,7 +455,7 @@ export function CameraCapture({
               className="w-full h-full object-cover"
             />
             <div className="absolute top-2 left-2 px-2 py-1 rounded-[2px] bg-ink/90 border border-ok text-ok text-[10px] font-mono flex items-center gap-1.5">
-              <Check className="w-3 h-3" />
+              <Check className="w-3 h-3" weight="bold" />
               <span>PHOTO CAPTURED // EMBEDDING READY</span>
             </div>
           </div>
@@ -458,9 +465,9 @@ export function CameraCapture({
             <button
               type="button"
               onClick={retakePhoto}
-              className="h-8 px-3 rounded-[4px] bg-transparent border border-border text-muted hover:text-text hover:border-muted text-xs font-mono flex items-center gap-1.5 transition-colors"
+              className="h-8 px-3 rounded-[4px] bg-transparent border border-border text-muted hover:text-text hover:border-muted text-xs flex items-center gap-1.5 transition-colors"
             >
-              <RefreshCw className="w-3 h-3" />
+              <ArrowsClockwise className="w-3 h-3" weight="bold" />
               <span>Retake Photo</span>
             </button>
           </div>

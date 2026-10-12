@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft, Loader2, MapPin, AlertCircle, History } from "lucide-react";
+import {
+  ArrowLeft,
+  SpinnerGap,
+  MapPin,
+  WarningCircle,
+  ClockCounterClockwise,
+} from "@phosphor-icons/react";
 import { CameraCapture } from "../../../components/camera-capture";
 import { VerdictCard } from "../../../components/verdict-card";
 import { runSelfAudit, AuditResult, ApiError } from "../../../lib/api";
@@ -103,7 +109,7 @@ export default function AuditRunPage() {
             aria-label="Back to Dashboard"
             className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-text" />
+            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
           </Link>
           <div>
             <h1 className="text-base font-medium text-text">Self-Audit Verification</h1>
@@ -113,9 +119,9 @@ export default function AuditRunPage() {
 
         <Link
           href="/audit/history"
-          className="text-xs font-mono px-3 py-1.5 rounded-[4px] bg-ink-2 border border-border text-muted hover:text-text hover:border-brand flex items-center gap-1.5 transition-colors"
+          className="text-xs px-3 py-1.5 rounded-[4px] bg-ink-2 border border-border text-muted hover:text-text hover:border-brand flex items-center gap-1.5 transition-colors font-medium"
         >
-          <History className="w-3.5 h-3.5 text-brand" />
+          <ClockCounterClockwise className="w-3.5 h-3.5 text-brand" weight="bold" />
           <span>History</span>
         </Link>
       </div>
@@ -124,7 +130,7 @@ export default function AuditRunPage() {
       {coords && (
         <div className="mb-4 px-3 py-2 rounded-[4px] bg-ink-2 border border-border flex items-center justify-between text-xs font-mono text-muted">
           <div className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-ok" />
+            <MapPin className="w-3.5 h-3.5 text-ok" weight="duotone" />
             <span>
               GPS ACTIVE: {coords.latitude.toFixed(3)}, {coords.longitude.toFixed(3)}
             </span>
@@ -135,7 +141,7 @@ export default function AuditRunPage() {
 
       {geoError && (
         <div className="mb-4 p-3 rounded-[4px] bg-warn/10 border border-warn/30 text-warn text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
+          <WarningCircle className="w-4 h-4 shrink-0" weight="duotone" />
           <span>{geoError}</span>
         </div>
       )}
@@ -144,13 +150,13 @@ export default function AuditRunPage() {
       {apiError && (
         <div className="mb-4 p-4 rounded-[4px] bg-danger/10 border border-danger text-danger text-xs flex flex-col gap-2">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <WarningCircle className="w-4 h-4 shrink-0 mt-0.5" weight="duotone" />
             <p className="font-medium text-text">{apiError}</p>
           </div>
           <button
             type="button"
             onClick={resetAudit}
-            className="self-end px-3 py-1 rounded-[4px] bg-danger text-ink font-mono text-[10px]"
+            className="self-end px-3 py-1 rounded-[4px] bg-danger text-ink font-medium text-xs"
           >
             Retry Scan
           </button>
@@ -160,7 +166,7 @@ export default function AuditRunPage() {
       {/* Loading Skeleton during Multi-Agent Verification (PRD.md Section 6) */}
       {isVerifying && (
         <div className="flex-1 flex flex-col items-center justify-center p-8 rounded-[4px] bg-ink-2 border border-brand/40 text-center gap-4 animate-pulse">
-          <Loader2 className="w-8 h-8 text-brand animate-spin" />
+          <SpinnerGap className="w-8 h-8 text-brand animate-spin" weight="bold" />
           <div>
             <h2 className="text-sm font-medium text-text">Running 5-Agent Pipeline</h2>
             <p className="text-xs font-mono text-brand mt-1">{currentAgentStep}</p>
@@ -184,7 +190,7 @@ export default function AuditRunPage() {
           />
           <Link
             href="/dashboard"
-            className="h-10 px-4 rounded-[4px] bg-ink-2 border border-border text-text hover:border-brand text-xs font-mono flex items-center justify-center transition-colors"
+            className="h-10 px-4 rounded-[4px] bg-ink-2 border border-border text-text hover:border-brand text-xs font-medium flex items-center justify-center transition-colors"
           >
             <span>Return to Dashboard</span>
           </Link>

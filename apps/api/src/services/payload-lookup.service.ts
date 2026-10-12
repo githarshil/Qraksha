@@ -1,6 +1,6 @@
 import crypto from "crypto";
 
-import { supabaseAdmin } from "../db/client.js";
+import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 
 export interface RegisteredQrLookupResult {
   id: string; // registered_qr_id
@@ -65,11 +65,13 @@ export class PayloadLookupService {
 
     // 2. Query database for registered_qr record
     let result: RegisteredQrLookupResult | null = null;
-    try {
-      result = await this.queryDatabase(hash, dbOverride);
-    } catch (_dbError) {
-      // Graceful fallback: unrecognized/unreachable record treated as null
-      result = null;
+    if (isSupabaseConfigured()) {
+      try {
+        result = await this.queryDatabase(hash, dbOverride);
+      } catch (_dbError) {
+        // Graceful fallback: unrecognized/unreachable record treated as null
+        result = null;
+      }
     }
 
     // 3. Cache result (including null for negative cache with shorter TTL)

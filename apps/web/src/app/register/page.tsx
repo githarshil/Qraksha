@@ -5,24 +5,24 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  Building2,
-  Smartphone,
+  Buildings,
+  DeviceMobile,
   ShieldCheck,
-  AlertTriangle,
-  CheckCircle2,
-  Loader2,
-  RefreshCw,
+  Warning,
+  CheckCircle,
+  SpinnerGap,
+  ArrowsClockwise,
   Info,
-  ExternalLink,
+  ArrowSquareOut,
   MapPin,
-  MapPinOff,
+  MapPinLine,
   Coins,
   Terminal,
-  ChevronDown,
-  ChevronUp,
+  CaretDown,
+  CaretUp,
   Clock,
   XCircle,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 
 import {
   RegisterIdentityInput,
@@ -451,7 +451,7 @@ export default function RegisterWizardPage() {
           className="p-4 rounded-[4px] mb-6 border bg-danger/10 border-danger text-text animate-in fade-in"
         >
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
+            <Warning className="w-5 h-5 text-danger shrink-0 mt-0.5" />
             <div className="flex-1">
               <h2 className="text-sm font-medium text-text mb-1">
                 {apiError.code === "CONFLICT" ? "Registration Conflict" : "Action Failed"}
@@ -469,7 +469,7 @@ export default function RegisterWizardPage() {
                     className="inline-flex items-center gap-1.5 text-xs font-mono font-medium text-danger hover:underline"
                   >
                     <span>File a dispute against this credential</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <ArrowSquareOut className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               )}
@@ -512,7 +512,7 @@ export default function RegisterWizardPage() {
                             : "bg-ink text-muted"
                         }`}
                       >
-                        <Building2 className="w-4 h-4" />
+                        <Buildings className="w-4 h-4" />
                       </div>
                       <span className="text-sm font-medium text-text">GST / Udyam Certificate</span>
                     </div>
@@ -547,7 +547,7 @@ export default function RegisterWizardPage() {
                             : "bg-ink text-muted"
                         }`}
                       >
-                        <Smartphone className="w-4 h-4" />
+                        <DeviceMobile className="w-4 h-4" />
                       </div>
                       <span className="text-sm font-medium text-text">UPI VPA Penny-Drop</span>
                     </div>
@@ -730,7 +730,7 @@ export default function RegisterWizardPage() {
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <SpinnerGap className="w-4 h-4 animate-spin" />
                       <span>{loadingMessage}</span>
                     </>
                   ) : (
@@ -782,7 +782,7 @@ export default function RegisterWizardPage() {
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <SpinnerGap className="w-4 h-4 animate-spin" />
                       <span>{loadingMessage}</span>
                     </>
                   ) : (
@@ -814,7 +814,7 @@ export default function RegisterWizardPage() {
           {/* Identity Verified Badge Summary */}
           <div className="p-3.5 rounded-[4px] bg-ink-2 border border-ok/40 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-ok" />
+              <CheckCircle className="w-4 h-4 text-ok" />
               <div>
                 <span className="text-xs font-medium text-text block">
                   {identityResult.displayName}
@@ -836,7 +836,7 @@ export default function RegisterWizardPage() {
               className="p-5 rounded-[4px] bg-danger/10 border border-danger text-text flex flex-col gap-3"
             >
               <div className="flex items-start gap-3">
-                <MapPinOff className="w-5 h-5 text-danger shrink-0 mt-0.5" />
+                <MapPinLine className="w-5 h-5 text-danger shrink-0 mt-0.5" />
                 <div className="flex-1">
                   <h3 className="text-sm font-medium text-text">Location Access Required</h3>
                   <p className="text-xs text-muted mt-1 leading-relaxed">
@@ -852,7 +852,7 @@ export default function RegisterWizardPage() {
                   onClick={requestLocation}
                   className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-xs flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <ArrowsClockwise className="w-4 h-4" />
                   <span>Retry Location Access</span>
                 </button>
               </div>
@@ -880,7 +880,7 @@ export default function RegisterWizardPage() {
 
           {isLocating && (
             <div className="p-3 rounded-[4px] bg-ink-2 border border-border flex items-center gap-2 text-xs font-mono text-muted">
-              <Loader2 className="w-4 h-4 animate-spin text-brand" />
+              <SpinnerGap className="w-4 h-4 animate-spin text-brand" />
               <span>Acquiring GPS coordinates for storefront binding…</span>
             </div>
           )}
@@ -910,7 +910,7 @@ export default function RegisterWizardPage() {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <SpinnerGap className="w-4 h-4 animate-spin" />
                   <span>{loadingMessage}</span>
                 </>
               ) : (
@@ -946,7 +946,7 @@ export default function RegisterWizardPage() {
               <div className="p-5 rounded-[4px] bg-ink-2 border-l-4 border-l-ok border-t border-r border-b border-border flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="w-5 h-5 text-ok" />
+                    <CheckCircle className="w-5 h-5 text-ok" />
                     <span className="font-mono text-xs uppercase tracking-wider text-ok font-medium">
                       Credential Activated
                     </span>
@@ -1015,7 +1015,7 @@ export default function RegisterWizardPage() {
                   onClick={handleReset}
                   className="h-9 px-4 rounded-[4px] bg-transparent border border-border text-muted hover:text-text text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
                 >
-                  <RefreshCw className="w-3 h-3" />
+                  <ArrowsClockwise className="w-3 h-3" />
                   <span>Register Another Credential</span>
                 </button>
               </div>
@@ -1139,7 +1139,7 @@ export default function RegisterWizardPage() {
                   >
                     {isLoading ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <SpinnerGap className="w-4 h-4 animate-spin" />
                         <span>{loadingMessage}</span>
                       </>
                     ) : (
@@ -1185,9 +1185,9 @@ export default function RegisterWizardPage() {
                     </span>
                   </div>
                   {isDevPanelOpen ? (
-                    <ChevronUp className="w-3.5 h-3.5 text-muted" />
+                    <CaretUp className="w-3.5 h-3.5 text-muted" />
                   ) : (
-                    <ChevronDown className="w-3.5 h-3.5 text-muted" />
+                    <CaretDown className="w-3.5 h-3.5 text-muted" />
                   )}
                 </button>
 
@@ -1213,7 +1213,7 @@ export default function RegisterWizardPage() {
                           }`}
                         >
                           <span>Pass (Active)</span>
-                          {simulationPassed && <CheckCircle2 className="w-3.5 h-3.5 text-brand" />}
+                          {simulationPassed && <CheckCircle className="w-3.5 h-3.5 text-brand" />}
                         </button>
                         <button
                           type="button"

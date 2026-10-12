@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { supabaseAdmin } from "../db/client.js";
+import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 import { NotFoundError, ValidationError } from "../middleware/error.middleware.js";
 import { payloadLookupService } from "./payload-lookup.service.js";
 import type {
@@ -514,6 +514,37 @@ export class AdminService {
       trustTier: TrustTier;
       status: CredentialStatus;
     }> = [];
+
+    if (!isSupabaseConfigured()) {
+      for (const m of demoMerchants) {
+        for (const qr of m.qrs) {
+          const qrPayloadHash = payloadLookupService.hashPayload(qr.payload);
+          payloadLookupService.primeCache(qrPayloadHash, {
+            id: `qr-${m.displayName.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+            credentialId: `cred-${m.displayName.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+            qrPayloadHash,
+            boundLat: qr.lat,
+            boundLng: qr.lng,
+            boundRadiusM: qr.radiusM,
+            trustTier: m.trustTier,
+            credentialStatus: m.status,
+            trustScore: m.trustScore,
+            merchantId: `merch-${m.displayName.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+          });
+        }
+        seededList.push({
+          name: m.displayName,
+          credentialId: `cred-${m.displayName.toLowerCase().replace(/[^a-z0-9]/g, "-")}`,
+          trustTier: m.trustTier,
+          status: m.status,
+        });
+      }
+      return {
+        message: "Successfully primed demo registry in mock environment",
+        seededCount: seededList.length,
+        merchants: seededList,
+      };
+    }
 
     // Synthesize dummy 768-dim normalized embedding for reference records
     const dummyEmbedding = new Array(768).fill(0.036);

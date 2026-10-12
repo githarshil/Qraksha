@@ -7,16 +7,16 @@ import {
   ArrowLeft,
   User,
   Shield,
-  LogOut,
+  SignOut,
   QrCode,
-  History,
-  ShieldAlert,
+  ClockCounterClockwise,
+  ShieldWarning,
   ShieldCheck,
   Check,
   Copy,
-  ExternalLink,
-  Loader2,
-} from "lucide-react";
+  ArrowSquareOut,
+  SpinnerGap,
+} from "@phosphor-icons/react";
 import { getMyCredentials } from "@/lib/api";
 
 export default function SettingsPage() {
@@ -114,11 +114,11 @@ export default function SettingsPage() {
           className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors text-text"
           aria-label="Back to dashboard"
         >
-          <ArrowLeft className="w-4 h-4 text-text" />
+          <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
         </Link>
         <div>
           <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-            <User className="w-3.5 h-3.5" />
+            <User className="w-3.5 h-3.5" weight="duotone" />
             <span>MERCHANT // SETTINGS</span>
           </div>
           <h1 className="text-lg font-medium text-text">Account & Verification</h1>
@@ -127,7 +127,7 @@ export default function SettingsPage() {
 
       {isLoading && (
         <div className="flex items-center gap-2 text-xs font-mono text-muted mb-3">
-          <Loader2 className="w-3.5 h-3.5 animate-spin text-brand" />
+          <SpinnerGap className="w-3.5 h-3.5 animate-spin text-brand" weight="bold" />
           <span>Syncing verified credentials…</span>
         </div>
       )}
@@ -146,7 +146,7 @@ export default function SettingsPage() {
 
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-[4px] bg-ink border border-border flex items-center justify-center text-brand font-medium">
-              <User className="w-5 h-5" />
+              <User className="w-5 h-5" weight="duotone" />
             </div>
             <div>
               <h2 className="text-base font-medium text-text">{profile.displayName}</h2>
@@ -159,7 +159,7 @@ export default function SettingsPage() {
         <div className="p-5 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-brand" />
+              <Shield className="w-4 h-4 text-brand" weight="duotone" />
               <span className="text-xs font-medium text-text">Identity Verification Tier</span>
             </div>
             <span
@@ -186,7 +186,7 @@ export default function SettingsPage() {
         <div className="p-5 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-brand" />
+              <ShieldCheck className="w-4 h-4 text-brand" weight="duotone" />
               <span className="text-xs font-medium text-text">Active Credential Standing</span>
             </div>
             <span
@@ -215,9 +215,9 @@ export default function SettingsPage() {
               title="Copy Credential ID"
             >
               {copiedId ? (
-                <Check className="w-3.5 h-3.5 text-ok" />
+                <Check className="w-3.5 h-3.5 text-ok" weight="bold" />
               ) : (
-                <Copy className="w-3.5 h-3.5" />
+                <Copy className="w-3.5 h-3.5" weight="bold" />
               )}
             </button>
           </div>
@@ -227,7 +227,7 @@ export default function SettingsPage() {
             className="text-xs font-mono text-brand hover:text-brand-soft flex items-center gap-1.5 transition-colors self-start mt-1"
           >
             <span>View Public Blockchain Proof Record</span>
-            <ExternalLink className="w-3 h-3" />
+            <ArrowSquareOut className="w-3 h-3" weight="bold" />
           </Link>
         </div>
 
@@ -238,7 +238,7 @@ export default function SettingsPage() {
             className="p-3.5 rounded-[4px] bg-ink-2 border border-border hover:border-brand flex items-center justify-between text-xs font-mono text-text transition-colors"
           >
             <div className="flex items-center gap-2.5">
-              <QrCode className="w-4 h-4 text-brand" />
+              <QrCode className="w-4 h-4 text-brand" weight="duotone" />
               <span>Manage Registered Physical QRs</span>
             </div>
             <span className="text-muted text-[11px]">{profile.qrCount} Active</span>
@@ -249,7 +249,7 @@ export default function SettingsPage() {
             className="p-3.5 rounded-[4px] bg-ink-2 border border-border hover:border-brand flex items-center justify-between text-xs font-mono text-text transition-colors"
           >
             <div className="flex items-center gap-2.5">
-              <History className="w-4 h-4 text-brand" />
+              <ClockCounterClockwise className="w-4 h-4 text-brand" weight="duotone" />
               <span>Audit History Log</span>
             </div>
             <span className="text-muted text-[11px]">View Runs</span>
@@ -260,7 +260,7 @@ export default function SettingsPage() {
             className="p-3.5 rounded-[4px] bg-ink-2 border border-border hover:border-danger flex items-center justify-between text-xs font-mono text-text hover:text-danger transition-colors"
           >
             <div className="flex items-center gap-2.5">
-              <ShieldAlert className="w-4 h-4 text-warn" />
+              <ShieldWarning className="w-4 h-4 text-warn" weight="duotone" />
               <span>File Dispute Against Impersonator</span>
             </div>
             <span className="text-muted text-[11px]">Report</span>
@@ -272,12 +272,12 @@ export default function SettingsPage() {
           type="button"
           onClick={handleSignOut}
           disabled={isSigningOut}
-          className="mt-6 h-11 rounded-[4px] border border-danger/40 bg-danger/10 hover:bg-danger/20 text-danger text-xs font-mono font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+          className="mt-6 h-11 rounded-[4px] border border-danger/40 bg-danger/10 hover:bg-danger/20 text-danger text-xs font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
         >
           {isSigningOut ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />
           ) : (
-            <LogOut className="w-4 h-4" />
+            <SignOut className="w-4 h-4" weight="bold" />
           )}
           <span>Sign Out of Merchant Session</span>
         </button>

@@ -2,7 +2,15 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { ArrowLeft, Plus, QrCode, CheckCircle2, AlertCircle, X, MapPin } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  QrCode,
+  CheckCircle,
+  WarningCircle,
+  X,
+  MapPin,
+} from "@phosphor-icons/react";
 import { CameraCapture } from "../../../components/camera-capture";
 import { addQrToCredential, getRegisteredQrs, ApiError } from "../../../lib/api";
 
@@ -140,9 +148,10 @@ export default function CredentialQrsPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
+            aria-label="Back to Dashboard"
             className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors"
           >
-            <ArrowLeft className="w-4 h-4 text-text" />
+            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
           </Link>
           <div>
             <h1 className="text-base font-medium text-text">Registered QR Stickers</h1>
@@ -165,9 +174,9 @@ export default function CredentialQrsPage() {
           }`}
         >
           {feedback.type === "success" ? (
-            <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+            <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" weight="duotone" />
           ) : (
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+            <WarningCircle className="w-4 h-4 shrink-0 mt-0.5" weight="duotone" />
           )}
           <div className="flex-1">
             <p className="font-medium">{feedback.message}</p>
@@ -175,9 +184,10 @@ export default function CredentialQrsPage() {
           <button
             type="button"
             onClick={() => setFeedback(null)}
+            aria-label="Dismiss feedback"
             className="p-0.5 text-muted hover:text-text"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-3.5 h-3.5" weight="bold" />
           </button>
         </div>
       )}
@@ -192,7 +202,7 @@ export default function CredentialQrsPage() {
             >
               <div className="flex gap-3">
                 <div className="p-2.5 rounded-[4px] bg-ink border border-border text-brand">
-                  <QrCode className="w-5 h-5" />
+                  <QrCode className="w-5 h-5" weight="duotone" />
                 </div>
                 <div>
                   <h2 className="text-sm font-medium text-text">{qr.label}</h2>
@@ -200,7 +210,7 @@ export default function CredentialQrsPage() {
                     HASH // {qr.qr_payload_hash.slice(0, 10)}…{qr.qr_payload_hash.slice(-8)}
                   </p>
                   <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted mt-1.5">
-                    <MapPin className="w-3 h-3 text-ok" />
+                    <MapPin className="w-3 h-3 text-ok" weight="duotone" />
                     <span>
                       {qr.bound_lat.toFixed(3)}, {qr.bound_lng.toFixed(3)} ({qr.bound_radius_m}m)
                     </span>
@@ -218,9 +228,9 @@ export default function CredentialQrsPage() {
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="h-11 px-4 rounded-[4px] border border-dashed border-brand text-brand font-mono text-xs flex items-center justify-center gap-2 hover:bg-brand/10 transition-colors mt-2"
+            className="h-11 px-4 rounded-[4px] border border-dashed border-brand text-brand font-medium text-xs flex items-center justify-center gap-2 hover:bg-brand/10 transition-colors mt-2"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4" weight="bold" />
             <span>Register Additional QR Sticker</span>
           </button>
         </div>
@@ -237,9 +247,10 @@ export default function CredentialQrsPage() {
                 setIsAdding(false);
                 setCapturedData(null);
               }}
+              aria-label="Close dialog"
               className="p-1 rounded-[4px] bg-ink border border-border text-muted hover:text-text"
             >
-              <X className="w-4 h-4" />
+              <X className="w-4 h-4" weight="bold" />
             </button>
           </div>
 

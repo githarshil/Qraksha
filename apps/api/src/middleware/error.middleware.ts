@@ -50,6 +50,7 @@ export class ServiceUnavailableError extends AppError {
 }
 
 import { logger } from "./logger.middleware.js";
+import { captureSentryException } from "../config/sentry.js";
 
 export function errorHandler(
   err: AppError,
@@ -67,6 +68,16 @@ export function errorHandler(
     code,
     statusCode,
   });
+
+  // Capture in Sentry if unhandled or internal error
+  if (statusCode >= 500) {
+    captureSentryException(err, {
+      correlationId,
+      code,
+      path: req.path,
+      method: req.method,
+    });
+  }
 
   if (statusCode === 500) {
     res.status(500).json({

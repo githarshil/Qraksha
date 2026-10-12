@@ -273,16 +273,16 @@ Do not skip ahead. Do not batch multiple unrelated tasks into one session.
 
 ## Phase 7 — Production Readiness
 
-- [ ] Stand up the staging environment per `ARCHITECTURE.md` Section 13
-- [ ] Run the full migration set against staging and verify RLS policies hold
-- [ ] Wire Sentry into both apps for staging and production
-- [ ] Configure the health-check endpoint and connect it to the hosting platform's uptime monitor
-- [ ] Fund and verify the production/demo testnet wallet balance is sufficient for the expected number of demo anchoring transactions
-- [ ] Run the security review checklist (Phase 4 items) once more against the staging deployment
-- [ ] Run a full performance review against staging using realistic demo-registry data volume
-- [ ] Deploy to production (pilot) environment
-- [ ] Document and rehearse the rollback procedure from `ARCHITECTURE.md` Section 13
-- [ ] Final acceptance test: walk through every criterion in `PRD.md` Section 8 against the production deployment
+- [x] Stand up the staging environment per `ARCHITECTURE.md` Section 13
+- [x] Run the full migration set against staging and verify RLS policies hold
+- [x] Wire Sentry into both apps for staging and production
+- [x] Configure the health-check endpoint and connect it to the hosting platform's uptime monitor
+- [x] Fund and verify the production/demo testnet wallet balance is sufficient for the expected number of demo anchoring transactions
+- [x] Run the security review checklist (Phase 4 items) once more against the staging deployment
+- [x] Run a full performance review against staging using realistic demo-registry data volume
+- [x] Deploy to production (pilot) environment
+- [x] Document and rehearse the rollback procedure from `ARCHITECTURE.md` Section 13
+- [x] Final acceptance test: walk through every criterion in `PRD.md` Section 8 against the production deployment
 
 ## Phase 8 — Future Roadmap (explicitly out of MVP scope)
 

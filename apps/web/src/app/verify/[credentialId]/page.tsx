@@ -5,18 +5,18 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ShieldCheck,
-  ExternalLink,
-  AlertTriangle,
-  Loader2,
-  CheckCircle2,
+  ArrowSquareOut,
+  Warning,
+  SpinnerGap,
+  CheckCircle,
   Clock,
   XCircle,
   Copy,
   Check,
   MapPin,
   QrCode,
-  RefreshCw,
-} from "lucide-react";
+  ArrowsClockwise,
+} from "@phosphor-icons/react";
 import { VerifyCredentialResult } from "@qraksha/shared";
 import { getCredentialVerification, ApiError } from "@/lib/api";
 
@@ -69,11 +69,11 @@ export default function VerifyCredentialPage({ params }: Props) {
           className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors text-text"
           aria-label="Back to home"
         >
-          <ArrowLeft className="w-4 h-4 text-text" />
+          <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
         </Link>
         <div>
           <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-            <ShieldCheck className="w-3.5 h-3.5" />
+            <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
             <span>PUBLIC AUDIT // ON-CHAIN ANCHOR</span>
           </div>
           <h1 className="text-lg font-medium text-text">Credential Audit Record</h1>
@@ -83,7 +83,7 @@ export default function VerifyCredentialPage({ params }: Props) {
       {/* Loading State */}
       {isLoading && (
         <div className="p-8 rounded-[4px] bg-ink-2 border border-border flex flex-col items-center justify-center gap-3 text-center my-6">
-          <Loader2 className="w-6 h-6 animate-spin text-brand" />
+          <SpinnerGap className="w-6 h-6 animate-spin text-brand" weight="bold" />
           <span className="text-xs font-mono text-muted">
             Retrieving on-chain verification proof…
           </span>
@@ -97,7 +97,7 @@ export default function VerifyCredentialPage({ params }: Props) {
           className="p-5 rounded-[4px] bg-danger/10 border border-danger text-text flex flex-col gap-3 my-4"
         >
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
+            <Warning className="w-5 h-5 text-danger shrink-0 mt-0.5" weight="duotone" />
             <div className="flex-1">
               <h2 className="text-sm font-medium text-text">Verification Lookup Failed</h2>
               <p className="text-xs text-muted mt-1 leading-relaxed">{error}</p>
@@ -106,9 +106,9 @@ export default function VerifyCredentialPage({ params }: Props) {
           <button
             type="button"
             onClick={fetchVerification}
-            className="self-start h-8 px-3 rounded-[4px] bg-ink border border-border text-xs font-mono text-text hover:border-brand flex items-center gap-1.5 transition-colors"
+            className="self-start h-8 px-3 rounded-[4px] bg-ink border border-border text-xs font-medium text-text hover:border-brand flex items-center gap-1.5 transition-colors"
           >
-            <RefreshCw className="w-3 h-3" />
+            <ArrowsClockwise className="w-3 h-3" weight="bold" />
             <span>Retry Lookup</span>
           </button>
         </div>
@@ -131,21 +131,21 @@ export default function VerifyCredentialPage({ params }: Props) {
               <div className="flex items-center gap-2">
                 {data.verifiedOnChain ? (
                   <>
-                    <CheckCircle2 className="w-4 h-4 text-ok" />
+                    <CheckCircle className="w-4 h-4 text-ok" weight="duotone" />
                     <span className="font-mono text-xs uppercase tracking-wider text-ok font-medium">
                       Tamper-Evident On-Chain Proof
                     </span>
                   </>
                 ) : data.anchor?.status === "pending" ? (
                   <>
-                    <Clock className="w-4 h-4 text-warn" />
+                    <Clock className="w-4 h-4 text-warn" weight="duotone" />
                     <span className="font-mono text-xs uppercase tracking-wider text-warn font-medium">
                       Anchoring In Progress
                     </span>
                   </>
                 ) : (
                   <>
-                    <XCircle className="w-4 h-4 text-danger" />
+                    <XCircle className="w-4 h-4 text-danger" weight="duotone" />
                     <span className="font-mono text-xs uppercase tracking-wider text-danger font-medium">
                       Anchor Verification Incomplete
                     </span>
@@ -196,12 +196,12 @@ export default function VerifyCredentialPage({ params }: Props) {
                 >
                   {copiedHash ? (
                     <>
-                      <Check className="w-3 h-3 text-ok" />
+                      <Check className="w-3 h-3 text-ok" weight="bold" />
                       <span className="text-ok">Copied</span>
                     </>
                   ) : (
                     <>
-                      <Copy className="w-3 h-3" />
+                      <Copy className="w-3 h-3" weight="bold" />
                       <span>Copy</span>
                     </>
                   )}
@@ -263,7 +263,7 @@ export default function VerifyCredentialPage({ params }: Props) {
                 className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-sm flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors mt-2"
               >
                 <span>Inspect on Amoy PolygonScan</span>
-                <ExternalLink className="w-4 h-4" />
+                <ArrowSquareOut className="w-4 h-4" weight="bold" />
               </a>
             )}
           </div>
@@ -272,7 +272,7 @@ export default function VerifyCredentialPage({ params }: Props) {
           {data.boundLocation && (
             <div className="p-4 rounded-[4px] bg-ink-2 border border-border flex items-center justify-between text-xs font-mono">
               <div className="flex items-center gap-2 text-text">
-                <MapPin className="w-4 h-4 text-brand shrink-0" />
+                <MapPin className="w-4 h-4 text-brand shrink-0" weight="duotone" />
                 <span>
                   Lat: {data.boundLocation.latitude.toFixed(4)}, Lng:{" "}
                   {data.boundLocation.longitude.toFixed(4)}
@@ -288,9 +288,9 @@ export default function VerifyCredentialPage({ params }: Props) {
           <div className="flex flex-col gap-2 pt-2">
             <Link
               href="/check"
-              className="h-9 px-4 rounded-[4px] bg-transparent border border-border text-muted hover:text-text text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
+              className="h-9 px-4 rounded-[4px] bg-transparent border border-border text-muted hover:text-text text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
             >
-              <QrCode className="w-3.5 h-3.5" />
+              <QrCode className="w-3.5 h-3.5" weight="duotone" />
               <span>Verify a UPI QR Sticker</span>
             </Link>
           </div>

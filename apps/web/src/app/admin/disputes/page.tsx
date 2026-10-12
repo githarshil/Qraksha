@@ -3,19 +3,19 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  ShieldAlert,
+  ShieldWarning,
   ArrowLeft,
-  Loader2,
-  CheckCircle2,
+  SpinnerGap,
+  CheckCircle,
   XCircle,
   Clock,
-  RefreshCw,
-  AlertTriangle,
-  Send,
-  Building2,
+  ArrowsClockwise,
+  Warning,
+  PaperPlaneTilt,
+  Buildings,
   FileText,
   User,
-} from "lucide-react";
+} from "@phosphor-icons/react";
 import { getAdminDisputes, resolveAdminDispute, AdminDisputeItem, ApiError } from "@/lib/api";
 
 type TabFilter = "all" | "open" | "resolved_upheld" | "resolved_rejected";
@@ -121,7 +121,7 @@ export default function AdminDisputesPage() {
           </Link>
           <div>
             <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-              <ShieldAlert className="w-3.5 h-3.5" />
+              <ShieldWarning className="w-3.5 h-3.5" />
               <span>ADMIN CONSOLE // DISPUTES QUEUE</span>
             </div>
             <h1 className="text-xl font-medium text-text">Merchant Dispute Queue</h1>
@@ -134,7 +134,7 @@ export default function AdminDisputesPage() {
           disabled={isLoading}
           className="h-9 px-3 rounded-[4px] bg-ink-2 border border-border hover:border-brand text-xs font-mono text-muted hover:text-text flex items-center gap-1.5 transition-colors"
         >
-          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
+          <ArrowsClockwise className={`w-3.5 h-3.5 ${isLoading ? "animate-spin" : ""}`} />
           <span className="hidden sm:inline">Refresh</span>
         </button>
       </div>
@@ -142,7 +142,7 @@ export default function AdminDisputesPage() {
       {/* Success Banner */}
       {successMessage && (
         <div className="p-4 rounded-[4px] bg-ok/10 border border-ok/30 text-text flex items-center gap-2.5 mb-5 animate-in fade-in">
-          <CheckCircle2 className="w-4 h-4 text-ok shrink-0" />
+          <CheckCircle className="w-4 h-4 text-ok shrink-0" />
           <p className="text-xs font-mono text-ok">{successMessage}</p>
         </div>
       )}
@@ -175,7 +175,7 @@ export default function AdminDisputesPage() {
       {/* Loading State */}
       {isLoading && (
         <div className="p-12 rounded-[4px] bg-ink-2 border border-border flex flex-col items-center justify-center gap-3 text-center my-6">
-          <Loader2 className="w-6 h-6 animate-spin text-brand" />
+          <SpinnerGap className="w-6 h-6 animate-spin text-brand" />
           <span className="text-xs font-mono text-muted">Loading disputes queue…</span>
         </div>
       )}
@@ -187,7 +187,7 @@ export default function AdminDisputesPage() {
           className="p-5 rounded-[4px] bg-danger/10 border border-danger text-text flex flex-col gap-3 my-4"
         >
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
+            <Warning className="w-5 h-5 text-danger shrink-0 mt-0.5" />
             <div className="flex-1">
               <h2 className="text-sm font-medium text-text">Failed to Load Disputes</h2>
               <p className="text-xs text-muted mt-1">{error}</p>
@@ -198,7 +198,7 @@ export default function AdminDisputesPage() {
             onClick={fetchDisputes}
             className="self-start h-8 px-3 rounded-[4px] bg-ink border border-border text-xs font-mono text-text hover:border-brand flex items-center gap-1.5 transition-colors"
           >
-            <RefreshCw className="w-3 h-3" />
+            <ArrowsClockwise className="w-3 h-3" />
             <span>Retry</span>
           </button>
         </div>
@@ -207,7 +207,7 @@ export default function AdminDisputesPage() {
       {/* Empty State */}
       {!isLoading && !error && filteredDisputes.length === 0 && (
         <div className="p-12 rounded-[4px] bg-ink-2 border border-border text-center flex flex-col items-center justify-center my-6">
-          <ShieldAlert className="w-10 h-10 text-muted mx-auto mb-3 opacity-40" />
+          <ShieldWarning className="w-10 h-10 text-muted mx-auto mb-3 opacity-40" />
           <h2 className="text-sm font-mono text-text uppercase tracking-wider">
             No Disputes Found
           </h2>
@@ -241,7 +241,7 @@ export default function AdminDisputesPage() {
                 {/* Header row */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/50 pb-3">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <Building2 className="w-4 h-4 text-brand shrink-0" />
+                    <Buildings className="w-4 h-4 text-brand shrink-0" />
                     <span className="text-sm font-medium text-text">
                       {dispute.targetMerchantName || "Target Credential"}
                     </span>
@@ -272,7 +272,7 @@ export default function AdminDisputesPage() {
                     >
                       {isOpen && <Clock className="w-3 h-3" />}
                       {isUpheld && <XCircle className="w-3 h-3" />}
-                      {isRejected && <CheckCircle2 className="w-3 h-3" />}
+                      {isRejected && <CheckCircle className="w-3 h-3" />}
                       <span>{dispute.status.replace("_", " ")}</span>
                     </span>
                   </div>
@@ -379,7 +379,7 @@ export default function AdminDisputesPage() {
                                 : "bg-ink-2 border-border text-muted hover:border-ok/50"
                             }`}
                           >
-                            <CheckCircle2 className="w-4 h-4 text-ok shrink-0 mt-0.5" />
+                            <CheckCircle className="w-4 h-4 text-ok shrink-0 mt-0.5" />
                             <div>
                               <span className="font-semibold block text-ok">
                                 Rejected (Restore)
@@ -431,9 +431,9 @@ export default function AdminDisputesPage() {
                             }`}
                           >
                             {isSubmitting ? (
-                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <SpinnerGap className="w-3.5 h-3.5 animate-spin" />
                             ) : (
-                              <Send className="w-3.5 h-3.5" />
+                              <PaperPlaneTilt className="w-3.5 h-3.5" />
                             )}
                             <span>Confirm & Finalize Resolution</span>
                           </button>
@@ -445,7 +445,7 @@ export default function AdminDisputesPage() {
                         onClick={() => handleOpenResolve(dispute)}
                         className="h-8 px-3 rounded-[4px] bg-ink border border-border hover:border-brand text-xs font-mono text-brand hover:text-brand-soft flex items-center gap-1.5 transition-colors"
                       >
-                        <ShieldAlert className="w-3.5 h-3.5" />
+                        <ShieldWarning className="w-3.5 h-3.5" />
                         <span>Review & Resolve Dispute</span>
                       </button>
                     )}

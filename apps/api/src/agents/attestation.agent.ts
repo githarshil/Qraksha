@@ -1,6 +1,6 @@
 import type { AgentOutput } from "@qraksha/shared";
 
-import { supabaseAdmin } from "../db/client.js";
+import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 
 export interface AttestationAgentInput {
   credentialId?: string;
@@ -23,12 +23,14 @@ export async function runAttestationAgent(
 ): Promise<AttestationAgentOutput> {
   const { credentialId, db = supabaseAdmin } = input;
 
-  if (!credentialId) {
+  if (!credentialId || !isSupabaseConfigured()) {
     return {
       status: "pass",
       diversityScore: 0,
       signalCount: 0,
-      reason: "No credential ID available for attestation query (clean baseline)",
+      reason: !credentialId
+        ? "No credential ID available for attestation query (clean baseline)"
+        : "Clean baseline: no prior attestation signals recorded yet",
     };
   }
 

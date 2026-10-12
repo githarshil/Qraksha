@@ -11,11 +11,19 @@
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "seed": "tsx src/scripts/seed.ts"
+    "seed": "tsx src/scripts/seed.ts",
+    "verify:staging": "tsx src/scripts/verify-staging.ts",
+    "db:verify-staging": "tsx src/scripts/verify-staging-migrations.ts",
+    "verify:wallet": "tsx src/scripts/verify-wallet-balance.ts",
+    "verify:security": "tsx src/scripts/verify-security-checklist.ts",
+    "benchmark:perf": "tsx src/scripts/benchmark-performance.ts",
+    "verify:prod": "tsx src/scripts/verify-production.ts",
+    "rehearse:rollback": "tsx src/scripts/rehearse-rollback.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@qraksha/shared": "*",
+    "@sentry/node": "^11.6.0",
     "@supabase/supabase-js": "^2.48.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

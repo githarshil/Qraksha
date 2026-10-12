@@ -91,9 +91,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
-          '"Inter Tight"',
-          "Geist",
-          '"General Sans"',
+          "var(--font-satoshi)",
           "system-ui",
           "-apple-system",
           "BlinkMacSystemFont",
@@ -101,7 +99,7 @@ module.exports = {
           "Roboto",
           "sans-serif",
         ],
-        mono: ['"JetBrains Mono"', '"Geist Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
+        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
       },
     },
   },

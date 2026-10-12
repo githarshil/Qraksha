@@ -58,8 +58,13 @@ export class GeminiClient {
       return JSON.parse(mockResponseText) as T;
     }
 
-    // 3. If no API key configured, use fallback structured response
-    if (!this.apiKey) {
+    // 3. If no API key configured or mock/offline mode active, use fallback structured response
+    if (
+      !this.apiKey ||
+      this.apiKey === "your-gemini-api-key" ||
+      process.env.MOCK_GEMINI === "true" ||
+      process.env.OFFLINE_MODE === "true"
+    ) {
       return this.generateDevFallback<T>(sanitizedParams);
     }
 
@@ -101,6 +106,7 @@ export class GeminiClient {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(2000),
     });
 
     if (!res.ok) {

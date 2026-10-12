@@ -1,6 +1,27 @@
 import type { Metadata, Viewport } from "next";
+import { Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+
 import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
+import { IconProvider } from "@/components/icon-provider";
+
+// Satoshi (Fontshare, ITF Free Font License) is self-hosted as a single variable woff2 so the
+// 400/500/600/700 weights all resolve without extra requests.
+const satoshi = localFont({
+  src: "./fonts/Satoshi-Variable.woff2",
+  weight: "300 900",
+  style: "normal",
+  display: "swap",
+  variable: "--font-satoshi",
+});
+
+// Geist Mono is reserved for small technical labels only (tags, FIG. markers, agent/verdict chips).
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-geist-mono",
+});
 
 export const metadata: Metadata = {
   title: "QRaksha — UPI QR Physical Sticker Verification",
@@ -38,12 +59,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-ink text-text flex flex-col items-center w-full">
-        <div className="w-full min-h-screen flex flex-col bg-ink relative">
-          {children}
-          <BottomNav />
-        </div>
+    <html lang="en" className={`${satoshi.variable} ${geistMono.variable}`}>
+      <body className="min-h-screen bg-ink text-text font-sans flex flex-col items-center w-full">
+        <IconProvider>
+          <div className="w-full min-h-screen flex flex-col bg-ink relative">
+            {children}
+            <BottomNav />
+          </div>
+        </IconProvider>
       </body>
     </html>
   );
