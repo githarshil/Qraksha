@@ -6,30 +6,39 @@
   "main": "./dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "npm --prefix ../../packages/shared run build && tsc",
     "start": "node dist/index.js",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "seed": "tsx src/scripts/seed.ts",
+    "verify:staging": "tsx src/scripts/verify-staging.ts",
+    "db:verify-staging": "tsx src/scripts/verify-staging-migrations.ts",
+    "verify:wallet": "tsx src/scripts/verify-wallet-balance.ts",
+    "verify:security": "tsx src/scripts/verify-security-checklist.ts",
+    "benchmark:perf": "tsx src/scripts/benchmark-performance.ts",
+    "verify:prod": "tsx src/scripts/verify-production.ts",
+    "rehearse:rollback": "tsx src/scripts/rehearse-rollback.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@qraksha/shared": "*",
+    "@sentry/node": "^11.6.0",
     "@supabase/supabase-js": "^2.48.1",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "ethers": "^6.13.5",
     "express": "^4.21.2",
+    "typescript": "^5.7.3",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.13.0",
     "@types/supertest": "^6.0.2",
     "supertest": "^7.0.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.3",
     "vitest": "^3.0.5"
   }
 }
