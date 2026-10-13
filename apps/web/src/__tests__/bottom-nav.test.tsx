@@ -75,7 +75,7 @@ describe("BottomNav & AI Assistant Redesign", () => {
       expect(html).toContain('aria-label="Open QRaksha assistant"');
       expect(html).toContain("rounded-full");
       expect(html).toContain("bg-surface");
-      expect(html).toContain("border-border");
+      expect(html).toContain("border-brand");
       expect(html).toContain("<canvas");
     });
 

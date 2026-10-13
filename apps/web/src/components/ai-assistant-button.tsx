@@ -40,7 +40,7 @@ export function AIAssistantButton({
       aria-label={ariaLabel ?? (isOpen ? "Close QRaksha assistant" : "Open QRaksha assistant")}
       aria-expanded={isOpen}
       aria-haspopup="dialog"
-      className={`relative flex items-center justify-center min-w-[48px] min-h-[48px] h-[52px] w-[52px] rounded-full bg-surface/80 backdrop-blur-xl border border-border/80 text-text shadow-[0_8px_32px_rgba(18,9,7,0.65),inset_0_1px_1px_rgba(255,255,255,0.1)] hover:border-brand/70 hover:bg-surface/90 active:scale-95 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 cursor-pointer ${className}`}
+      className={`relative shrink-0 flex items-center justify-center min-w-[48px] min-h-[48px] h-[54px] w-[54px] rounded-full bg-surface/85 backdrop-blur-xl border border-brand text-text shadow-[0_8px_32px_rgba(18,9,7,0.7),0_0_15px_rgba(255,75,31,0.15)] hover:border-brand-soft hover:bg-surface/95 active:scale-95 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 cursor-pointer ${className}`}
     >
       {/* 
         ThinkingOrb is rendered using the 64 preset and constrained with CSS 
