@@ -20,6 +20,7 @@ out/
 *.tsbuildinfo
 supabase/.temp/
 .temp/
+.netlify/
 
 # Testing & Coverage
 coverage/

@@ -16,7 +16,7 @@ services:
       - key: PORT
         value: 4000
       - key: CORS_ORIGIN
-        value: https://staging.qraksha.vercel.app,http://localhost:3000,http://localhost:3001
+        value: https://qraksha-v3ru.netlify.app,https://staging.qraksha.vercel.app,http://localhost:3000,http://localhost:3001
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
@@ -24,7 +24,7 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: CHAIN_RPC_URL
-        value: https://rpc-amoy.polygon.technology
+        value: https://polygon-amoy.drpc.org
       - key: CHAIN_PRIVATE_KEY
         sync: false
       - key: CHAIN_NETWORK
@@ -51,7 +51,7 @@ services:
       - key: PORT
         value: 4000
       - key: CORS_ORIGIN
-        value: https://qraksha.vercel.app
+        value: https://qraksha-v3ru.netlify.app,https://qraksha.vercel.app
       - key: SUPABASE_URL
         sync: false
       - key: SUPABASE_SERVICE_ROLE_KEY
@@ -59,7 +59,7 @@ services:
       - key: GEMINI_API_KEY
         sync: false
       - key: CHAIN_RPC_URL
-        value: https://rpc-amoy.polygon.technology
+        value: https://polygon-amoy.drpc.org
       - key: CHAIN_PRIVATE_KEY
         sync: false
       - key: CHAIN_NETWORK

@@ -12,11 +12,37 @@ import {
   CheckCircle,
 } from "@phosphor-icons/react";
 
+import { useEffect, useState } from "react";
+import { getCredentialVerification } from "@/lib/api";
+
 export default function DashboardPage() {
   // Demo credential data for MVP merchant view
   const demoCredentialId = "550e8400-e29b-41d4-a716-446655440000";
-  const demoTxHash = "0x8f3c7a2b9e1d4c5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f";
-  const explorerUrl = `https://amoy.polygonscan.com/tx/${demoTxHash}`;
+  const [txHash, setTxHash] = useState<string>(
+    "0x5934f0384053daf1e88539c6cbd5b940efbe1f683c4b51e49a12bbce8c0be6dc",
+  );
+  const [explorerUrl, setExplorerUrl] = useState<string>(
+    "https://amoy.polygonscan.com/tx/0x5934f0384053daf1e88539c6cbd5b940efbe1f683c4b51e49a12bbce8c0be6dc",
+  );
+
+  useEffect(() => {
+    async function loadAnchor() {
+      try {
+        const res = await getCredentialVerification(demoCredentialId);
+        if (res?.anchor?.txHash) {
+          setTxHash(res.anchor.txHash);
+          if (res.anchor.explorerUrl) {
+            setExplorerUrl(res.anchor.explorerUrl);
+          } else {
+            setExplorerUrl(`https://amoy.polygonscan.com/tx/${res.anchor.txHash}`);
+          }
+        }
+      } catch {
+        // Retain verified broadcast default
+      }
+    }
+    loadAnchor();
+  }, [demoCredentialId]);
 
   return (
     <main className="flex-1 flex flex-col p-6 max-w-[480px] mx-auto w-full">
@@ -89,7 +115,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-muted">TRANSACTION</span>
             <span className="text-text truncate max-w-[200px]">
-              {demoTxHash.slice(0, 10)}…{demoTxHash.slice(-8)}
+              {txHash.slice(0, 10)}…{txHash.slice(-8)}
             </span>
           </div>
           <div className="flex items-center justify-between">

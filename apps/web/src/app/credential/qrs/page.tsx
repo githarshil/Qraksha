@@ -12,7 +12,7 @@ import {
   MapPin,
 } from "@phosphor-icons/react";
 import { CameraCapture } from "../../../components/camera-capture";
-import { addQrToCredential, getRegisteredQrs, ApiError } from "../../../lib/api";
+import { addQrToCredential, getRegisteredQrs, getMyCredentials, ApiError } from "../../../lib/api";
 
 interface RegisteredQrItem {
   id: string;
@@ -25,7 +25,7 @@ interface RegisteredQrItem {
 }
 
 export default function CredentialQrsPage() {
-  const credentialId = "550e8400-e29b-41d4-a716-446655440000"; // Demo merchant credential
+  const [credentialId, setCredentialId] = useState("550e8400-e29b-41d4-a716-446655440000"); // Demo merchant credential default
   const [qrs, setQrs] = useState<RegisteredQrItem[]>([
     {
       id: "qr-primary",
@@ -54,24 +54,48 @@ export default function CredentialQrsPage() {
   );
 
   // Load existing QRs from API
-  const loadQrs = useCallback(async () => {
-    try {
-      const items = await getRegisteredQrs(credentialId);
-      if (items && items.length > 0) {
-        setQrs(
-          items.map((q, idx) => ({
-            ...q,
-            label: idx === 0 ? "Counter 1 (Main Billing Counter)" : `Counter ${idx + 1} Sticker`,
-          })),
-        );
+  const loadQrs = useCallback(
+    async (targetId?: string) => {
+      const activeId = targetId || credentialId;
+      try {
+        const items = await getRegisteredQrs(activeId);
+        if (items && items.length > 0) {
+          setQrs(
+            items.map((q, idx) => ({
+              ...q,
+              label: idx === 0 ? "Counter 1 (Main Billing Counter)" : `Counter ${idx + 1} Sticker`,
+            })),
+          );
+        }
+      } catch {
+        // Retain demo list if API unreachable
       }
-    } catch {
-      // Retain demo list if API unreachable
-    }
-  }, [credentialId]);
+    },
+    [credentialId],
+  );
 
   useEffect(() => {
-    loadQrs();
+    async function init() {
+      let resolvedId = "550e8400-e29b-41d4-a716-446655440000";
+      if (typeof window !== "undefined") {
+        const queryParam = new URLSearchParams(window.location.search).get("credentialId");
+        if (queryParam) {
+          resolvedId = queryParam;
+        } else {
+          try {
+            const meRes = await getMyCredentials();
+            if (meRes?.activeCredential?.id) {
+              resolvedId = meRes.activeCredential.id;
+            }
+          } catch {
+            // Keep default
+          }
+        }
+      }
+      setCredentialId(resolvedId);
+      loadQrs(resolvedId);
+    }
+    init();
 
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(

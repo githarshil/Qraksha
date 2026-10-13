@@ -1,8 +1,10 @@
+import crypto from "crypto";
 import { Router, Request, Response, NextFunction } from "express";
 import { AuditRunSchema } from "@qraksha/shared";
 
 import { validateBody } from "../middleware/validate.middleware.js";
 import { scanRateLimiter } from "../middleware/rate-limit.middleware.js";
+import { logger } from "../middleware/logger.middleware.js";
 import { runAgentPipeline } from "../agents/orchestrator.js";
 import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 
@@ -21,6 +23,12 @@ auditRouter.post(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { qrPayload, latitude, longitude, photoBase64 } = req.body;
+
+      const payloadHash = crypto.createHash("sha256").update(qrPayload).digest("hex");
+      logger.info(
+        `[Audit API] Incoming audit for payload: "${qrPayload}" (hash: ${payloadHash}) at (${latitude}, ${longitude})`,
+        req.correlationId,
+      );
 
       const verdictResult = await runAgentPipeline(qrPayload, latitude, longitude, photoBase64, {
         initiatedBy: "merchant",

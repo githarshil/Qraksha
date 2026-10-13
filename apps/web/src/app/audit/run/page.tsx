@@ -197,11 +197,71 @@ export default function AuditRunPage() {
         </div>
       )}
 
+      {/* Quick Sticker Selection for verification */}
+      {!isVerifying && !verdictResult && (
+        <div className="mb-4 p-3 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-2">
+          <div className="flex items-center justify-between text-[10px] font-mono text-muted uppercase">
+            <span>Sticker Preset // One-Click Audit</span>
+            <span className="text-ok">REGISTERED</span>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                handleCapture({
+                  photoBase64:
+                    "data:image/jpeg;base64," +
+                    btoa("photo-bytes-for-harshil-qr-sample-testing-12345678901234567890"),
+                  qrPayload:
+                    "upi://pay?pa=harshil.456.sharma@okhdfcbank&pn=Harshil%20Sharma&aid=uGICAgMCc_OiTDg",
+                });
+              }}
+              className="w-full text-left p-2.5 rounded-[4px] bg-ink border border-border hover:border-brand transition-colors text-xs font-mono text-text flex items-center justify-between"
+            >
+              <div>
+                <span className="font-medium text-brand">Counter 2 (Harshil Sharma)</span>
+                <p className="text-[10px] text-muted truncate mt-0.5">
+                  upi://pay?pa=harshil.456.sharma@okhdfcbank…
+                </p>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-[2px] bg-brand/10 text-brand border border-brand/30 shrink-0">
+                AUDIT NOW
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                handleCapture({
+                  photoBase64:
+                    "data:image/jpeg;base64," +
+                    btoa("photo-bytes-for-harshil-qr-sample-testing-12345678901234567890"),
+                  qrPayload:
+                    "upi://pay?pa=sharmacanteen@okaxis&pn=Sharma%20Canteen&mc=5499&aid=uGICAgICAgICAgA",
+                });
+              }}
+              className="w-full text-left p-2.5 rounded-[4px] bg-ink border border-border hover:border-brand transition-colors text-xs font-mono text-text flex items-center justify-between"
+            >
+              <div>
+                <span className="font-medium text-text">Counter 1 (Sharma Canteen)</span>
+                <p className="text-[10px] text-muted truncate mt-0.5">
+                  upi://pay?pa=sharmacanteen@okaxis…
+                </p>
+              </div>
+              <span className="text-[10px] px-2 py-0.5 rounded-[2px] bg-brand/10 text-brand border border-brand/30 shrink-0">
+                AUDIT NOW
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Camera Capture Viewfinder */}
       {!isVerifying && !verdictResult && (
         <CameraCapture
           title="Align Physical UPI Sticker"
           helperText="Position your billing counter sticker inside the frame. Camera captures live photo and checks payload and location."
+          defaultPayload="upi://pay?pa=harshil.456.sharma@okhdfcbank&pn=Harshil%20Sharma&aid=uGICAgMCc_OiTDg"
           onCapture={handleCapture}
         />
       )}
