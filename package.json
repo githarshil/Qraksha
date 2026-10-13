@@ -16,7 +16,7 @@
     "typecheck": "npm run typecheck --workspaces",
     "test": "npm run test --workspaces",
     "test:e2e": "npm run test:e2e --workspace=apps/web",
-    "prepare": "husky"
+    "prepare": "node -e \"if (process.env.NODE_ENV !== 'production' && !process.env.CI && !process.env.RENDER) try { require('child_process').execSync('husky', { stdio: 'inherit' }) } catch {}\""
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",

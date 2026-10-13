@@ -18,6 +18,66 @@ export interface CameraCaptureProps {
   defaultPayload?: string;
 }
 
+function decodeQrFromCanvas(canvas: HTMLCanvasElement): string | null {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+
+  const w = canvas.width;
+  const h = canvas.height;
+
+  // 1. Direct pass with both normal and inverted polarity
+  try {
+    const imgData = ctx.getImageData(0, 0, w, h);
+    const code = jsQR(imgData.data, w, h, { inversionAttempts: "attemptBoth" });
+    if (code?.data?.trim()) return code.data.trim();
+  } catch {
+    // ignore
+  }
+
+  // 2. Downscaled pass if resolution > 640px (optimal for jsQR performance & noise reduction)
+  if (w > 640 || h > 640) {
+    try {
+      const scale = 600 / Math.max(w, h);
+      const scaledCanvas = document.createElement("canvas");
+      scaledCanvas.width = Math.max(1, Math.floor(w * scale));
+      scaledCanvas.height = Math.max(1, Math.floor(h * scale));
+      const sCtx = scaledCanvas.getContext("2d");
+      if (sCtx) {
+        sCtx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+        const sImgData = sCtx.getImageData(0, 0, scaledCanvas.width, scaledCanvas.height);
+        const code = jsQR(sImgData.data, scaledCanvas.width, scaledCanvas.height, {
+          inversionAttempts: "attemptBoth",
+        });
+        if (code?.data?.trim()) return code.data.trim();
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  // 3. Center-crop pass (matches technical framing reticle in viewfinder)
+  try {
+    const cropW = Math.floor(w * 0.7);
+    const cropH = Math.floor(h * 0.7);
+    const cropX = Math.floor((w - cropW) / 2);
+    const cropY = Math.floor((h - cropH) / 2);
+    const cropCanvas = document.createElement("canvas");
+    cropCanvas.width = 480;
+    cropCanvas.height = 480;
+    const cCtx = cropCanvas.getContext("2d");
+    if (cCtx) {
+      cCtx.drawImage(canvas, cropX, cropY, cropW, cropH, 0, 0, 480, 480);
+      const cImgData = cCtx.getImageData(0, 0, 480, 480);
+      const code = jsQR(cImgData.data, 480, 480, { inversionAttempts: "attemptBoth" });
+      if (code?.data?.trim()) return code.data.trim();
+    }
+  } catch {
+    // ignore
+  }
+
+  return null;
+}
+
 export function CameraCapture({
   onCapture,
   title = "Capture Reference Photo",
@@ -32,6 +92,8 @@ export function CameraCapture({
 
   const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
   const [detectedQr, setDetectedQr] = useState<string>(defaultPayload);
+  const [hasLiveQrDetected, setHasLiveQrDetected] = useState<boolean>(false);
+  const [qrDecodeWarning, setQrDecodeWarning] = useState<boolean>(false);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const [permissionError, setPermissionError] = useState<string | null>(null);
   const [isCameraActive, setIsCameraActive] = useState<boolean>(false);
@@ -190,9 +252,10 @@ export function CameraCapture({
             const results = await barcodeDetector.detect(video);
             if (results && results.length > 0 && results[0].rawValue) {
               const code = results[0].rawValue.trim();
-              if (code && code !== detectedQrRef.current) {
+              if (code) {
                 detectedQrRef.current = code;
                 setDetectedQr(code);
+                setHasLiveQrDetected(true);
               }
               return;
             }
@@ -221,10 +284,11 @@ export function CameraCapture({
 
         const imgData = ctx.getImageData(0, 0, targetW, targetH);
         const qr = jsQR(imgData.data, targetW, targetH);
-        if (qr && qr.data && qr.data.trim() !== detectedQrRef.current) {
+        if (qr && qr.data && qr.data.trim()) {
           const val = qr.data.trim();
           detectedQrRef.current = val;
           setDetectedQr(val);
+          setHasLiveQrDetected(true);
         }
       } catch {
         // Silently catch scan errors
@@ -270,29 +334,33 @@ export function CameraCapture({
 
     const photoBase64 = canvas.toDataURL("image/jpeg", 0.85);
 
-    // Final attempt to decode from snapshot if not yet detected
-    let payload = detectedQrRef.current || defaultPayload;
-    try {
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imgData.data, canvas.width, canvas.height);
-      if (code?.data?.trim()) {
-        payload = code.data.trim();
-        detectedQrRef.current = payload;
-        setDetectedQr(payload);
-      }
-    } catch {
-      // jsQR decode failure tolerated
+    // Multi-scale decode attempt from snapshot canvas
+    const decoded = decodeQrFromCanvas(canvas);
+    if (decoded) {
+      detectedQrRef.current = decoded;
+      setDetectedQr(decoded);
+      setHasLiveQrDetected(true);
+      setQrDecodeWarning(false);
+      setCapturedPhoto(photoBase64);
+      stopCamera();
+      onCaptureRef.current({ photoBase64, qrPayload: decoded });
+    } else if (hasLiveQrDetected && detectedQrRef.current) {
+      setQrDecodeWarning(false);
+      setCapturedPhoto(photoBase64);
+      stopCamera();
+      onCaptureRef.current({ photoBase64, qrPayload: detectedQrRef.current });
+    } else {
+      // No QR could be extracted
+      setQrDecodeWarning(true);
+      setCapturedPhoto(photoBase64);
+      stopCamera();
     }
-
-    console.log("[CameraCapture] Snapshot ready, payload:", payload);
-    setCapturedPhoto(photoBase64);
-    stopCamera();
-    onCaptureRef.current({ photoBase64, qrPayload: payload });
-  }, [defaultPayload, stopCamera]);
+  }, [hasLiveQrDetected, stopCamera]);
 
   // Retake photo
   const retakePhoto = useCallback(() => {
     setCapturedPhoto(null);
+    setQrDecodeWarning(false);
     startCamera();
   }, [startCamera]);
 
@@ -313,32 +381,31 @@ export function CameraCapture({
           canvas.width = img.width;
           canvas.height = img.height;
           const ctx = canvas.getContext("2d");
-          let payload = detectedQrRef.current || defaultPayload;
           if (ctx) {
             ctx.drawImage(img, 0, 0);
-            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const code = jsQR(imgData.data, canvas.width, canvas.height);
-            if (code?.data) {
-              payload = code.data.trim();
-              detectedQrRef.current = payload;
-              setDetectedQr(payload);
+            const decoded = decodeQrFromCanvas(canvas);
+            if (decoded) {
+              setDetectedQr(decoded);
+              detectedQrRef.current = decoded;
+              setHasLiveQrDetected(true);
+              setQrDecodeWarning(false);
+              stopCamera();
+              onCaptureRef.current({ photoBase64: base64, qrPayload: decoded });
+              return;
             }
           }
+          setQrDecodeWarning(true);
           stopCamera();
-          onCaptureRef.current({ photoBase64: base64, qrPayload: payload });
         };
         img.onerror = () => {
+          setQrDecodeWarning(true);
           stopCamera();
-          onCaptureRef.current({
-            photoBase64: base64,
-            qrPayload: detectedQrRef.current || defaultPayload,
-          });
         };
         img.src = base64;
       };
       reader.readAsDataURL(file);
     },
-    [defaultPayload, stopCamera],
+    [stopCamera],
   );
 
   return (
@@ -410,6 +477,21 @@ export function CameraCapture({
             </div>
           )}
 
+          {/* Live QR Detection Status Indicator */}
+          <div className="absolute top-3 left-3 right-3 flex justify-center pointer-events-none z-10">
+            {hasLiveQrDetected ? (
+              <div className="px-3 py-1 rounded-[4px] bg-ok/90 backdrop-blur-md border border-ok text-ink text-[11px] font-mono font-medium flex items-center gap-1.5 shadow-md">
+                <Check className="w-3.5 h-3.5 text-ink" weight="bold" />
+                <span>QR DETECTED // READY</span>
+              </div>
+            ) : (
+              <div className="px-3 py-1 rounded-[4px] bg-ink/80 backdrop-blur-md border border-border text-muted text-[11px] font-mono flex items-center gap-1.5">
+                <SpinnerGap className="w-3.5 h-3.5 text-brand animate-spin" weight="bold" />
+                <span>HOLD STEADY // DETECTING QR</span>
+              </div>
+            )}
+          </div>
+
           {/* Technical Framing Overlay per DESIGN.md */}
           <div className="absolute inset-6 pointer-events-none border border-brand/50 rounded-[2px] flex flex-col justify-between p-2">
             <div className="flex justify-between items-start text-[10px] font-mono text-brand">
@@ -474,6 +556,33 @@ export function CameraCapture({
         </div>
       )}
 
+      {/* QR Decode Warning Alert if jsQR could not decode the snapshot */}
+      {capturedPhoto && qrDecodeWarning && (
+        <div className="p-3.5 rounded-[4px] bg-warn/10 border border-warn text-text text-xs flex flex-col gap-2.5">
+          <div className="flex items-start gap-2.5">
+            <WarningCircle className="w-4 h-4 text-warn shrink-0 mt-0.5" weight="duotone" />
+            <div>
+              <p className="font-medium text-warn">QR Pattern Not Detected in Frame</p>
+              <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+                Camera snapshot could not decode the QR matrix (possible glare or angle). Verify or
+                type your registered UPI payload below to continue self-audit.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setQrDecodeWarning(false);
+              onCaptureRef.current({ photoBase64: capturedPhoto, qrPayload: detectedQr });
+            }}
+            className="self-end px-3 py-1.5 rounded-[4px] bg-brand text-ink text-xs font-medium hover:bg-brand-soft transition-colors"
+          >
+            Verify with Entered Payload →
+          </button>
+        </div>
+      )}
+
       {/* Scanned/Configured QR Payload */}
       <div className="p-3 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-1.5">
         <div className="flex items-center justify-between text-[10px] font-mono text-muted uppercase">
@@ -487,9 +596,6 @@ export function CameraCapture({
             const val = e.target.value;
             detectedQrRef.current = val;
             setDetectedQr(val);
-            if (capturedPhoto) {
-              onCaptureRef.current({ photoBase64: capturedPhoto, qrPayload: val });
-            }
           }}
           placeholder="upi://pay?pa=merchant@upi&pn=Store"
           className="w-full h-8 px-2 rounded-[2px] bg-ink border border-border/80 text-xs font-mono text-text focus:outline-none focus:border-brand"

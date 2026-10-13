@@ -12,5 +12,10 @@
     "outDir": "dist"
   },
   "include": ["src/**/*"],
+  "exclude": [
+    "src/__tests__/**/*",
+    "src/scripts/benchmark-performance.ts",
+    "src/scripts/rehearse-rollback.ts"
+  ],
   "references": [{ "path": "../../packages/shared" }]
 }
