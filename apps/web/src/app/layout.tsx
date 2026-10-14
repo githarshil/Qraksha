@@ -5,6 +5,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
 import { IconProvider } from "@/components/icon-provider";
+import { ThemeProvider } from "@/context/theme-context";
 
 // Satoshi (Fontshare, ITF Free Font License) is self-hosted as a single variable woff2 so the
 // 400/500/600/700 weights all resolve without extra requests.
@@ -52,21 +53,34 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FF4B1F",
+  themeColor: "#E0262F",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${satoshi.variable} ${geistMono.variable}`}>
-      <body className="min-h-screen bg-ink text-text font-sans flex flex-col items-center w-full">
-        <IconProvider>
-          <div className="w-full min-h-screen flex flex-col bg-ink relative">
-            {children}
-            <BottomNav />
-          </div>
-        </IconProvider>
+    <html
+      lang="en"
+      className={`${satoshi.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var stored=localStorage.getItem('qraksha_theme');var theme=stored;if(!theme){theme=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',theme);if(theme==='dark'){document.documentElement.classList.add('dark');}else{document.documentElement.classList.remove('dark');}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans flex flex-col items-center w-full antialiased selection:bg-[#FF6B5E]/20 selection:text-[#E0262F]">
+        <ThemeProvider>
+          <IconProvider>
+            <div className="w-full min-h-screen flex flex-col bg-[var(--bg-app)] relative">
+              {children}
+              <BottomNav />
+            </div>
+          </IconProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

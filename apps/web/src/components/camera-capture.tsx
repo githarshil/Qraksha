@@ -412,32 +412,34 @@ export function CameraCapture({
     <div className="flex flex-col gap-4 w-full">
       {/* Header Info */}
       <div>
-        <h3 className="text-sm font-medium text-text">{title}</h3>
-        <p className="text-xs text-muted mt-0.5 leading-relaxed">{helperText}</p>
+        <h3 className="text-sm font-medium text-[var(--text-primary)]">{title}</h3>
+        <p className="text-xs text-[var(--text-secondary)] mt-0.5 leading-relaxed">{helperText}</p>
       </div>
 
       {/* Camera Permission Denied Screen */}
       {hasCameraPermission === false && (
         <div
           role="alert"
-          className="p-5 rounded-[4px] bg-danger/10 border border-danger text-text flex flex-col gap-3"
+          className="p-5 rounded-[16px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-[var(--text-primary)] flex flex-col gap-3"
         >
           <div className="flex items-start gap-3">
-            <WarningCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" weight="duotone" />
+            <WarningCircle className="w-5 h-5 text-[#E0262F] shrink-0 mt-0.5" weight="duotone" />
             <div className="flex-1">
-              <h4 className="text-sm font-medium text-text">Camera Access Required</h4>
-              <p className="text-xs text-muted mt-1 leading-relaxed">
+              <h4 className="text-sm font-medium text-[var(--text-primary)]">
+                Camera Access Required
+              </h4>
+              <p className="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">
                 {permissionError ||
                   "QRaksha requires camera access to photograph your physical UPI sticker and extract a visual embedding. We never persist raw photos."}
               </p>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 pt-2 border-t border-danger/30">
+          <div className="flex flex-col gap-2 pt-2 border-t border-red-200 dark:border-red-900/40">
             <button
               type="button"
               onClick={startCamera}
-              className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-xs flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
+              className="h-10 px-4 rounded-[14px] btn-red-glass font-medium text-xs flex items-center justify-center gap-2"
             >
               <ArrowsClockwise className="w-4 h-4" weight="bold" />
               <span>Retry Camera Permission</span>
@@ -446,7 +448,7 @@ export function CameraCapture({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="h-9 px-4 rounded-[4px] bg-ink-2 border border-border text-muted hover:text-text text-xs flex items-center justify-center gap-2 transition-colors"
+              className="btn-pill-secondary h-9 px-4 text-xs flex items-center justify-center gap-2"
             >
               <UploadSimple className="w-3.5 h-3.5" weight="bold" />
               <span>Upload Photo Instead</span>
@@ -457,7 +459,7 @@ export function CameraCapture({
 
       {/* Live Camera Viewfinder (Persistent Video Element) */}
       {!capturedPhoto && hasCameraPermission !== false && (
-        <div className="relative w-full aspect-[4/3] bg-ink-2 rounded-[4px] overflow-hidden border border-border flex items-center justify-center">
+        <div className="relative w-full aspect-[4/3] bg-black/90 rounded-[20px] overflow-hidden border border-[var(--surface-border)] flex items-center justify-center">
           {/* <video> is ALWAYS in DOM to prevent hardware encoder thrashing */}
           <video
             ref={videoRef}
@@ -471,8 +473,8 @@ export function CameraCapture({
 
           {/* Loading overlay while camera initializes */}
           {!isCameraActive && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-ink-2 text-muted">
-              <SpinnerGap className="w-5 h-5 animate-spin text-brand" weight="bold" />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[var(--surface)] text-[var(--text-secondary)]">
+              <SpinnerGap className="w-5 h-5 animate-spin text-[#E0262F]" weight="bold" />
               <span className="text-xs font-mono">Initializing camera feed…</span>
             </div>
           )}
@@ -480,25 +482,25 @@ export function CameraCapture({
           {/* Live QR Detection Status Indicator */}
           <div className="absolute top-3 left-3 right-3 flex justify-center pointer-events-none z-10">
             {hasLiveQrDetected ? (
-              <div className="px-3 py-1 rounded-[4px] bg-ok/90 backdrop-blur-md border border-ok text-ink text-[11px] font-mono font-medium flex items-center gap-1.5 shadow-md">
-                <Check className="w-3.5 h-3.5 text-ink" weight="bold" />
+              <div className="px-3 py-1 rounded-full bg-ok/90 backdrop-blur-md border border-ok text-white text-[11px] font-mono font-medium flex items-center gap-1.5 shadow-md">
+                <Check className="w-3.5 h-3.5 text-white" weight="bold" />
                 <span>QR DETECTED // READY</span>
               </div>
             ) : (
-              <div className="px-3 py-1 rounded-[4px] bg-ink/80 backdrop-blur-md border border-border text-muted text-[11px] font-mono flex items-center gap-1.5">
-                <SpinnerGap className="w-3.5 h-3.5 text-brand animate-spin" weight="bold" />
+              <div className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-mono flex items-center gap-1.5">
+                <SpinnerGap className="w-3.5 h-3.5 text-[#FF6B5E] animate-spin" weight="bold" />
                 <span>HOLD STEADY // DETECTING QR</span>
               </div>
             )}
           </div>
 
           {/* Technical Framing Overlay per DESIGN.md */}
-          <div className="absolute inset-6 pointer-events-none border border-brand/50 rounded-[2px] flex flex-col justify-between p-2">
-            <div className="flex justify-between items-start text-[10px] font-mono text-brand">
+          <div className="absolute inset-6 pointer-events-none border border-[#FF6B5E]/60 rounded-[14px] flex flex-col justify-between p-2">
+            <div className="flex justify-between items-start text-[10px] font-mono text-[#FF6B5E]">
               <span>┌ FRAME ▸ ALIGN QR</span>
               <span>FIG. 01 ┐</span>
             </div>
-            <div className="flex justify-between items-end text-[10px] font-mono text-brand">
+            <div className="flex justify-between items-end text-[10px] font-mono text-[#FF6B5E]">
               <span>└ TRACKING ACTIVE</span>
               <span>100M RADIUS ┘</span>
             </div>
@@ -509,7 +511,7 @@ export function CameraCapture({
             <button
               type="button"
               onClick={takeSnapshot}
-              className="h-11 px-5 rounded-[4px] bg-brand text-ink font-medium text-xs flex items-center justify-center gap-2 shadow-sm hover:bg-brand-soft transition-colors"
+              className="btn-red-glass h-11 px-5 rounded-[16px] font-medium text-xs flex items-center justify-center gap-2 shadow-sm"
             >
               <Camera className="w-4 h-4" weight="bold" />
               <span>Capture Reference Photo</span>
@@ -519,7 +521,7 @@ export function CameraCapture({
               type="button"
               onClick={() => fileInputRef.current?.click()}
               aria-label="Upload from files"
-              className="h-11 w-11 rounded-[4px] bg-ink/80 backdrop-blur-sm border border-border text-text flex items-center justify-center hover:border-brand transition-colors"
+              className="h-11 w-11 rounded-[14px] bg-black/60 backdrop-blur-sm border border-white/30 text-white flex items-center justify-center hover:border-white transition-colors"
             >
               <UploadSimple className="w-4 h-4" weight="bold" />
             </button>
@@ -530,24 +532,26 @@ export function CameraCapture({
       {/* Captured Photo Preview */}
       {capturedPhoto && (
         <div className="flex flex-col gap-3">
-          <div className="relative w-full aspect-[4/3] bg-ink-2 rounded-[4px] overflow-hidden border border-ok/50">
+          <div className="relative w-full aspect-[4/3] bg-[var(--surface)] rounded-[20px] overflow-hidden border border-ok/50">
             <img
               src={capturedPhoto}
               alt="Reference QR Sticker"
               className="w-full h-full object-cover"
             />
-            <div className="absolute top-2 left-2 px-2 py-1 rounded-[2px] bg-ink/90 border border-ok text-ok text-[10px] font-mono flex items-center gap-1.5">
+            <div className="absolute top-2 left-2 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-sm border border-ok text-[#4ADE80] text-[10px] font-mono flex items-center gap-1.5">
               <Check className="w-3 h-3" weight="bold" />
               <span>PHOTO CAPTURED // EMBEDDING READY</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono text-muted">Zero raw bytes will be stored</span>
+            <span className="text-[11px] font-mono text-[var(--text-muted)]">
+              Zero raw bytes will be stored
+            </span>
             <button
               type="button"
               onClick={retakePhoto}
-              className="h-8 px-3 rounded-[4px] bg-transparent border border-border text-muted hover:text-text hover:border-muted text-xs flex items-center gap-1.5 transition-colors"
+              className="btn-pill-secondary h-8 px-3 text-xs flex items-center gap-1.5"
             >
               <ArrowsClockwise className="w-3 h-3" weight="bold" />
               <span>Retake Photo</span>
@@ -558,12 +562,17 @@ export function CameraCapture({
 
       {/* QR Decode Warning Alert if jsQR could not decode the snapshot */}
       {capturedPhoto && qrDecodeWarning && (
-        <div className="p-3.5 rounded-[4px] bg-warn/10 border border-warn text-text text-xs flex flex-col gap-2.5">
+        <div className="p-3.5 rounded-[16px] bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-[var(--text-primary)] text-xs flex flex-col gap-2.5">
           <div className="flex items-start gap-2.5">
-            <WarningCircle className="w-4 h-4 text-warn shrink-0 mt-0.5" weight="duotone" />
+            <WarningCircle
+              className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5"
+              weight="duotone"
+            />
             <div>
-              <p className="font-medium text-warn">QR Pattern Not Detected in Frame</p>
-              <p className="text-[11px] text-muted mt-0.5 leading-relaxed">
+              <p className="font-medium text-amber-700 dark:text-amber-400">
+                QR Pattern Not Detected in Frame
+              </p>
+              <p className="text-[11px] text-[var(--text-secondary)] mt-0.5 leading-relaxed">
                 Camera snapshot could not decode the QR matrix (possible glare or angle). Verify or
                 type your registered UPI payload below to continue self-audit.
               </p>
@@ -576,7 +585,7 @@ export function CameraCapture({
               setQrDecodeWarning(false);
               onCaptureRef.current({ photoBase64: capturedPhoto, qrPayload: detectedQr });
             }}
-            className="self-end px-3 py-1.5 rounded-[4px] bg-brand text-ink text-xs font-medium hover:bg-brand-soft transition-colors"
+            className="self-end px-3 py-1.5 rounded-full bg-[#E0262F] text-white text-xs font-medium hover:bg-[#E0262F]/90 transition-colors"
           >
             Verify with Entered Payload →
           </button>
@@ -584,8 +593,8 @@ export function CameraCapture({
       )}
 
       {/* Scanned/Configured QR Payload */}
-      <div className="p-3 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-1.5">
-        <div className="flex items-center justify-between text-[10px] font-mono text-muted uppercase">
+      <div className="p-3 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] flex flex-col gap-1.5">
+        <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-secondary)] uppercase">
           <span>Decoded QR Payload</span>
           <span className="text-ok">UPI Compliant</span>
         </div>
@@ -598,9 +607,9 @@ export function CameraCapture({
             setDetectedQr(val);
           }}
           placeholder="upi://pay?pa=merchant@upi&pn=Store"
-          className="w-full h-8 px-2 rounded-[2px] bg-ink border border-border/80 text-xs font-mono text-text focus:outline-none focus:border-brand"
+          className="w-full h-8 px-2.5 rounded-[10px] bg-[var(--surface)] border border-[var(--box-mono-border)] text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#E0262F]"
         />
-        <p className="text-[10px] text-muted">
+        <p className="text-[10px] text-[var(--text-muted)]">
           Auto-detected from camera or test default. You can edit this if needed.
         </p>
       </div>

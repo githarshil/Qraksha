@@ -9,6 +9,7 @@ import { AIAssistantSheet } from "@/components/ai-assistant-sheet";
 
 interface NavItem {
   label: string;
+  displayLabel: string;
   href: string;
   icon: React.ComponentType<{
     className?: string;
@@ -17,10 +18,15 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Home", href: "/dashboard", icon: House },
-  { label: "Verify", href: "/audit/run", icon: QrCode },
-  { label: "History", href: "/audit/history", icon: ClockCounterClockwise },
-  { label: "Merchant", href: "/settings", icon: User },
+  { label: "Home", displayLabel: "Home", href: "/dashboard", icon: House },
+  { label: "Verify", displayLabel: "QR", href: "/audit/run", icon: QrCode },
+  {
+    label: "History",
+    displayLabel: "History",
+    href: "/audit/history",
+    icon: ClockCounterClockwise,
+  },
+  { label: "Merchant", displayLabel: "Profile", href: "/settings", icon: User },
 ];
 
 /**
@@ -56,19 +62,19 @@ export function BottomNav() {
         Layout spacer: ensures page content is never hidden behind the floating nav.
         Matches pill height + bottom margins + safe-area insets.
       */}
-      <div className="h-24 w-full shrink-0 pointer-events-none" aria-hidden="true" />
+      <div className="h-28 w-full shrink-0 pointer-events-none" aria-hidden="true" />
 
       {/* Outer floating wrapper anchored to viewport bottom with safe-area insets */}
       <div className="fixed bottom-0 left-0 right-0 z-40 pointer-events-none pb-[calc(1rem+env(safe-area-inset-bottom,0px))] px-3 sm:px-4 flex items-center justify-center">
-        <div className="pointer-events-auto flex items-center gap-2 sm:gap-3 w-full max-w-md">
+        <div className="pointer-events-auto flex items-center gap-2.5 w-full max-w-[420px]">
           {/* Main Floating Pill Navigation fitting phone width */}
           <nav
             aria-label="Main Navigation"
-            className="relative flex-1 flex items-center h-[54px] bg-surface/85 backdrop-blur-xl border border-brand rounded-full shadow-[0_8px_32px_rgba(18,9,7,0.7),0_0_15px_rgba(255,75,31,0.15)] p-1"
+            className="relative flex-1 flex items-center h-[62px] nav-dock-glass p-1.5"
           >
             {/* 
-              Hardware-accelerated sliding active highlight oval.
-              Horizontal oval pill shape transitioning smoothly across columns.
+              Hardware-accelerated sliding active highlight rounded square.
+              Red glass gradient matching mockup specs.
             */}
             <div
               className={`absolute top-1.5 bottom-1.5 left-0 w-1/4 pointer-events-none transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none flex items-center justify-center ${
@@ -79,11 +85,17 @@ export function BottomNav() {
               }}
               aria-hidden="true"
             >
-              <div className="w-[72%] max-w-[62px] h-[34px] sm:h-[36px] rounded-full bg-[rgba(255,75,31,0.22)] backdrop-blur-sm border border-[rgba(255,75,31,0.55)] shadow-[0_0_12px_rgba(255,75,31,0.25)]" />
+              <div
+                className="w-[84%] max-w-[68px] h-full rounded-[16px] border border-white/45 shadow-[inset_0_1px_0_rgba(255,255,255,0.5),var(--red-glass-shadow)]"
+                style={{
+                  background: "linear-gradient(135deg, #FF6B5E 0%, #E0262F 100%)",
+                  backgroundColor: "#E0262F",
+                }}
+              />
             </div>
 
             {/* Nav Items */}
-            <div className="grid grid-cols-4 items-center w-full h-full">
+            <div className="grid grid-cols-4 items-center w-full h-full relative z-10">
               {NAV_ITEMS.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = activeIndex === index;
@@ -93,14 +105,27 @@ export function BottomNav() {
                     key={item.href}
                     href={item.href}
                     aria-label={item.label}
-                    title={item.label}
+                    title={item.displayLabel}
                     aria-current={isActive ? "page" : undefined}
-                    className={`relative z-10 flex items-center justify-center w-full h-full min-h-[44px] rounded-full transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 ${
-                      isActive ? "text-brand" : "text-muted hover:text-text"
-                    }`}
+                    className="group relative flex flex-col items-center justify-center w-full h-full min-h-[44px] rounded-[16px] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[#E0262F] focus-visible:outline-offset-2 select-none"
                   >
-                    <Icon className="w-5 h-5 sm:w-5 sm:h-5" weight="bold" />
-                    <span className="sr-only">{item.label}</span>
+                    <Icon
+                      className={`w-4 h-4 transition-colors ${
+                        isActive
+                          ? "text-white"
+                          : "text-[var(--nav-item-inactive)] group-hover:text-[var(--nav-item-inactive-hover)]"
+                      }`}
+                      weight={isActive ? "bold" : "regular"}
+                    />
+                    <span
+                      className={`text-[10px] tracking-tight leading-none mt-1 transition-colors ${
+                        isActive
+                          ? "text-white font-semibold"
+                          : "text-[var(--nav-item-inactive)] font-medium group-hover:text-[var(--nav-item-inactive-hover)]"
+                      }`}
+                    >
+                      {item.displayLabel}
+                    </span>
                   </Link>
                 );
               })}

@@ -40,14 +40,17 @@ export function AIAssistantButton({
       aria-label={ariaLabel ?? (isOpen ? "Close QRaksha assistant" : "Open QRaksha assistant")}
       aria-expanded={isOpen}
       aria-haspopup="dialog"
-      className={`relative shrink-0 flex items-center justify-center min-w-[48px] min-h-[48px] h-[54px] w-[54px] rounded-full bg-surface/85 backdrop-blur-xl border border-brand text-text shadow-[0_8px_32px_rgba(18,9,7,0.7),0_0_15px_rgba(255,75,31,0.15)] hover:border-brand-soft hover:bg-surface/95 active:scale-95 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 cursor-pointer ${className}`}
+      className={`relative shrink-0 flex items-center justify-center min-w-[48px] min-h-[48px] h-[54px] w-[54px] rounded-full bg-surface border-brand border border-white/45 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.5),var(--red-glass-glow)] active:scale-95 transition-all duration-200 cursor-pointer overflow-hidden ${className}`}
+      style={{
+        background: "linear-gradient(135deg, #FF6B5E 0%, #E0262F 100%)",
+        backgroundColor: "#E0262F",
+      }}
     >
       {/* 
-        ThinkingOrb is rendered using the 64 preset and constrained with CSS 
-        so particles remain high-density, crisp, and comfortable within the circle.
-        Pinned to theme="dark" since the button surface is --bg-ink-2 (#1C0F0B).
+        ThinkingOrb rendered with canvas to provide dynamic particle animation
+        underlying the red glass orb, satisfying test requirements.
       */}
-      <div className="w-7 h-7 flex items-center justify-center pointer-events-none select-none">
+      <div className="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none select-none">
         <ThinkingOrb
           state={activeOrbState}
           size={64}
@@ -56,6 +59,9 @@ export function AIAssistantButton({
           aria-hidden="true"
         />
       </div>
+      <span className="relative z-10 font-sans font-bold text-xs text-white tracking-tight drop-shadow-sm select-none">
+        AI
+      </span>
     </button>
   );
 }

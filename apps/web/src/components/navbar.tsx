@@ -111,7 +111,7 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setActiveSection(link.href)}
-                  className={`relative font-medium py-1 transition-colors duration-[120ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-sm ${
+                  className={`relative font-medium py-1 px-1.5 transition-colors duration-[120ms] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black rounded-md ${
                     isActive ? "text-white" : "text-neutral-400 hover:text-white"
                   }`}
                 >

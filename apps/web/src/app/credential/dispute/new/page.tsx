@@ -49,53 +49,57 @@ function DisputeForm() {
 
   if (result) {
     return (
-      <div className="flex-1 flex flex-col justify-center items-center text-center py-8">
-        <div className="w-12 h-12 rounded-[4px] bg-danger/10 border border-danger/30 flex items-center justify-center text-danger mb-4">
+      <div className="card-glass flex-1 flex flex-col justify-center items-center text-center p-6 sm:p-8 rounded-[24px]">
+        <div className="w-12 h-12 rounded-[16px] bg-red-50 border border-red-200 flex items-center justify-center text-[#E0262F] mb-4">
           <ShieldWarning className="w-6 h-6" weight="duotone" />
         </div>
 
-        <span className="text-[11px] font-mono tracking-widest uppercase px-2 py-0.5 rounded-[4px] bg-danger/10 text-danger border border-danger/30 mb-2">
+        <span className="chip-neutral-pill text-[11px] mb-2 font-medium">
           DISPUTE FILED • TIER DOWNGRADED
         </span>
 
-        <h2 className="text-xl font-medium tracking-tight text-text mb-2">
+        <h2 className="text-xl font-bold tracking-tight text-[var(--text-primary)] mb-2">
           Target Credential Flagged
         </h2>
 
-        <p className="text-xs text-muted leading-relaxed max-w-sm mb-6">
+        <p className="text-xs text-[var(--text-secondary)] leading-relaxed max-w-sm mb-6">
           The credential has been immediately downgraded to{" "}
-          <strong className="text-danger font-mono font-medium">🔴 WARNING</strong>. Its previous
+          <strong className="text-[#E0262F] font-mono font-medium">🔴 WARNING</strong>. Its previous
           tier was <span className="font-mono uppercase">{result.previousTrustTier}</span>. An
           administrative auditor will review your evidence within 24 hours.
         </p>
 
-        <div className="w-full p-4 rounded-[4px] bg-ink-2 border border-border text-left mb-6 font-mono text-xs">
-          <div className="flex justify-between py-1 border-b border-border/50 text-[11px]">
-            <span className="text-muted">Dispute ID:</span>
-            <span className="text-text select-all">{result.dispute.id}</span>
+        <div className="w-full p-4 rounded-[16px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] text-left mb-6 font-mono text-xs">
+          <div className="flex justify-between py-1 border-b border-[var(--surface-border)] text-[11px]">
+            <span className="text-[var(--text-secondary)]">Dispute ID:</span>
+            <span className="text-[var(--text-primary)] select-all font-semibold">
+              {result.dispute.id}
+            </span>
           </div>
-          <div className="flex justify-between py-1 border-b border-border/50 text-[11px]">
-            <span className="text-muted">Target Credential:</span>
-            <span className="text-text select-all truncate max-w-[200px]">
+          <div className="flex justify-between py-1 border-b border-[var(--surface-border)] text-[11px]">
+            <span className="text-[var(--text-secondary)]">Target Credential:</span>
+            <span className="text-[var(--text-primary)] select-all truncate max-w-[200px]">
               {result.targetCredentialId}
             </span>
           </div>
           <div className="flex justify-between py-1 text-[11px]">
-            <span className="text-muted">Status:</span>
-            <span className="text-warn uppercase font-semibold">UNDER ADMIN REVIEW</span>
+            <span className="text-[var(--text-secondary)]">Status:</span>
+            <span className="text-amber-700 dark:text-amber-400 uppercase font-semibold">
+              UNDER ADMIN REVIEW
+            </span>
           </div>
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col gap-2.5 w-full">
           <Link
             href="/dashboard"
-            className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-sm flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
+            className="btn-red-glass h-11 px-4 rounded-[16px] text-white font-medium text-xs flex items-center justify-center gap-2"
           >
             <span>Return to Merchant Dashboard</span>
           </Link>
           <Link
             href="/audit/run"
-            className="h-9 px-4 rounded-[4px] bg-transparent border border-border text-muted hover:text-text text-xs font-medium flex items-center justify-center transition-colors"
+            className="btn-pill-secondary h-11 px-4 rounded-[16px] text-xs font-medium flex items-center justify-center transition-colors"
           >
             <span>Run Another Audit Scan</span>
           </Link>
@@ -107,63 +111,66 @@ function DisputeForm() {
   return (
     <>
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-border">
+      <header className="flex items-center gap-3 mb-5">
         <Link
           href="/dashboard"
           aria-label="Back to Dashboard"
-          className="w-8 h-8 rounded-[4px] bg-ink-2 border border-border flex items-center justify-center text-text hover:border-brand/40 transition-colors"
+          title="Back to Dashboard"
+          className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-[14px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] shadow-[var(--header-btn-shadow)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--header-btn-border-hover)] flex items-center justify-center transition-all select-none"
         >
-          <ArrowLeft className="w-4 h-4" weight="bold" />
+          <ArrowLeft className="w-5 h-5" weight="bold" />
         </Link>
         <div>
-          <h1 className="text-base font-medium tracking-tight text-text leading-none">
+          <h1 className="text-xl font-bold tracking-tight text-[var(--text-primary)] leading-tight">
             Report Impersonation / QR Swap
           </h1>
-          <p className="text-[11px] font-mono text-muted mt-0.5">
+          <p className="text-xs text-[var(--text-secondary)]">
             File a formal merchant credential dispute
           </p>
         </div>
-      </div>
+      </header>
 
       {/* Immediate Downgrade Impact Banner */}
-      <div className="p-3.5 rounded-[4px] bg-danger/10 border border-danger/30 mb-6 flex gap-3 items-start">
-        <ShieldWarning className="w-4 h-4 text-danger shrink-0 mt-0.5" weight="duotone" />
-        <div className="text-xs leading-relaxed text-text">
-          <span className="font-semibold text-danger block mb-0.5 font-mono text-[11px] uppercase tracking-wide">
+      <div className="p-4 rounded-[16px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 mb-5 flex gap-3 items-start">
+        <ShieldWarning className="w-5 h-5 text-[#E0262F] shrink-0 mt-0.5" weight="duotone" />
+        <div className="text-xs leading-relaxed text-[var(--text-primary)]">
+          <span className="font-semibold text-[#E0262F] block mb-0.5 font-mono text-[11px] uppercase tracking-wide">
             Immediate Auto-Downgrade
           </span>
           Submitting a dispute automatically downgrades the target credential to{" "}
-          <span className="text-danger font-mono font-medium">🔴 WARNING</span> across all customer
-          and audit scans while an admin reviews your report.
+          <span className="text-[#E0262F] font-mono font-medium">🔴 WARNING</span> across all
+          customer and audit scans while an admin reviews your report.
         </div>
       </div>
 
       {error && (
-        <div className="p-3 rounded-[4px] bg-danger/10 border border-danger/30 text-danger text-xs mb-4 flex items-center gap-2">
+        <div className="p-3.5 rounded-[16px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-[#E0262F] dark:text-[#FF6B5E] text-xs mb-4 flex items-center gap-2">
           <Warning className="w-4 h-4 shrink-0" weight="duotone" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="card-glass p-5 rounded-[24px] flex flex-col gap-4">
         <div>
-          <label className="text-xs font-medium text-text mb-1 block">Target Credential ID</label>
+          <label className="text-xs font-semibold text-[var(--text-primary)] mb-1 block">
+            Target Credential ID
+          </label>
           <input
             type="text"
             required
             value={credentialId}
             onChange={(e) => setCredentialId(e.target.value)}
             placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000"
-            className="w-full h-10 px-3 rounded-[4px] border border-border bg-ink-2 text-text font-mono text-xs focus:outline-none focus:border-brand"
+            className="w-full h-10 px-3.5 rounded-[14px] border border-[var(--box-mono-border)] bg-[var(--box-mono-bg)] text-[var(--text-primary)] font-mono text-xs focus:outline-none focus:border-[#E0262F]"
           />
-          <p className="text-[10px] font-mono text-muted mt-1">
+          <p className="text-[10px] font-mono text-[var(--text-secondary)] mt-1">
             Found on the merchant's physical sticker, QRaksha verification URL, or audit logs.
           </p>
         </div>
 
         <div>
-          <label className="text-xs font-medium text-text mb-1 block">
+          <label className="text-xs font-semibold text-[var(--text-primary)] mb-1 block">
             Evidence Summary & Circumstances
           </label>
           <textarea
@@ -174,9 +181,9 @@ function DisputeForm() {
             value={evidenceSummary}
             onChange={(e) => setEvidenceSummary(e.target.value)}
             placeholder="Explain why this credential is fraudulent (e.g. Unauthorized sticker pasted over counter, fake merchant name, altered VPA recipient, photo evidence link)..."
-            className="w-full p-3 rounded-[4px] border border-border bg-ink-2 text-text text-xs focus:outline-none focus:border-brand resize-none leading-relaxed"
+            className="w-full p-3.5 rounded-[14px] border border-[var(--box-mono-border)] bg-[var(--box-mono-bg)] text-[var(--text-primary)] text-xs focus:outline-none focus:border-[#E0262F] resize-none leading-relaxed"
           />
-          <div className="flex justify-between items-center text-[10px] font-mono text-muted mt-1">
+          <div className="flex justify-between items-center text-[10px] font-mono text-[var(--text-secondary)] mt-1">
             <span>Minimum 10 characters required</span>
             <span>{evidenceSummary.length} / 2000</span>
           </div>
@@ -185,7 +192,7 @@ function DisputeForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="mt-2 h-10 px-4 rounded-[4px] bg-danger text-white font-medium text-xs flex items-center justify-center gap-2 hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="btn-red-glass mt-2 h-11 px-4 text-white font-medium text-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
         >
           {isSubmitting ? (
             <>
@@ -200,7 +207,7 @@ function DisputeForm() {
           )}
         </button>
 
-        <p className="text-[10px] text-center text-muted leading-relaxed mt-1">
+        <p className="text-[10px] text-center text-[#6B7280] leading-relaxed mt-1">
           Frivolous or malicious filings will be rejected and may result in penalties to your
           merchant account.
         </p>
@@ -211,9 +218,11 @@ function DisputeForm() {
 
 export default function NewDisputePage() {
   return (
-    <main className="flex-1 flex flex-col p-6 max-w-[480px] mx-auto w-full">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
       <Suspense
-        fallback={<div className="text-xs font-mono text-muted p-4">Loading dispute form...</div>}
+        fallback={
+          <div className="text-xs font-mono text-[#6B7280] p-4">Loading dispute form...</div>
+        }
       >
         <DisputeForm />
       </Suspense>
