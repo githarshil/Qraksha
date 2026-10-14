@@ -62,10 +62,10 @@ export function LanguageSelector({
     <div
       role="group"
       aria-label="Select voice assistant language"
-      className={`flex items-center gap-1.5 p-1 rounded-[6px] bg-ink-2 border border-border ${className}`}
+      className={`flex items-center gap-1 p-1 rounded-[12px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] ${className}`}
     >
-      <div className="flex items-center pl-1.5 pr-1 text-muted text-xs">
-        <SpeakerHigh className="w-3.5 h-3.5 text-brand" weight="duotone" aria-hidden="true" />
+      <div className="flex items-center pl-1.5 pr-1 text-[var(--text-secondary)] text-xs">
+        <SpeakerHigh className="w-3.5 h-3.5 text-[#E0262F]" weight="duotone" aria-hidden="true" />
       </div>
       {languages.map((lang) => {
         const isSelected = currentLang === lang;
@@ -76,10 +76,10 @@ export function LanguageSelector({
             type="button"
             onClick={() => handleSelect(lang)}
             aria-pressed={isSelected}
-            className={`px-2.5 py-1 text-xs font-mono rounded-[4px] transition-all cursor-pointer ${
+            className={`px-2.5 py-1 text-xs font-mono rounded-[8px] transition-all cursor-pointer ${
               isSelected
-                ? "bg-brand text-ink font-semibold shadow-[0_0_8px_rgba(255,75,31,0.25)]"
-                : "text-muted hover:text-text hover:bg-surface/50"
+                ? "bg-[var(--surface)] text-[var(--text-primary)] font-semibold shadow-sm border border-[var(--surface-border)]"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             }`}
           >
             {meta.nativeLabel}

@@ -2,7 +2,7 @@ const path = require("path");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "media",
+  darkMode: ["class", '[data-theme="dark"]'],
   content: [
     path.join(__dirname, "src/**/*.{js,ts,jsx,tsx,mdx}"),
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
@@ -37,8 +37,8 @@ module.exports = {
           dark: "var(--bg-ink)",
         },
         surface: {
-          DEFAULT: "var(--bg-ink-2)",
-          dark: "var(--bg-ink-2)",
+          DEFAULT: "var(--surface)",
+          dark: "var(--surface)",
         },
         text: {
           DEFAULT: "var(--text-on-dark)",
@@ -81,13 +81,24 @@ module.exports = {
       },
       borderRadius: {
         DEFAULT: "var(--radius)",
-        sm: "2px",
-        md: "var(--radius)",
-        lg: "var(--radius)",
-        xl: "var(--radius)",
-        "2xl": "var(--radius)",
-        "3xl": "var(--radius)",
+        sm: "8px",
+        md: "14px",
+        lg: "16px",
+        xl: "20px",
+        "2xl": "24px",
+        "3xl": "28px",
+        card: "24px",
+        btn: "16px",
+        tile: "14px",
+        tab: "16px",
         full: "9999px",
+      },
+      boxShadow: {
+        card: "0 8px 24px rgba(0, 0, 0, 0.06)",
+        "card-hover": "0 12px 32px rgba(0, 0, 0, 0.08)",
+        "red-glass": "0 8px 20px rgba(224, 38, 47, 0.25)",
+        "red-glow": "0 4px 16px rgba(224, 38, 47, 0.35)",
+        dock: "0 8px 32px rgba(0, 0, 0, 0.08)",
       },
       fontFamily: {
         sans: [

@@ -145,30 +145,29 @@ export default function CustomerCheckPage() {
     : "";
 
   return (
-    <main className="flex-1 flex flex-col p-6 max-w-[480px] mx-auto w-full">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
+      <header className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <Link
             href="/"
             aria-label="Back to Home"
-            className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors"
+            title="Back to Home"
+            className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-[14px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] shadow-[var(--header-btn-shadow)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--header-btn-border-hover)] flex items-center justify-center transition-all select-none"
           >
-            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
+            <ArrowLeft className="w-5 h-5" weight="bold" />
           </Link>
           <div>
-            <h1 className="text-base font-medium text-text">Customer Pre-Pay Check</h1>
-            <p className="text-xs font-mono text-muted">Verify any physical UPI sticker</p>
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">Customer Pre-Pay Check</h1>
+            <p className="text-xs text-[var(--text-secondary)]">Verify any physical UPI sticker</p>
           </div>
         </div>
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-brand/10 text-brand border border-brand/30">
-          NO LOGIN REQ
-        </span>
-      </div>
+        <span className="chip-neutral-pill text-[11px]">NO LOGIN REQ</span>
+      </header>
 
       {/* Language Selector Header Bar */}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-muted">
+      <div className="card-glass px-4 py-2.5 rounded-[16px] flex items-center justify-between mb-4">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary)] font-medium">
           Voice Assistant
         </span>
         <LanguageSelector currentLang={voiceLang} onSelectLang={handleLanguageChange} />
@@ -176,8 +175,8 @@ export default function CustomerCheckPage() {
 
       {/* Explanatory Banner */}
       {!verdictResult && !isVerifying && (
-        <div className="mb-4 p-3.5 rounded-[4px] bg-ink-2 border border-border flex items-start gap-2.5 text-xs text-muted leading-relaxed">
-          <Info className="w-4 h-4 text-brand shrink-0 mt-0.5" weight="duotone" />
+        <div className="card-glass mb-4 p-4 rounded-[20px] flex items-start gap-3 text-xs text-[var(--text-secondary)] leading-relaxed">
+          <Info className="w-4 h-4 text-[#E0262F] shrink-0 mt-0.5" weight="duotone" />
           <p>
             Point your camera at the merchant's physical UPI sticker before paying. QRaksha speaks
             who you are paying and whether the sticker is verified before you leave for your UPI
@@ -188,12 +187,12 @@ export default function CustomerCheckPage() {
 
       {/* API Error alert */}
       {apiError && (
-        <div className="mb-4 p-4 rounded-[4px] bg-danger/10 border border-danger text-danger text-xs flex flex-col gap-2">
-          <p className="font-medium text-text">{apiError}</p>
+        <div className="mb-4 p-4 rounded-[16px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-[#E0262F] text-xs flex flex-col gap-2">
+          <p className="font-medium text-[var(--text-primary)]">{apiError}</p>
           <button
             type="button"
             onClick={resetCheck}
-            className="self-end px-3 py-1 rounded-[4px] bg-danger text-ink font-medium text-xs"
+            className="self-end px-3 py-1 rounded-full bg-[#E0262F] text-white font-medium text-xs cursor-pointer"
           >
             Try Again
           </button>
@@ -202,7 +201,7 @@ export default function CustomerCheckPage() {
 
       {/* Loading state with active Thinking Orb */}
       {isVerifying && (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 rounded-[4px] bg-ink-2 border border-brand/40 text-center gap-5">
+        <div className="card-glass flex-1 flex flex-col items-center justify-center p-8 text-center gap-5 rounded-[24px]">
           <VoiceOrb
             voiceState="thinking"
             verdict="RECENTLY_REGISTERED"
@@ -211,10 +210,14 @@ export default function CustomerCheckPage() {
             size={72}
           />
           <div>
-            <h2 className="text-sm font-medium text-text">Checking Merchant Registry</h2>
-            <p className="text-xs font-mono text-brand mt-1">Cross-referencing QR & location…</p>
+            <h2 className="text-base font-semibold text-[var(--text-primary)]">
+              Checking Merchant Registry
+            </h2>
+            <p className="text-xs font-mono text-[#E0262F] mt-1 font-medium">
+              Cross-referencing QR & location…
+            </p>
           </div>
-          <p className="text-[11px] text-muted max-w-[260px] leading-relaxed">
+          <p className="text-xs text-[var(--text-secondary)] max-w-[260px] leading-relaxed">
             Querying public tamper-evident registry and preparing multilingual voice guidance.
           </p>
         </div>
@@ -222,7 +225,7 @@ export default function CustomerCheckPage() {
 
       {/* Verdict Takeover with prominent Voice Thinking Orb */}
       {!isVerifying && verdictResult && (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-4">
           {/* Accessible Live Region */}
           <div aria-live="assertive" className="sr-only">
             {spokenAriaText}
@@ -237,8 +240,8 @@ export default function CustomerCheckPage() {
           />
 
           {/* Prominent Thinking Orb Voice Button Section */}
-          <div className="p-5 rounded-[4px] bg-ink-2 border border-border flex flex-col items-center justify-center gap-3 text-center">
-            <span className="text-[10px] font-mono uppercase text-muted tracking-wider">
+          <div className="card-glass p-5 rounded-[24px] flex flex-col items-center justify-center gap-3 text-center">
+            <span className="text-[10px] font-mono uppercase text-[var(--text-secondary)] tracking-wider font-medium">
               Multilingual Audio Verdict
             </span>
             <VoiceOrb
@@ -250,16 +253,18 @@ export default function CustomerCheckPage() {
               size={68}
             />
             {verdictResult.merchantDisplayName && voiceVerdict === "VERIFIED" && (
-              <p className="text-xs text-text font-medium">
+              <p className="text-xs text-[var(--text-primary)] font-semibold">
                 Verified Merchant: {verdictResult.merchantDisplayName}
               </p>
             )}
           </div>
 
           {/* Pay Button Pointer */}
-          <div className="p-4 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-2 text-center">
-            <span className="text-xs text-muted">Proceed to pay using your preferred UPI app</span>
-            <div className="flex justify-center gap-2 font-mono text-[11px] text-brand">
+          <div className="card-glass p-4 rounded-[16px] flex flex-col gap-2 text-center">
+            <span className="text-xs text-[var(--text-secondary)]">
+              Proceed to pay using your preferred UPI app
+            </span>
+            <div className="flex justify-center gap-2 font-mono text-[11px] text-[#E0262F] font-medium">
               <span>Google Pay</span>
               <span>•</span>
               <span>PhonePe</span>

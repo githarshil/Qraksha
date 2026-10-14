@@ -174,20 +174,20 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
       {/* Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-[#120907]/60 backdrop-blur-sm transition-opacity duration-200"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-opacity duration-200"
         aria-hidden="true"
       />
 
       {/* Sheet Container with frosted glassmorphic styling */}
-      <div className="relative w-full max-w-[480px] mx-auto bg-surface/90 backdrop-blur-2xl border-t border-x border-border/80 rounded-t-2xl shadow-[0_-8px_32px_rgba(18,9,7,0.7),inset_0_1px_1px_rgba(255,255,255,0.1)] p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] flex flex-col gap-4 animate-in fade-in slide-in-from-bottom duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-[480px] mx-auto bg-[var(--surface)]/95 backdrop-blur-2xl border-t border-x border-[var(--surface-border)] rounded-t-[28px] shadow-[0_-8px_32px_rgba(0,0,0,0.12),inset_0_1px_1px_rgba(255,255,255,0.08)] p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] flex flex-col gap-4 animate-in fade-in slide-in-from-bottom duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-0.5">
-            <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-brand">
+            <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-[#E0262F] font-semibold">
               <Sparkle className="w-3.5 h-3.5" weight="bold" />
               <span>AI ASSISTANT</span>
             </div>
-            <h2 id="assistant-title" className="text-lg font-medium text-text">
+            <h2 id="assistant-title" className="text-lg font-bold text-[var(--text-primary)]">
               QRaksha Assistant
             </h2>
           </div>
@@ -197,23 +197,23 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
             type="button"
             onClick={onClose}
             aria-label="Close assistant"
-            className="flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-full text-muted hover:text-text hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-brand focus-visible:outline-offset-2 cursor-pointer"
+            className="flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-[#E0262F] focus-visible:outline-offset-2 cursor-pointer"
           >
             <X className="w-5 h-5" weight="bold" />
           </button>
         </div>
 
         {/* Top Control Bar: Language Selection */}
-        <div className="flex items-center justify-between px-3 py-2 rounded-[4px] bg-[#120907] border border-border">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-muted">
+        <div className="flex items-center justify-between px-3.5 py-2.5 rounded-[16px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)]">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary)] font-medium">
             Language
           </span>
           <LanguageSelector currentLang={voiceLang} onSelectLang={handleLanguageChange} />
         </div>
 
         {/* Interactive Voice Orb Hero Section */}
-        <div className="p-4 rounded-[4px] bg-[#120907] border border-border flex flex-col items-center justify-center gap-3 text-center">
-          <span className="text-[10px] font-mono uppercase text-muted tracking-wider">
+        <div className="p-5 rounded-[24px] bg-[var(--bg-app)] border border-[var(--surface-border)] flex flex-col items-center justify-center gap-3 text-center shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+          <span className="text-[10px] font-mono uppercase text-[var(--text-secondary)] tracking-wider font-medium">
             Sarvam Bulbul AI Voice Copilot
           </span>
 
@@ -230,16 +230,16 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
             <button
               type="button"
               onClick={() => handlePlayVoice(selectedVerdict, voiceLang)}
-              className="flex items-center gap-1.5 text-xs font-mono px-3 py-1 rounded-full bg-surface border border-border hover:border-brand text-text transition-colors"
+              className="flex items-center gap-1.5 text-xs font-mono px-3.5 py-1.5 rounded-full bg-[var(--surface)] border border-[var(--surface-border)] hover:border-[#E0262F] text-[var(--text-primary)] shadow-sm transition-colors cursor-pointer"
             >
               {voiceState === "speaking" ? (
                 <>
-                  <Stop className="w-3.5 h-3.5 text-brand" weight="fill" />
+                  <Stop className="w-3.5 h-3.5 text-[#E0262F]" weight="fill" />
                   <span>Stop Speech</span>
                 </>
               ) : (
                 <>
-                  <Play className="w-3.5 h-3.5 text-brand" weight="fill" />
+                  <Play className="w-3.5 h-3.5 text-[#E0262F]" weight="fill" />
                   <span>Tap to Speak</span>
                 </>
               )}
@@ -248,16 +248,16 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
         </div>
 
         {/* Spoken Script Transcription */}
-        <div className="p-3.5 rounded-[4px] bg-[#1a0e0b] border border-border/80 flex flex-col gap-1.5">
-          <div className="flex items-center justify-between text-[11px] font-mono text-muted">
-            <span className="uppercase tracking-wider">Voice Script ({voiceLang})</span>
+        <div className="p-4 rounded-[16px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] flex flex-col gap-1.5">
+          <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-secondary)]">
+            <span className="uppercase tracking-wider font-medium">Voice Script ({voiceLang})</span>
             {activeMerchantName && (
-              <span className="text-text font-sans font-medium text-[11px]">
+              <span className="text-[var(--text-primary)] font-sans font-semibold text-[11px]">
                 {activeMerchantName}
               </span>
             )}
           </div>
-          <p className="text-xs text-text/90 leading-relaxed font-sans italic">
+          <p className="text-xs text-[var(--text-primary)]/90 leading-relaxed font-sans italic">
             &ldquo;{spokenScript}&rdquo;
           </p>
         </div>
@@ -265,10 +265,12 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
         {/* Verdict Simulation Controls */}
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono uppercase tracking-wider text-muted">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[var(--text-secondary)] font-medium">
               Test Audio Verdicts
             </span>
-            <span className="text-[10px] font-mono text-brand">Select to Preview</span>
+            <span className="text-[10px] font-mono text-[#E0262F] font-semibold">
+              Select to Preview
+            </span>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -280,14 +282,16 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
                   type="button"
                   onClick={() => handleSelectVerdict(opt.key)}
                   aria-pressed={isSelected}
-                  className={`p-2.5 rounded-[4px] border text-left flex flex-col gap-1 transition-all cursor-pointer ${
+                  className={`p-3 rounded-[14px] border text-left flex flex-col gap-1 transition-all cursor-pointer ${
                     isSelected
-                      ? `bg-surface shadow-[0_0_12px_rgba(255,75,31,0.2)] ${opt.color}`
-                      : "bg-[#120907] border-border text-muted hover:border-border/80 hover:text-text"
+                      ? `bg-[var(--surface)] shadow-[0_4px_16px_rgba(224,38,47,0.12)] border-[#E0262F]/40`
+                      : "bg-[var(--box-mono-bg)] border-[var(--box-mono-border)] text-[var(--text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium font-sans text-text">{opt.label}</span>
+                    <span className="text-xs font-semibold font-sans text-[var(--text-primary)]">
+                      {opt.label}
+                    </span>
                     <span className="text-[10px] font-mono">{opt.badge}</span>
                   </div>
                 </button>
@@ -297,11 +301,11 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
         </div>
 
         {/* Quick Action Navigation */}
-        <div className="pt-2 border-t border-border/60 flex items-center justify-between gap-3">
+        <div className="pt-2 border-t border-[var(--surface-border)] flex items-center justify-between gap-3">
           <Link
             href="/check"
             onClick={onClose}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-[4px] bg-brand text-ink font-medium text-xs hover:bg-brand/90 transition-colors shadow-sm"
+            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-[16px] bg-[#E0262F] text-white font-medium text-xs hover:bg-[#E0262F]/90 transition-colors shadow-sm"
           >
             <QrCode className="w-4 h-4" weight="bold" />
             <span>Scan & Check QR</span>

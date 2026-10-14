@@ -100,63 +100,69 @@ export default function AuditRunPage() {
   }, []);
 
   return (
-    <main className="flex-1 flex flex-col p-6 max-w-[480px] mx-auto w-full">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
       {/* Top Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
+      <header className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
             aria-label="Back to Dashboard"
-            className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors"
+            title="Back to Dashboard"
+            className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-[14px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] shadow-[var(--header-btn-shadow)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--header-btn-border-hover)] flex items-center justify-center transition-all select-none"
           >
-            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
+            <ArrowLeft className="w-5 h-5" weight="bold" />
           </Link>
           <div>
-            <h1 className="text-base font-medium text-text">Self-Audit Verification</h1>
-            <p className="text-xs font-mono text-muted">Daily sticker integrity loop</p>
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">
+              Self-Audit Verification
+            </h1>
+            <p className="text-xs text-[var(--text-secondary)]">Daily sticker integrity loop</p>
           </div>
         </div>
 
         <Link
           href="/audit/history"
-          className="text-xs px-3 py-1.5 rounded-[4px] bg-ink-2 border border-border text-muted hover:text-text hover:border-brand flex items-center gap-1.5 transition-colors font-medium"
+          className="btn-pill-secondary h-9 px-3.5 text-xs font-medium flex items-center gap-1.5"
         >
-          <ClockCounterClockwise className="w-3.5 h-3.5 text-brand" weight="bold" />
+          <ClockCounterClockwise className="w-3.5 h-3.5 text-[#E0262F]" weight="bold" />
           <span>History</span>
         </Link>
-      </div>
+      </header>
 
       {/* Geolocation Notice */}
       {coords && (
-        <div className="mb-4 px-3 py-2 rounded-[4px] bg-ink-2 border border-border flex items-center justify-between text-xs font-mono text-muted">
+        <div className="card-glass mb-4 px-4 py-2.5 rounded-[16px] flex items-center justify-between text-xs font-mono text-[var(--text-secondary)]">
           <div className="flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-ok" weight="duotone" />
+            <MapPin className="w-3.5 h-3.5 text-[#1E7A3C] dark:text-[#4ADE80]" weight="duotone" />
             <span>
               GPS ACTIVE: {coords.latitude.toFixed(3)}, {coords.longitude.toFixed(3)}
             </span>
           </div>
-          <span className="text-[10px] text-ok">~100M RADIUS</span>
+          <span className="chip-success-pill text-[10px]">~100M RADIUS</span>
         </div>
       )}
 
       {geoError && (
-        <div className="mb-4 p-3 rounded-[4px] bg-warn/10 border border-warn/30 text-warn text-xs flex items-center gap-2">
-          <WarningCircle className="w-4 h-4 shrink-0" weight="duotone" />
+        <div className="mb-4 p-3.5 rounded-[16px] bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 text-amber-700 dark:text-amber-400 text-xs flex items-center gap-2">
+          <WarningCircle
+            className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400"
+            weight="duotone"
+          />
           <span>{geoError}</span>
         </div>
       )}
 
       {/* API Error Alert */}
       {apiError && (
-        <div className="mb-4 p-4 rounded-[4px] bg-danger/10 border border-danger text-danger text-xs flex flex-col gap-2">
+        <div className="mb-4 p-4 rounded-[16px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-[#E0262F] dark:text-[#FF6B5E] text-xs flex flex-col gap-2">
           <div className="flex items-start gap-2">
-            <WarningCircle className="w-4 h-4 shrink-0 mt-0.5" weight="duotone" />
-            <p className="font-medium text-text">{apiError}</p>
+            <WarningCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#E0262F]" weight="duotone" />
+            <p className="font-medium text-[var(--text-primary)]">{apiError}</p>
           </div>
           <button
             type="button"
             onClick={resetAudit}
-            className="self-end px-3 py-1 rounded-[4px] bg-danger text-ink font-medium text-xs"
+            className="self-end px-3 py-1 rounded-full bg-[#E0262F] text-white font-medium text-xs cursor-pointer"
           >
             Retry Scan
           </button>
@@ -165,16 +171,18 @@ export default function AuditRunPage() {
 
       {/* Loading Skeleton during Multi-Agent Verification (PRD.md Section 6) */}
       {isVerifying && (
-        <div className="flex-1 flex flex-col items-center justify-center p-8 rounded-[4px] bg-ink-2 border border-brand/40 text-center gap-4 animate-pulse">
-          <SpinnerGap className="w-8 h-8 text-brand animate-spin" weight="bold" />
+        <div className="card-glass flex-1 flex flex-col items-center justify-center p-8 text-center gap-4 animate-pulse rounded-[24px]">
+          <SpinnerGap className="w-8 h-8 text-[#E0262F] animate-spin" weight="bold" />
           <div>
-            <h2 className="text-sm font-medium text-text">Running 5-Agent Pipeline</h2>
-            <p className="text-xs font-mono text-brand mt-1">{currentAgentStep}</p>
+            <h2 className="text-base font-semibold text-[var(--text-primary)]">
+              Running 5-Agent Pipeline
+            </h2>
+            <p className="text-xs font-mono text-[#E0262F] mt-1 font-medium">{currentAgentStep}</p>
           </div>
-          <div className="w-full max-w-[240px] h-1.5 bg-ink rounded-full overflow-hidden mt-2">
-            <div className="h-full bg-brand animate-pulse w-3/4" />
+          <div className="w-full max-w-[240px] h-1.5 bg-[var(--chip-neutral-bg)] rounded-full overflow-hidden mt-2">
+            <div className="h-full bg-[#E0262F] animate-pulse w-3/4 rounded-full" />
           </div>
-          <p className="text-[11px] text-muted max-w-[260px] leading-relaxed">
+          <p className="text-xs text-[var(--text-secondary)] max-w-[260px] leading-relaxed">
             Evaluating QR identity, visual perceptual embedding, bound GPS, and attestation history.
           </p>
         </div>
@@ -190,7 +198,7 @@ export default function AuditRunPage() {
           />
           <Link
             href="/dashboard"
-            className="h-10 px-4 rounded-[4px] bg-ink-2 border border-border text-text hover:border-brand text-xs font-medium flex items-center justify-center transition-colors"
+            className="btn-pill-secondary h-11 w-full rounded-[16px] text-xs font-medium flex items-center justify-center transition-colors"
           >
             <span>Return to Dashboard</span>
           </Link>
@@ -199,12 +207,12 @@ export default function AuditRunPage() {
 
       {/* Quick Sticker Selection for verification */}
       {!isVerifying && !verdictResult && (
-        <div className="mb-4 p-3 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-2">
-          <div className="flex items-center justify-between text-[10px] font-mono text-muted uppercase">
+        <div className="card-glass mb-4 p-4 rounded-[20px] flex flex-col gap-2.5">
+          <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-secondary)] uppercase font-medium">
             <span>Sticker Preset // One-Click Audit</span>
-            <span className="text-ok">REGISTERED</span>
+            <span className="chip-success-pill text-[10px]">REGISTERED</span>
           </div>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <button
               type="button"
               onClick={() => {
@@ -216,17 +224,15 @@ export default function AuditRunPage() {
                     "upi://pay?pa=harshil.456.sharma@okhdfcbank&pn=Harshil%20Sharma&aid=uGICAgMCc_OiTDg",
                 });
               }}
-              className="w-full text-left p-2.5 rounded-[4px] bg-ink border border-border hover:border-brand transition-colors text-xs font-mono text-text flex items-center justify-between"
+              className="w-full text-left p-3 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] hover:border-[#E0262F]/40 transition-colors text-xs font-mono text-[var(--box-mono-text)] flex items-center justify-between cursor-pointer"
             >
               <div>
-                <span className="font-medium text-brand">Counter 2 (Harshil Sharma)</span>
-                <p className="text-[10px] text-muted truncate mt-0.5">
+                <span className="font-semibold text-[#E0262F]">Counter 2 (Harshil Sharma)</span>
+                <p className="text-[10px] text-[var(--text-secondary)] truncate mt-0.5">
                   upi://pay?pa=harshil.456.sharma@okhdfcbank…
                 </p>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-[2px] bg-brand/10 text-brand border border-brand/30 shrink-0">
-                AUDIT NOW
-              </span>
+              <span className="chip-neutral-pill text-[10px] shrink-0 font-medium">AUDIT NOW</span>
             </button>
 
             <button
@@ -240,17 +246,17 @@ export default function AuditRunPage() {
                     "upi://pay?pa=sharmacanteen@okaxis&pn=Sharma%20Canteen&mc=5499&aid=uGICAgICAgICAgA",
                 });
               }}
-              className="w-full text-left p-2.5 rounded-[4px] bg-ink border border-border hover:border-brand transition-colors text-xs font-mono text-text flex items-center justify-between"
+              className="w-full text-left p-3 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] hover:border-[#E0262F]/40 transition-colors text-xs font-mono text-[var(--box-mono-text)] flex items-center justify-between cursor-pointer"
             >
               <div>
-                <span className="font-medium text-text">Counter 1 (Sharma Canteen)</span>
-                <p className="text-[10px] text-muted truncate mt-0.5">
+                <span className="font-semibold text-[var(--text-primary)]">
+                  Counter 1 (Sharma Canteen)
+                </span>
+                <p className="text-[10px] text-[var(--text-secondary)] truncate mt-0.5">
                   upi://pay?pa=sharmacanteen@okaxis…
                 </p>
               </div>
-              <span className="text-[10px] px-2 py-0.5 rounded-[2px] bg-brand/10 text-brand border border-brand/30 shrink-0">
-                AUDIT NOW
-              </span>
+              <span className="chip-neutral-pill text-[10px] shrink-0 font-medium">AUDIT NOW</span>
             </button>
           </div>
         </div>

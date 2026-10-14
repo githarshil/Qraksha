@@ -166,35 +166,36 @@ export default function CredentialQrsPage() {
   };
 
   return (
-    <main className="flex-1 flex flex-col p-6 max-w-[480px] mx-auto w-full">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
       {/* Header */}
-      <div className="flex items-center justify-between pb-4 border-b border-border mb-6">
+      <header className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard"
             aria-label="Back to Dashboard"
-            className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors"
+            title="Back to Dashboard"
+            className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-[14px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] shadow-[var(--header-btn-shadow)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--header-btn-border-hover)] flex items-center justify-center transition-all select-none"
           >
-            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
+            <ArrowLeft className="w-5 h-5" weight="bold" />
           </Link>
           <div>
-            <h1 className="text-base font-medium text-text">Registered QR Stickers</h1>
-            <p className="text-xs font-mono text-muted">Multi-QR management per credential</p>
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">Registered QR Stickers</h1>
+            <p className="text-xs text-[var(--text-secondary)]">
+              Multi-QR management per credential
+            </p>
           </div>
         </div>
 
-        <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-brand/10 text-brand border border-brand/30">
-          {qrs.length} REGISTERED
-        </span>
-      </div>
+        <span className="chip-neutral-pill text-[11px]">{qrs.length} REGISTERED</span>
+      </header>
 
       {/* Feedback banner */}
       {feedback && (
         <div
-          className={`mb-4 p-3.5 rounded-[4px] border text-xs flex items-start gap-2.5 ${
+          className={`mb-4 p-4 rounded-[16px] border text-xs flex items-start gap-2.5 ${
             feedback.type === "success"
-              ? "bg-ok/10 border-ok text-ok"
-              : "bg-danger/10 border-danger text-danger"
+              ? "bg-[#E6F4EA] dark:bg-[#132B1A] border-[#1E7A3C]/30 text-[#1E7A3C] dark:text-[#4ADE80]"
+              : "bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-900/40 text-[#E0262F] dark:text-[#FF6B5E]"
           }`}
         >
           {feedback.type === "success" ? (
@@ -209,7 +210,7 @@ export default function CredentialQrsPage() {
             type="button"
             onClick={() => setFeedback(null)}
             aria-label="Dismiss feedback"
-            className="p-0.5 text-muted hover:text-text"
+            className="p-0.5 text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           >
             <X className="w-3.5 h-3.5" weight="bold" />
           </button>
@@ -222,19 +223,22 @@ export default function CredentialQrsPage() {
           {qrs.map((qr) => (
             <div
               key={qr.id}
-              className="p-4 rounded-[4px] bg-ink-2 border border-border flex items-start justify-between"
+              className="card-glass p-4 rounded-[20px] flex items-start justify-between"
             >
               <div className="flex gap-3">
-                <div className="p-2.5 rounded-[4px] bg-ink border border-border text-brand">
+                <div className="w-10 h-10 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] text-[#E0262F] flex items-center justify-center shrink-0">
                   <QrCode className="w-5 h-5" weight="duotone" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-medium text-text">{qr.label}</h2>
-                  <p className="text-[11px] font-mono text-muted mt-0.5">
+                  <h2 className="text-sm font-semibold text-[var(--text-primary)]">{qr.label}</h2>
+                  <p className="text-[11px] font-mono text-[var(--text-secondary)] mt-0.5">
                     HASH // {qr.qr_payload_hash.slice(0, 10)}…{qr.qr_payload_hash.slice(-8)}
                   </p>
-                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-muted mt-1.5">
-                    <MapPin className="w-3 h-3 text-ok" weight="duotone" />
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-[var(--text-secondary)] mt-1.5">
+                    <MapPin
+                      className="w-3 h-3 text-[#1E7A3C] dark:text-[#4ADE80]"
+                      weight="duotone"
+                    />
                     <span>
                       {qr.bound_lat.toFixed(3)}, {qr.bound_lng.toFixed(3)} ({qr.bound_radius_m}m)
                     </span>
@@ -242,9 +246,7 @@ export default function CredentialQrsPage() {
                 </div>
               </div>
 
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
-                ACTIVE
-              </span>
+              <span className="chip-success-pill text-[10px]">ACTIVE</span>
             </div>
           ))}
 
@@ -252,7 +254,7 @@ export default function CredentialQrsPage() {
           <button
             type="button"
             onClick={() => setIsAdding(true)}
-            className="h-11 px-4 rounded-[4px] border border-dashed border-brand text-brand font-medium text-xs flex items-center justify-center gap-2 hover:bg-brand/10 transition-colors mt-2"
+            className="h-12 px-4 rounded-[16px] border border-dashed border-[#E0262F]/50 text-[#E0262F] font-medium text-xs flex items-center justify-center gap-2 hover:bg-[#E0262F]/5 transition-colors mt-2 cursor-pointer"
           >
             <Plus className="w-4 h-4" weight="bold" />
             <span>Register Additional QR Sticker</span>
@@ -262,9 +264,11 @@ export default function CredentialQrsPage() {
 
       {/* Add New QR Modal / Step Flow */}
       {isAdding && (
-        <div className="flex flex-col gap-4 p-5 rounded-[4px] bg-ink-2 border border-brand/40">
-          <div className="flex items-center justify-between pb-3 border-b border-border">
-            <h2 className="text-sm font-medium text-text">New QR Sticker Registration</h2>
+        <div className="card-glass flex flex-col gap-4 p-5 rounded-[24px]">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--surface-border)]">
+            <h2 className="text-sm font-semibold text-[var(--text-primary)]">
+              New QR Sticker Registration
+            </h2>
             <button
               type="button"
               onClick={() => {
@@ -272,7 +276,7 @@ export default function CredentialQrsPage() {
                 setCapturedData(null);
               }}
               aria-label="Close dialog"
-              className="p-1 rounded-[4px] bg-ink border border-border text-muted hover:text-text"
+              className="p-1.5 rounded-[12px] bg-[var(--box-mono-bg)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] cursor-pointer"
             >
               <X className="w-4 h-4" weight="bold" />
             </button>
@@ -282,7 +286,7 @@ export default function CredentialQrsPage() {
             <div>
               <label
                 htmlFor="labelInput"
-                className="block text-[11px] font-mono text-muted uppercase mb-1"
+                className="block text-[11px] font-mono text-[var(--text-secondary)] uppercase mb-1 font-medium"
               >
                 Sticker Counter Label
               </label>
@@ -292,7 +296,7 @@ export default function CredentialQrsPage() {
                 value={labelInput}
                 onChange={(e) => setLabelInput(e.target.value)}
                 placeholder="e.g. Counter 2 (Takeaway Window)"
-                className="w-full h-9 px-3 rounded-[4px] bg-ink border border-border text-xs font-mono text-text focus:outline-none focus:border-brand"
+                className="w-full h-10 px-3.5 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] text-xs font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#E0262F]"
               />
             </div>
 
@@ -304,14 +308,14 @@ export default function CredentialQrsPage() {
               onCapture={handleCapture}
             />
 
-            <div className="flex gap-2 pt-2 border-t border-border">
+            <div className="flex gap-2.5 pt-2 border-t border-[var(--surface-border)]">
               <button
                 type="button"
                 onClick={() => {
                   setIsAdding(false);
                   setCapturedData(null);
                 }}
-                className="flex-1 h-10 px-4 rounded-[4px] bg-ink border border-border text-muted hover:text-text font-mono text-xs transition-colors"
+                className="btn-pill-secondary flex-1 h-11 px-4 text-xs font-medium cursor-pointer"
               >
                 Cancel
               </button>
@@ -319,7 +323,7 @@ export default function CredentialQrsPage() {
               <button
                 type="submit"
                 disabled={!capturedData || isSubmitting}
-                className="flex-1 h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-xs disabled:opacity-40 disabled:cursor-not-allowed hover:bg-brand-soft transition-colors flex items-center justify-center gap-1.5"
+                className="btn-red-glass flex-1 h-11 px-4 text-xs font-medium disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {isSubmitting ? "Registering…" : "Bind & Register QR"}
               </button>

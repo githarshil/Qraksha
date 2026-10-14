@@ -4,7 +4,6 @@ import { use, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  ShieldCheck,
   ArrowSquareOut,
   Warning,
   SpinnerGap,
@@ -125,27 +124,24 @@ export default function VerifyCredentialPage({ params }: Props) {
   const spokenAriaText = data ? formatVoiceScript(voiceVerdict, voiceLang, data.displayName) : "";
 
   return (
-    <main className="flex-1 flex flex-col p-6 max-w-[540px] mx-auto w-full">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
       {/* Top Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
+      <header className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors text-text"
+            className="w-10 h-10 rounded-[14px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] shadow-[var(--header-btn-shadow)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center justify-center transition-all"
             aria-label="Back to home"
           >
-            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
+            <ArrowLeft className="w-5 h-5" weight="bold" />
           </Link>
           <div>
-            <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-              <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
-              <span>PUBLIC AUDIT // ON-CHAIN ANCHOR</span>
-            </div>
-            <h1 className="text-base font-medium text-text">Credential Audit Record</h1>
+            <h1 className="text-xl font-bold text-[var(--text-primary)]">Public Audit</h1>
+            <p className="text-xs text-[var(--text-secondary)]">On-chain tamper-evident proof</p>
           </div>
         </div>
         <LanguageSelector currentLang={voiceLang} onSelectLang={handleLanguageChange} />
-      </div>
+      </header>
 
       {/* Accessible Live Region */}
       {data && (
@@ -156,9 +152,9 @@ export default function VerifyCredentialPage({ params }: Props) {
 
       {/* Loading State */}
       {isLoading && (
-        <div className="p-8 rounded-[4px] bg-ink-2 border border-border flex flex-col items-center justify-center gap-3 text-center my-6">
-          <SpinnerGap className="w-6 h-6 animate-spin text-brand" weight="bold" />
-          <span className="text-xs font-mono text-muted">
+        <div className="card-glass p-8 flex flex-col items-center justify-center gap-3 text-center my-6 rounded-[24px]">
+          <SpinnerGap className="w-6 h-6 animate-spin text-[#E0262F]" weight="bold" />
+          <span className="text-xs font-mono text-[var(--text-secondary)]">
             Retrieving on-chain verification proof…
           </span>
         </div>
@@ -168,21 +164,23 @@ export default function VerifyCredentialPage({ params }: Props) {
       {!isLoading && error && (
         <div
           role="alert"
-          className="p-5 rounded-[4px] bg-danger/10 border border-danger text-text flex flex-col gap-3 my-4"
+          className="p-5 rounded-[20px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 text-[var(--text-primary)] flex flex-col gap-3 my-4"
         >
           <div className="flex items-start gap-3">
-            <Warning className="w-5 h-5 text-danger shrink-0 mt-0.5" weight="duotone" />
+            <Warning className="w-5 h-5 text-[#E0262F] shrink-0 mt-0.5" weight="duotone" />
             <div className="flex-1">
-              <h2 className="text-sm font-medium text-text">Verification Lookup Failed</h2>
-              <p className="text-xs text-muted mt-1 leading-relaxed">{error}</p>
+              <h2 className="text-sm font-semibold text-[var(--text-primary)]">
+                Verification Lookup Failed
+              </h2>
+              <p className="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">{error}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={fetchVerification}
-            className="self-start h-8 px-3 rounded-[4px] bg-ink border border-border text-xs font-medium text-text hover:border-brand flex items-center gap-1.5 transition-colors"
+            className="btn-pill-secondary self-start h-8 px-3.5 text-xs font-medium flex items-center gap-1.5 cursor-pointer"
           >
-            <ArrowsClockwise className="w-3 h-3" weight="bold" />
+            <ArrowsClockwise className="w-3.5 h-3.5" weight="bold" />
             <span>Retry Lookup</span>
           </button>
         </div>
@@ -190,15 +188,17 @@ export default function VerifyCredentialPage({ params }: Props) {
 
       {/* Verification Details */}
       {!isLoading && data && (
-        <div className="flex flex-col gap-5 animate-in fade-in duration-300">
+        <div className="flex flex-col gap-4 animate-in fade-in duration-300">
           {/* Prominent Thinking Orb Voice Section */}
-          <div className="p-4 rounded-[4px] bg-ink-2 border border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="card-glass p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex flex-col text-center sm:text-left">
-              <span className="text-[10px] font-mono uppercase text-muted tracking-wider">
+              <span className="text-[10px] font-mono uppercase text-[var(--text-secondary)] tracking-wider font-medium">
                 Audible Security Verdict
               </span>
-              <span className="text-sm font-medium text-text mt-0.5">{data.displayName}</span>
-              <span className="text-xs text-muted">
+              <span className="text-base font-semibold text-[var(--text-primary)] mt-0.5">
+                {data.displayName}
+              </span>
+              <span className="text-xs text-[var(--text-secondary)] mt-0.5">
                 Tap the orb to hear merchant verification in your chosen language
               </span>
             </div>
@@ -214,46 +214,46 @@ export default function VerifyCredentialPage({ params }: Props) {
 
           {/* Status Banner Card */}
           <div
-            className={`p-5 rounded-[4px] bg-ink-2 border-t border-r border-b border-border flex flex-col gap-3 ${
+            className={`card-glass p-5 border-l-4 flex flex-col gap-3 ${
               data.verifiedOnChain
-                ? "border-l-4 border-l-ok"
+                ? "border-l-ok"
                 : data.anchor?.status === "pending"
-                  ? "border-l-4 border-l-warn"
-                  : "border-l-4 border-l-danger"
+                  ? "border-l-warn"
+                  : "border-l-danger"
             }`}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {data.verifiedOnChain ? (
                   <>
-                    <CheckCircle className="w-4 h-4 text-ok" weight="duotone" />
-                    <span className="font-mono text-xs uppercase tracking-wider text-ok font-medium">
+                    <CheckCircle className="w-4 h-4 text-[#1E7A3C]" weight="fill" />
+                    <span className="font-mono text-xs uppercase tracking-wider text-[#1E7A3C] font-semibold">
                       Tamper-Evident On-Chain Proof
                     </span>
                   </>
                 ) : data.anchor?.status === "pending" ? (
                   <>
-                    <Clock className="w-4 h-4 text-warn" weight="duotone" />
-                    <span className="font-mono text-xs uppercase tracking-wider text-warn font-medium">
+                    <Clock className="w-4 h-4 text-amber-600" weight="fill" />
+                    <span className="font-mono text-xs uppercase tracking-wider text-amber-600 font-semibold">
                       Anchoring In Progress
                     </span>
                   </>
                 ) : (
                   <>
-                    <XCircle className="w-4 h-4 text-danger" weight="duotone" />
-                    <span className="font-mono text-xs uppercase tracking-wider text-danger font-medium">
+                    <XCircle className="w-4 h-4 text-[#E0262F]" weight="fill" />
+                    <span className="font-mono text-xs uppercase tracking-wider text-[#E0262F] font-semibold">
                       Anchor Verification Incomplete
                     </span>
                   </>
                 )}
               </div>
               <span
-                className={`text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ${
+                className={`text-[10px] font-mono px-2.5 py-0.5 rounded-full border ${
                   data.verifiedOnChain
-                    ? "bg-ok/10 text-ok border-ok/30"
+                    ? "bg-[#E6F4EA] text-[#1E7A3C] border-[#1E7A3C]/30"
                     : data.anchor?.status === "pending"
-                      ? "bg-warn/10 text-warn border-warn/30"
-                      : "bg-danger/10 text-danger border-danger/30"
+                      ? "bg-amber-50 text-amber-700 border-amber-200"
+                      : "bg-red-50 text-[#E0262F] border-red-200"
                 }`}
               >
                 STATUS: {data.status.toUpperCase()}
@@ -261,11 +261,15 @@ export default function VerifyCredentialPage({ params }: Props) {
             </div>
 
             <div>
-              <h2 className="text-base font-medium text-text">{data.displayName}</h2>
-              <p className="text-xs font-mono text-muted mt-0.5">ID: {data.credentialId}</p>
+              <h2 className="text-base font-semibold text-[var(--text-primary)]">
+                {data.displayName}
+              </h2>
+              <p className="text-xs font-mono text-[var(--text-secondary)] mt-0.5">
+                ID: {data.credentialId}
+              </p>
             </div>
 
-            <p className="text-xs text-muted leading-relaxed">
+            <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
               {data.verifiedOnChain
                 ? "This credential has been anchored to the public testnet. The canonical Keccak-256 hash computed from current registry metadata matches the transaction input data exactly."
                 : data.anchor?.status === "pending"
@@ -275,24 +279,24 @@ export default function VerifyCredentialPage({ params }: Props) {
           </div>
 
           {/* Cryptographic Proof Details */}
-          <div className="p-5 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-4 font-mono text-xs">
-            <span className="text-[11px] uppercase tracking-wider text-brand font-medium">
+          <div className="card-glass p-5 flex flex-col gap-4 font-mono text-xs">
+            <span className="text-[11px] uppercase tracking-wider text-[#E0262F] font-semibold">
               Cryptographic Anchor Details
             </span>
 
             {/* Canonical Hash Box */}
             <div className="flex flex-col gap-1.5">
-              <div className="flex items-center justify-between text-[10px] text-muted">
+              <div className="flex items-center justify-between text-[10px] text-[var(--text-secondary)]">
                 <span>CANONICAL CREDENTIAL HASH (KECCAK-256)</span>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(data.canonicalCredentialHash)}
-                  className="flex items-center gap-1 hover:text-text text-brand transition-colors"
+                  className="flex items-center gap-1 hover:text-[var(--text-primary)] text-[#E0262F] transition-colors font-medium cursor-pointer"
                 >
                   {copiedHash ? (
                     <>
-                      <Check className="w-3 h-3 text-ok" weight="bold" />
-                      <span className="text-ok">Copied</span>
+                      <Check className="w-3 h-3 text-[#1E7A3C]" weight="bold" />
+                      <span className="text-[#1E7A3C]">Copied</span>
                     </>
                   ) : (
                     <>
@@ -302,46 +306,46 @@ export default function VerifyCredentialPage({ params }: Props) {
                   )}
                 </button>
               </div>
-              <div className="p-2.5 rounded-[4px] bg-ink border border-border text-text break-all select-all font-mono text-[11px]">
+              <div className="mono-box-container p-3 text-[var(--box-mono-text)] break-all select-all font-mono text-[11px]">
                 {data.canonicalCredentialHash}
               </div>
             </div>
 
             {/* Anchor Transaction Details Grid */}
-            <div className="pt-2 border-t border-border/50 grid grid-cols-2 gap-3 text-xs">
+            <div className="pt-2 border-t border-[var(--surface-border)] grid grid-cols-2 gap-3 text-xs">
               <div>
-                <span className="text-muted block text-[10px]">NETWORK</span>
-                <span className="text-text">
+                <span className="text-[var(--text-muted)] block text-[10px]">NETWORK</span>
+                <span className="text-[var(--text-primary)] font-medium">
                   {data.anchor?.network
                     ? `Polygon ${data.anchor.network.toUpperCase()}`
                     : "Polygon Amoy"}
                 </span>
               </div>
               <div>
-                <span className="text-muted block text-[10px]">ANCHOR STATUS</span>
+                <span className="text-[var(--text-muted)] block text-[10px]">ANCHOR STATUS</span>
                 <span
                   className={
                     data.anchor?.status === "confirmed"
-                      ? "text-ok font-medium"
+                      ? "text-[#1E7A3C] font-semibold"
                       : data.anchor?.status === "pending"
-                        ? "text-warn font-medium"
-                        : "text-muted"
+                        ? "text-amber-600 font-semibold"
+                        : "text-[var(--text-secondary)]"
                   }
                 >
                   {data.anchor?.status?.toUpperCase() || "PENDING"}
                 </span>
               </div>
               <div>
-                <span className="text-muted block text-[10px]">TRANSACTION HASH</span>
-                <span className="text-text truncate block font-mono">
+                <span className="text-[var(--text-muted)] block text-[10px]">TRANSACTION HASH</span>
+                <span className="text-[var(--text-primary)] truncate block font-mono">
                   {data.anchor?.txHash
                     ? `${data.anchor.txHash.slice(0, 10)}…${data.anchor.txHash.slice(-8)}`
                     : "Awaiting submission"}
                 </span>
               </div>
               <div>
-                <span className="text-muted block text-[10px]">CONFIRMED AT</span>
-                <span className="text-text">
+                <span className="text-[var(--text-muted)] block text-[10px]">CONFIRMED AT</span>
+                <span className="text-[var(--text-primary)]">
                   {data.anchor?.confirmedAt
                     ? new Date(data.anchor.confirmedAt).toLocaleTimeString()
                     : "—"}
@@ -355,7 +359,7 @@ export default function VerifyCredentialPage({ params }: Props) {
                 href={data.anchor.explorerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-sm flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors mt-2"
+                className="btn-red-glass h-11 px-4 text-xs font-medium flex items-center justify-center gap-2 mt-2"
               >
                 <span>Inspect on Amoy PolygonScan</span>
                 <ArrowSquareOut className="w-4 h-4" weight="bold" />
@@ -365,27 +369,27 @@ export default function VerifyCredentialPage({ params }: Props) {
 
           {/* Bound Location Details */}
           {data.boundLocation && (
-            <div className="p-4 rounded-[4px] bg-ink-2 border border-border flex items-center justify-between text-xs font-mono">
-              <div className="flex items-center gap-2 text-text">
-                <MapPin className="w-4 h-4 text-brand shrink-0" weight="duotone" />
+            <div className="card-glass p-4 rounded-[16px] flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-2 text-[var(--text-primary)]">
+                <MapPin className="w-4 h-4 text-[#E0262F] shrink-0" weight="duotone" />
                 <span>
                   Lat: {data.boundLocation.latitude.toFixed(4)}, Lng:{" "}
                   {data.boundLocation.longitude.toFixed(4)}
                 </span>
               </div>
-              <span className="text-ok text-[11px]">
+              <span className="chip-success-pill text-[10px]">
                 Bound (±{data.boundLocation.boundRadiusM}m)
               </span>
             </div>
           )}
 
           {/* Navigation Action Buttons */}
-          <div className="flex flex-col gap-2 pt-2">
+          <div className="flex flex-col gap-2 pt-1">
             <Link
               href="/check"
-              className="h-9 px-4 rounded-[4px] bg-transparent border border-border text-muted hover:text-text text-xs font-medium flex items-center justify-center gap-1.5 transition-colors"
+              className="btn-pill-secondary h-11 px-4 text-xs font-medium flex items-center justify-center gap-2"
             >
-              <QrCode className="w-3.5 h-3.5" weight="duotone" />
+              <QrCode className="w-4 h-4 text-[#E0262F]" weight="duotone" />
               <span>Verify a UPI QR Sticker</span>
             </Link>
           </div>

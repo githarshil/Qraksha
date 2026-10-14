@@ -2,18 +2,17 @@
 
 import Link from "next/link";
 import {
-  QrCode,
-  ShieldCheck,
   ShieldWarning,
-  ClockCounterClockwise,
   ArrowSquareOut,
-  ArrowRight,
   LinkSimple,
   CheckCircle,
+  Gear,
+  Scan,
 } from "@phosphor-icons/react";
 
 import { useEffect, useState } from "react";
 import { getCredentialVerification } from "@/lib/api";
+import { ThemeToggleButton } from "@/components/theme-toggle-button";
 
 export default function DashboardPage() {
   // Demo credential data for MVP merchant view
@@ -45,126 +44,127 @@ export default function DashboardPage() {
   }, [demoCredentialId]);
 
   return (
-    <main className="flex-1 flex flex-col p-6 max-w-[480px] mx-auto w-full">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
       {/* Top Header */}
-      <header className="flex justify-between items-center pb-4 border-b border-border mb-6">
+      <header className="flex justify-between items-center mb-5">
         <div>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-            <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
-            <span>MERCHANT // DASHBOARD</span>
-          </div>
-          <h1 className="text-lg font-medium text-text mt-0.5">Sharma Canteen</h1>
-          <p className="text-xs font-mono text-muted mt-0.5">
-            Tier: <span className="text-ok font-medium">GST-VERIFIED</span> (Fast Ramp)
+          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
+            Sharma Canteen
+          </h1>
+          <p className="text-xs text-[var(--text-secondary)] mt-1 font-medium flex items-center gap-1.5">
+            <span>Badges:</span>
+            <span className="font-mono chip-neutral-pill text-[11px] py-0.5 px-2">
+              GST-VERIFIED (Fast Ramp)
+            </span>
           </p>
         </div>
-        <Link
-          href="/settings"
-          className="text-xs font-mono px-3 py-1.5 rounded-[4px] bg-ink-2 border border-border text-text hover:border-brand transition-colors"
-        >
-          Settings
-        </Link>
+        <div className="flex items-center gap-2.5">
+          <ThemeToggleButton />
+          <Link
+            href="/settings"
+            aria-label="Settings"
+            title="Settings"
+            className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-[14px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] shadow-[var(--header-btn-shadow)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--header-btn-border-hover)] flex items-center justify-center transition-all select-none"
+          >
+            <Gear className="w-5 h-5" weight="regular" />
+          </Link>
+        </div>
       </header>
 
       {/* Main Action Banner: Self-Audit */}
-      <div className="p-5 rounded-[4px] bg-ink-2 border border-brand/40 flex flex-col gap-3 mb-6">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-brand font-medium">
+      <div className="card-glass p-5 flex flex-col gap-3 mb-4">
+        <div>
+          <span className="text-xs font-medium text-[var(--text-secondary)]">
             Daily Verification Loop
           </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-ok/10 text-ok border border-ok/30">
-            Last audit: Today, 9:30 AM
-          </span>
-        </div>
-        <div>
-          <h2 className="text-base font-medium text-text">Audit Physical QR Sticker</h2>
-          <p className="text-xs text-muted leading-relaxed mt-1">
-            Point your camera at your billing counter sticker to verify payload integrity and
-            confirm no physical swap or relocation has occurred.
-          </p>
+          <h2 className="text-base font-semibold text-[var(--text-primary)] mt-0.5">
+            Audit Physical QR Sticker
+          </h2>
         </div>
         <Link
           href="/audit/run"
-          className="h-10 px-4 rounded-[4px] bg-brand text-ink font-medium text-sm flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors mt-1"
+          className="btn-red-glass h-12 w-full flex items-center justify-center gap-2 font-medium text-sm mt-1"
         >
           <span>Run Self-Audit Now</span>
-          <ArrowRight className="w-4 h-4" weight="bold" />
+          <Scan className="w-4 h-4" weight="bold" />
         </Link>
       </div>
 
-      {/* Blockchain Anchor Status Card (Task 6) */}
-      <div className="p-5 rounded-[4px] bg-ink-2 border-l-4 border-l-ok border-t border-r border-b border-border flex flex-col gap-3 mb-6">
+      {/* Blockchain Anchor Status Card */}
+      <div className="card-glass p-5 flex flex-col gap-3.5 mb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-ok" weight="duotone" />
-            <span className="font-mono text-xs uppercase tracking-wider text-ok font-medium">
-              Blockchain Anchor Confirmed
-            </span>
-          </div>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-ok/10 text-ok border border-ok/30">
-            POLYGON AMOY
-          </span>
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">
+            Blockchain Anchor <br className="sm:hidden" />
+            Confirmed
+          </h2>
+          <span className="chip-neutral-pill text-[11px]">Polygon Amoy</span>
         </div>
 
-        <p className="text-xs text-muted leading-relaxed">
-          Your credential hash is anchored to the Polygon Amoy testnet. Any attempt to alter your
-          registered VPA or location will produce a hash mismatch on the public block explorer.
-        </p>
-
-        <div className="pt-2 border-t border-border/50 flex flex-col gap-2 font-mono text-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted">TRANSACTION</span>
-            <span className="text-text truncate max-w-[200px]">
-              {txHash.slice(0, 10)}…{txHash.slice(-8)}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-1.5">
+            <CheckCircle className="w-4 h-4 text-[#1E7A3C] dark:text-[#4ADE80]" weight="fill" />
+            <span className="text-xs font-semibold text-[var(--text-primary)]">
+              Confirmed (Tamper-Evident)
             </span>
           </div>
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-muted">STATUS</span>
-            <span className="text-ok font-medium">CONFIRMED (TAMPER-EVIDENT)</span>
-          </div>
+          <p className="font-mono text-xs text-[var(--text-secondary)] truncate">
+            tx Hash: {txHash.slice(0, 10)}…{txHash.slice(-8)}
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 mt-1">
+        <div className="grid grid-cols-2 gap-2.5 pt-1">
           <a
             href={explorerUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="h-8 px-3 rounded-[4px] bg-ink border border-border text-text hover:border-brand text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
+            className="btn-pill-secondary h-9 px-3 text-xs font-medium flex items-center justify-center gap-1.5"
           >
             <span>PolygonScan</span>
-            <ArrowSquareOut className="w-3 h-3 text-brand" weight="bold" />
+            <ArrowSquareOut className="w-3.5 h-3.5 text-[var(--text-secondary)]" weight="bold" />
           </a>
           <Link
             href={`/verify/${demoCredentialId}`}
-            className="h-8 px-3 rounded-[4px] bg-ink border border-border text-text hover:border-brand text-xs font-mono flex items-center justify-center gap-1.5 transition-colors"
+            className="btn-pill-secondary h-9 px-3 text-xs font-medium flex items-center justify-center gap-1.5"
           >
             <span>Public Audit</span>
-            <LinkSimple className="w-3 h-3 text-brand" weight="bold" />
+            <LinkSimple className="w-3.5 h-3.5 text-[var(--text-secondary)]" weight="bold" />
           </Link>
         </div>
       </div>
 
       {/* Quick stats grid */}
-      <div className="grid grid-cols-2 gap-3 mb-6">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <Link
           href="/credential/qrs"
-          className="p-4 rounded-[4px] bg-ink-2 border border-border hover:border-brand/50 transition-colors"
+          className="card-glass p-4 relative overflow-hidden group hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
         >
-          <div className="flex items-center gap-1.5 mb-1 text-muted text-xs font-mono">
-            <QrCode className="w-3.5 h-3.5 text-brand" weight="duotone" />
-            <span>ACTIVE QRS</span>
-          </div>
-          <span className="text-lg font-medium text-text">1 Registered</span>
+          <span className="text-xs text-[var(--text-secondary)] font-medium block">
+            Active QRs:
+          </span>
+          <span className="text-base font-semibold text-[var(--text-primary)] mt-1 block">
+            1 Registered
+          </span>
+          {/* Green indicator bar on right edge */}
+          <span
+            className="w-1.5 h-6 bg-[#2FBF71] rounded-full absolute right-4 top-1/2 -translate-y-1/2"
+            aria-hidden="true"
+          />
         </Link>
         <Link
           href="/audit/history"
-          className="p-4 rounded-[4px] bg-ink-2 border border-border hover:border-brand/50 transition-colors"
+          className="card-glass p-4 relative overflow-hidden group hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
         >
-          <div className="flex items-center gap-1.5 mb-1 text-muted text-xs font-mono">
-            <ClockCounterClockwise className="w-3.5 h-3.5 text-ok" weight="duotone" />
-            <span>CLEAN AUDITS</span>
-          </div>
-          <span className="text-lg font-medium text-ok">14 Clean Runs</span>
+          <span className="text-xs text-[var(--text-secondary)] font-medium block">
+            Clean Audits:
+          </span>
+          <span className="text-base font-semibold text-[var(--text-primary)] mt-1 block">
+            14 Clean Runs
+          </span>
+          {/* Green indicator bar on right edge */}
+          <span
+            className="w-1.5 h-6 bg-[#2FBF71] rounded-full absolute right-4 top-1/2 -translate-y-1/2"
+            aria-hidden="true"
+          />
         </Link>
       </div>
 
@@ -172,10 +172,10 @@ export default function DashboardPage() {
       <div className="flex flex-col gap-2">
         <Link
           href="/credential/dispute/new"
-          className="p-3.5 rounded-[4px] bg-ink-2 border border-border flex justify-between items-center text-xs font-mono text-text hover:border-danger transition-colors"
+          className="card-glass p-4 flex justify-between items-center text-xs font-medium text-[var(--text-secondary)] hover:text-[#E0262F] transition-colors rounded-[16px]"
         >
           <span>Report Sticker Impersonation / Dispute</span>
-          <ShieldWarning className="w-4 h-4 text-danger" weight="duotone" />
+          <ShieldWarning className="w-4 h-4 text-[#E0262F]" weight="duotone" />
         </Link>
       </div>
     </main>

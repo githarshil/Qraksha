@@ -5,19 +5,18 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
-  User,
-  Shield,
   SignOut,
   QrCode,
   ClockCounterClockwise,
   ShieldWarning,
-  ShieldCheck,
   Check,
   Copy,
-  ArrowSquareOut,
   SpinnerGap,
+  CaretDown,
+  CaretRight,
 } from "@phosphor-icons/react";
 import { getMyCredentials } from "@/lib/api";
+import { ThemeToggleButton } from "@/components/theme-toggle-button";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -106,116 +105,94 @@ export default function SettingsPage() {
   };
 
   return (
-    <main className="flex-1 flex flex-col p-6 max-w-[520px] mx-auto w-full">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <Link
-          href="/dashboard"
-          className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors text-text"
-          aria-label="Back to dashboard"
-        >
-          <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
-        </Link>
-        <div>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-            <User className="w-3.5 h-3.5" weight="duotone" />
-            <span>MERCHANT // SETTINGS</span>
-          </div>
-          <h1 className="text-lg font-medium text-text">Account & Verification</h1>
+      <header className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/dashboard"
+            className="min-w-[44px] min-h-[44px] w-11 h-11 rounded-[14px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] shadow-[var(--header-btn-shadow)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--header-btn-border-hover)] flex items-center justify-center transition-all select-none"
+            aria-label="Back to dashboard"
+            title="Back to dashboard"
+          >
+            <ArrowLeft className="w-5 h-5" weight="bold" />
+          </Link>
+          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text-primary)] tracking-tight">
+            Account & Security
+          </h1>
         </div>
-      </div>
+        <ThemeToggleButton />
+      </header>
 
       {isLoading && (
-        <div className="flex items-center gap-2 text-xs font-mono text-muted mb-3">
-          <SpinnerGap className="w-3.5 h-3.5 animate-spin text-brand" weight="bold" />
+        <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-secondary)] mb-3">
+          <SpinnerGap className="w-3.5 h-3.5 animate-spin text-[#E0262F]" weight="bold" />
           <span>Syncing verified credentials…</span>
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3.5">
         {/* Merchant Profile Card */}
-        <div className="p-5 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-muted">
-              MERCHANT PROFILE
+        <div className="card-glass p-5 flex flex-col gap-1">
+          <h2 className="text-base font-semibold text-[var(--text-primary)]">
+            {profile.displayName}
+          </h2>
+          <p className="text-xs font-mono text-[var(--text-secondary)]">{profile.contactPhone}</p>
+          <div className="mt-2">
+            <span className="chip-success-pill">
+              Status: {profile.status === "active" ? "Active" : profile.status}
             </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-ok/10 text-ok border border-ok/30 uppercase">
-              STATUS: {profile.status}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[4px] bg-ink border border-border flex items-center justify-center text-brand font-medium">
-              <User className="w-5 h-5" weight="duotone" />
-            </div>
-            <div>
-              <h2 className="text-base font-medium text-text">{profile.displayName}</h2>
-              <p className="text-xs font-mono text-muted">{profile.contactPhone}</p>
-            </div>
           </div>
         </div>
 
-        {/* Verification Tier & Data Privacy Card */}
-        <div className="p-5 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-3">
+        {/* Identity Verification Tier Card */}
+        <div className="card-glass p-5 flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-brand" weight="duotone" />
-              <span className="text-xs font-medium text-text">Identity Verification Tier</span>
-            </div>
-            <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ${
-                profile.identityTier === "gst_verified"
-                  ? "bg-ok/10 text-ok border-ok/30"
-                  : "bg-warn/10 text-warn border-warn/30"
-              }`}
-            >
-              {profile.identityTier === "gst_verified"
-                ? "GST / UDYAM VERIFIED (TIER 1)"
-                : "BASELINE TIER"}
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+              Identity Verification Tier
+            </h3>
+            <span className="chip-neutral-pill">
+              {profile.identityTier === "gst_verified" ? "Tier 1" : "Baseline"}
             </span>
           </div>
-
-          <p className="text-xs text-muted leading-relaxed">
+          <p className="text-xs font-medium text-[var(--text-secondary)] mt-0.5">
             {profile.identityTier === "gst_verified"
-              ? "Your credential benefits from accelerated trust ramping. Real GST and address credentials are stored in a partitioned schema under strict Postgres Row-Level Security."
-              : "Baseline credential verified via bank account penny-drop name match. Operates under standard ramp intervals."}
+              ? "GST / UDYAM Verified"
+              : "Bank Penny-Drop Verified"}
           </p>
         </div>
 
         {/* Active Credential Standing & On-Chain Hash */}
-        <div className="p-5 rounded-[4px] bg-ink-2 border border-border flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-brand" weight="duotone" />
-              <span className="text-xs font-medium text-text">Active Credential Standing</span>
-            </div>
-            <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ${
-                profile.trustTier === "verified"
-                  ? "bg-ok/10 text-ok border-ok/30"
-                  : profile.trustTier === "warning"
-                    ? "bg-danger/10 text-danger border-danger/30"
-                    : "bg-warn/10 text-warn border-warn/30"
-              }`}
-            >
-              {profile.trustTier.toUpperCase()} // SCORE {Math.round(profile.trustScore)}
-            </span>
+        <div className="card-glass p-5 flex flex-col gap-3">
+          <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+            Active Credential Standing
+          </h3>
+
+          {/* Chips Row */}
+          <div className="flex items-center gap-2">
+            <span className="chip-success-pill capitalize">{profile.trustTier}</span>
+            <span className="chip-neutral-pill">Score: {Math.round(profile.trustScore)}</span>
           </div>
 
           {/* Credential ID row */}
-          <div className="p-3 rounded-[4px] bg-ink border border-border flex items-center justify-between text-xs font-mono">
+          <div className="mono-box-container p-3 flex items-center justify-between text-xs">
             <div className="truncate mr-2">
-              <span className="text-[10px] text-muted block">CREDENTIAL ID</span>
-              <span className="text-text select-all">{profile.credentialId}</span>
+              <span className="text-[10px] text-[var(--text-muted)] block uppercase">
+                Credential ID
+              </span>
+              <span className="text-[var(--text-primary)] font-mono select-all truncate block">
+                {profile.credentialId}
+              </span>
             </div>
             <button
               type="button"
               onClick={handleCopyCredentialId}
-              className="p-1.5 rounded bg-ink-2 border border-border text-muted hover:text-text transition-colors shrink-0"
+              className="p-2 rounded-[12px] bg-[var(--header-btn-bg)] border border-[var(--header-btn-border)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors shrink-0 shadow-sm"
               title="Copy Credential ID"
+              aria-label="Copy Credential ID"
             >
               {copiedId ? (
-                <Check className="w-3.5 h-3.5 text-ok" weight="bold" />
+                <Check className="w-3.5 h-3.5 text-[#1E7A3C] dark:text-[#4ADE80]" weight="bold" />
               ) : (
                 <Copy className="w-3.5 h-3.5" weight="bold" />
               )}
@@ -224,46 +201,55 @@ export default function SettingsPage() {
 
           <Link
             href={`/verify/${profile.credentialId}`}
-            className="text-xs font-mono text-brand hover:text-brand-soft flex items-center gap-1.5 transition-colors self-start mt-1"
+            className="text-xs font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center gap-1 transition-colors self-start mt-0.5"
           >
             <span>View Public Blockchain Proof Record</span>
-            <ArrowSquareOut className="w-3 h-3" weight="bold" />
+            <CaretDown className="w-3.5 h-3.5" weight="bold" />
           </Link>
         </div>
 
-        {/* Quick Management Links */}
-        <div className="flex flex-col gap-2 pt-2">
+        {/* Management Links as Rounded Card Items */}
+        <div className="flex flex-col gap-2.5 pt-1">
           <Link
             href="/credential/qrs"
-            className="p-3.5 rounded-[4px] bg-ink-2 border border-border hover:border-brand flex items-center justify-between text-xs font-mono text-text transition-colors"
+            className="card-glass p-4 rounded-[16px] flex items-center justify-between text-sm font-medium text-[var(--text-primary)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
           >
-            <div className="flex items-center gap-2.5">
-              <QrCode className="w-4 h-4 text-brand" weight="duotone" />
+            <div className="flex items-center gap-3">
+              <QrCode className="w-4 h-4 text-[#E0262F]" weight="duotone" />
               <span>Manage Registered Physical QRs</span>
             </div>
-            <span className="text-muted text-[11px]">{profile.qrCount} Active</span>
+            <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
+              <span className="text-xs font-mono">{profile.qrCount} Active</span>
+              <CaretRight className="w-4 h-4" weight="bold" />
+            </div>
           </Link>
 
           <Link
             href="/audit/history"
-            className="p-3.5 rounded-[4px] bg-ink-2 border border-border hover:border-brand flex items-center justify-between text-xs font-mono text-text transition-colors"
+            className="card-glass p-4 rounded-[16px] flex items-center justify-between text-sm font-medium text-[var(--text-primary)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
           >
-            <div className="flex items-center gap-2.5">
-              <ClockCounterClockwise className="w-4 h-4 text-brand" weight="duotone" />
+            <div className="flex items-center gap-3">
+              <ClockCounterClockwise
+                className="w-4 h-4 text-[#1E7A3C] dark:text-[#4ADE80]"
+                weight="duotone"
+              />
               <span>Audit History Log</span>
             </div>
-            <span className="text-muted text-[11px]">View Runs</span>
+            <div className="flex items-center gap-1.5 text-[var(--text-muted)]">
+              <span className="text-xs font-mono">View</span>
+              <CaretRight className="w-4 h-4" weight="bold" />
+            </div>
           </Link>
 
           <Link
             href="/credential/dispute/new"
-            className="p-3.5 rounded-[4px] bg-ink-2 border border-border hover:border-danger flex items-center justify-between text-xs font-mono text-text hover:text-danger transition-colors"
+            className="card-glass p-4 rounded-[16px] flex items-center justify-between text-xs font-medium text-[var(--text-secondary)] hover:text-[#E0262F] transition-colors"
           >
             <div className="flex items-center gap-2.5">
-              <ShieldWarning className="w-4 h-4 text-warn" weight="duotone" />
+              <ShieldWarning className="w-4 h-4 text-[#E0262F]" weight="duotone" />
               <span>File Dispute Against Impersonator</span>
             </div>
-            <span className="text-muted text-[11px]">Report</span>
+            <CaretRight className="w-4 h-4 text-[var(--text-muted)]" weight="bold" />
           </Link>
         </div>
 
@@ -272,7 +258,7 @@ export default function SettingsPage() {
           type="button"
           onClick={handleSignOut}
           disabled={isSigningOut}
-          className="mt-6 h-11 rounded-[4px] border border-danger/40 bg-danger/10 hover:bg-danger/20 text-danger text-xs font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+          className="mt-4 h-11 rounded-[16px] border border-red-200 dark:border-red-900/40 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-[#E0262F] dark:text-[#FF6B5E] text-xs font-medium flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
         >
           {isSigningOut ? (
             <SpinnerGap className="w-4 h-4 animate-spin" weight="bold" />

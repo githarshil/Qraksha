@@ -74,9 +74,11 @@ export function VerdictCard({
     <div className="flex flex-col gap-4 w-full max-w-[480px] mx-auto animate-verdict-reveal">
       {/* Full-screen Takeover Header */}
       <div className="flex items-center justify-between">
-        <span className="text-xs font-mono uppercase tracking-wider text-muted">{title}</span>
+        <span className="text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">
+          {title}
+        </span>
         {degradedCheck && (
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-[4px] bg-warn/10 text-warn border border-warn/30">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-warn/10 text-warn border border-warn/30">
             DEGRADED CHECK
           </span>
         )}
@@ -84,119 +86,121 @@ export function VerdictCard({
 
       {/* Main Verdict Card per DESIGN.md Section 5 */}
       <div
-        className={`p-6 rounded-[4px] bg-ink-2 border-t border-r border-b border-border border-l-4 ${borderColor} flex flex-col gap-5`}
+        className={`p-6 rounded-[24px] bg-[var(--surface)] border-t border-r border-b border-[var(--surface-border)] border-l-4 ${borderColor} shadow-[var(--surface-shadow)] flex flex-col gap-5 transition-colors duration-200`}
       >
         {/* Top: Verdict Name & Shield Icon */}
         <div className="flex items-start justify-between">
           <div>
-            <span className="text-[10px] font-mono text-muted uppercase tracking-wider">
+            <span className="text-[10px] font-mono text-[var(--text-secondary)] uppercase tracking-wider">
               {isCustomerView ? "Merchant Status" : "Security State"}
             </span>
             <h2 className={`text-2xl font-mono font-medium tracking-tight mt-0.5 ${textColor}`}>
               {verdictDisplayLabel}
             </h2>
             {lang !== "en-IN" && localizedLabels?.subtitle && (
-              <p className="text-xs font-sans text-muted mt-0.5">{localizedLabels.subtitle}</p>
+              <p className="text-xs font-sans text-[var(--text-secondary)] mt-0.5">
+                {localizedLabels.subtitle}
+              </p>
             )}
 
             <div className="flex items-center gap-2 mt-1.5">
-              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ${bgBadge}`}>
+              <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${bgBadge}`}>
                 REASON // {reason}
               </span>
               {result.auditRunId && (
-                <span className="text-[10px] font-mono text-muted">
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">
                   ID: {result.auditRunId.slice(0, 8)}
                 </span>
               )}
             </div>
           </div>
           <div
-            className={`p-2.5 rounded-[4px] bg-ink border border-border ${textColor} animate-shield-resolve`}
+            className={`p-2.5 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] ${textColor} animate-shield-resolve`}
           >
             <ShieldIcon className="w-7 h-7" weight="duotone" />
           </div>
         </div>
 
         {/* Plain Language Message */}
-        <p className="text-xs text-text leading-relaxed font-sans border-t border-border/60 pt-3">
+        <p className="text-xs text-[var(--text-primary)] leading-relaxed font-sans border-t border-[var(--surface-border)] pt-3">
           {message}
         </p>
 
         {/* 3-Row Evidence Breakdown (Identity, Vision, Context) per DESIGN.md Section 5 */}
-        <div className="flex flex-col gap-2 pt-2 border-t border-border/60">
-          <span className="text-[10px] font-mono uppercase text-muted tracking-wider">
+        <div className="flex flex-col gap-2 pt-2 border-t border-[var(--surface-border)]">
+          <span className="text-[10px] font-mono uppercase text-[var(--text-secondary)] tracking-wider">
             Multi-Agent Evidence Breakdown
           </span>
 
           {/* Row 1: Identity Agent */}
-          <div className="p-2.5 rounded-[4px] bg-ink border border-border/80 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-muted font-mono text-[11px]">01</span>
+              <span className="text-[var(--text-muted)] font-mono text-[11px]">01</span>
               <div>
-                <p className="font-medium text-text">Identity Agent</p>
-                <p className="text-[10px] text-muted truncate max-w-[220px]">
+                <p className="font-semibold text-[var(--text-primary)]">Identity Agent</p>
+                <p className="text-[10px] text-[var(--text-secondary)] truncate max-w-[220px]">
                   {agentOutputs?.identity?.reason || "Payload matched registered credential"}
                 </p>
               </div>
             </div>
             {identityStatus === "pass" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-ok/10 text-ok border border-ok/30">
                 <Check className="w-3 h-3" weight="bold" /> PASS
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-[#FF6B81] border border-danger/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-danger/10 text-[#FF6B81] border border-danger/30">
                 <X className="w-3 h-3" weight="bold" /> FLAG
               </span>
             )}
           </div>
 
           {/* Row 2: Vision Agent */}
-          <div className="p-2.5 rounded-[4px] bg-ink border border-border/80 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-muted font-mono text-[11px]">02</span>
+              <span className="text-[var(--text-muted)] font-mono text-[11px]">02</span>
               <div>
-                <p className="font-medium text-text">Vision Agent</p>
-                <p className="text-[10px] text-muted truncate max-w-[220px]">
+                <p className="font-semibold text-[var(--text-primary)]">Vision Agent</p>
+                <p className="text-[10px] text-[var(--text-secondary)] truncate max-w-[220px]">
                   {agentOutputs?.vision?.reason || "Visual embedding compared"}
                 </p>
               </div>
             </div>
             {visionStatus === "pass" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-ok/10 text-ok border border-ok/30">
                 <Check className="w-3 h-3" weight="bold" /> PASS
               </span>
             ) : visionStatus === "warn" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-warn/10 text-warn border border-warn/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-warn/10 text-warn border border-warn/30">
                 <Warning className="w-3 h-3" weight="bold" /> SOFT WARN
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-muted/10 text-muted border border-border">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-muted/10 text-muted border border-border">
                 SKIPPED
               </span>
             )}
           </div>
 
           {/* Row 3: Context Agent */}
-          <div className="p-2.5 rounded-[4px] bg-ink border border-border/80 flex items-center justify-between text-xs">
+          <div className="p-3 rounded-[14px] bg-[var(--box-mono-bg)] border border-[var(--box-mono-border)] flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-muted font-mono text-[11px]">03</span>
+              <span className="text-[var(--text-muted)] font-mono text-[11px]">03</span>
               <div>
-                <p className="font-medium text-text">Context Agent</p>
-                <p className="text-[10px] text-muted truncate max-w-[220px]">
+                <p className="font-semibold text-[var(--text-primary)]">Context Agent</p>
+                <p className="text-[10px] text-[var(--text-secondary)] truncate max-w-[220px]">
                   {agentOutputs?.context?.reason || "GPS proximity verified"}
                 </p>
               </div>
             </div>
             {contextStatus === "pass" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-ok/10 text-ok border border-ok/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-ok/10 text-ok border border-ok/30">
                 <Check className="w-3 h-3" weight="bold" /> PASS
               </span>
             ) : contextStatus === "fail" ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-danger/10 text-[#FF6B81] border border-danger/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-danger/10 text-[#FF6B81] border border-danger/30">
                 <X className="w-3 h-3" weight="bold" /> RELOCATED
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-[2px] bg-warn/10 text-warn border border-warn/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-full bg-warn/10 text-warn border border-warn/30">
                 NO GPS
               </span>
             )}
@@ -210,7 +214,7 @@ export function VerdictCard({
           <button
             type="button"
             onClick={onReset}
-            className="h-10 px-4 rounded-[4px] bg-brand text-black font-semibold text-xs flex items-center justify-center gap-2 hover:bg-brand-soft transition-colors"
+            className="btn-red-glass h-12 w-full px-4 rounded-[16px] text-white font-semibold text-xs flex items-center justify-center gap-2"
           >
             <span>Scan Another QR Sticker</span>
           </button>

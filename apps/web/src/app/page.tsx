@@ -171,7 +171,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-ink text-text flex flex-col w-full selection:bg-brand selection:text-ink">
+    <div className="landing-page min-h-screen bg-ink text-text flex flex-col w-full selection:bg-brand selection:text-ink">
       {/* Floating Capsule Navbar */}
       <Navbar />
 
