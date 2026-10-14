@@ -144,3 +144,123 @@ export function assertAiDataBoundary(payload: unknown): void {
     }
   }
 }
+
+/**
+ * Sarvam Voice Privacy Guard
+ *
+ * Allowed to reach Sarvam:
+ * - Spoken template text / transliteration input
+ * - Target language code / source language code
+ * - Merchant display name (from verified registry only)
+ * - TTS model / speaker configuration options
+ *
+ * Strictly FORBIDDEN to reach Sarvam:
+ * - GST/Udyam numbers
+ * - Raw VPAs / bank account details
+ * - KYC address
+ * - Contact phone
+ * - GPS coordinates
+ * - Raw photo bytes or embeddings
+ * - Audit internals, agent scores, or secrets
+ */
+const SARVAM_ALLOWED_KEYS = new Set([
+  "verdict",
+  "lang",
+  "target_language_code",
+  "source_language_code",
+  "merchantdisplayname",
+  "merchant_display_name",
+  "displayname",
+  "display_name",
+  "text",
+  "input",
+  "speaker",
+  "model",
+  "mode",
+  "speech_sample_rate",
+  "enable_preprocessing",
+  "pace",
+  "pitch",
+  "loudness",
+  "numerals_format",
+  "spoken_form",
+  "spoken_form_numerals_language",
+  "output_audio_codec",
+]);
+
+const SARVAM_FORBIDDEN_KEY_SUBSTRINGS = [
+  "gst",
+  "udyam",
+  "vpa",
+  "bank",
+  "account",
+  "ifsc",
+  "kyc",
+  "address",
+  "phone",
+  "contact",
+  "lat",
+  "lng",
+  "gps",
+  "coord",
+  "photo",
+  "image",
+  "embedding",
+  "vector",
+  "secret",
+  "key",
+  "token",
+  "password",
+  "agent_output",
+  "agentoutputs",
+  "score",
+  "misbinding",
+  "attestation",
+];
+
+export function assertSarvamVoiceDataBoundary(payload: unknown): void {
+  if (payload === null || payload === undefined) return;
+
+  if (typeof payload === "string") {
+    if (GSTIN_REGEX.test(payload)) {
+      throw new AiDataBoundaryError(
+        "Detected unredacted GST/Udyam number in outgoing Sarvam voice payload",
+      );
+    }
+    return;
+  }
+
+  if (Array.isArray(payload)) {
+    for (const item of payload) {
+      assertSarvamVoiceDataBoundary(item);
+    }
+    return;
+  }
+
+  if (typeof payload === "object") {
+    for (const [key, value] of Object.entries(payload as Record<string, unknown>)) {
+      const lowerKey = key.toLowerCase();
+
+      // Check if key is explicitly forbidden
+      const isForbidden = SARVAM_FORBIDDEN_KEY_SUBSTRINGS.some((forbidden) =>
+        lowerKey.includes(forbidden),
+      );
+
+      if (isForbidden) {
+        throw new AiDataBoundaryError(
+          `Forbidden field '${key}' detected in outgoing Sarvam voice payload. PII, GPS, photos, and audit internals must never reach Sarvam.`,
+        );
+      }
+
+      // Check if key is in the allowed whitelist
+      const isAllowed = SARVAM_ALLOWED_KEYS.has(lowerKey);
+      if (!isAllowed) {
+        throw new AiDataBoundaryError(
+          `Disallowed field '${key}' in outgoing Sarvam voice payload. Only text, language, verified merchant display name, and TTS settings are permitted.`,
+        );
+      }
+
+      assertSarvamVoiceDataBoundary(value);
+    }
+  }
+}

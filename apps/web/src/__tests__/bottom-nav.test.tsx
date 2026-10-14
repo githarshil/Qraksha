@@ -105,7 +105,7 @@ describe("BottomNav & AI Assistant Redesign", () => {
       expect(html).toContain('aria-modal="true"');
       expect(html).toContain("AI ASSISTANT");
       expect(html).toContain("QRaksha Assistant");
-      expect(html).toContain("Assistant coming soon");
+      expect(html).toContain("Sarvam Bulbul AI Voice Copilot");
       expect(html).toContain('aria-label="Close assistant"');
     });
   });

@@ -14,6 +14,8 @@ import {
   AdminCredentialItem,
   AdminCredentialsListResult,
   SeedRegistryResult,
+  VoiceVerdictInput,
+  VoiceVerdictResponse,
 } from "@qraksha/shared";
 
 export type {
@@ -25,6 +27,8 @@ export type {
   AdminCredentialItem,
   AdminCredentialsListResult,
   SeedRegistryResult,
+  VoiceVerdictInput,
+  VoiceVerdictResponse,
 };
 
 const API_BASE_URL =
@@ -198,6 +202,7 @@ export interface AuditResult {
   credentialId?: string;
   auditRunId?: string;
   isUnregistered?: boolean;
+  merchantDisplayName?: string;
 }
 
 export interface AuditHistoryItem {
@@ -333,6 +338,51 @@ export async function runCustomerCheck(input: {
   }
 
   return json.data as AuditResult;
+}
+
+export async function getVoiceVerdict(input: VoiceVerdictInput): Promise<VoiceVerdictResponse> {
+  const endpoints = [
+    `${API_BASE_URL}/voice/verdict`,
+    ...(API_BASE_URL.includes("localhost:4000")
+      ? []
+      : ["http://localhost:4000/api/v1/voice/verdict"]),
+  ];
+
+  let lastError: Error | null = null;
+
+  for (const endpoint of endpoints) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(input),
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        if (json?.data) {
+          return json.data as VoiceVerdictResponse;
+        }
+      } else {
+        const json = await response.json().catch(() => null);
+        const errorPayload = json?.error;
+        lastError = new ApiError(
+          errorPayload?.message || `Voice synthesis failed with HTTP ${response.status}`,
+          errorPayload?.code || "VOICE_ERROR",
+          response.status,
+        );
+      }
+    } catch (networkError) {
+      lastError = new ApiError(
+        "Unable to fetch voice verdict. Please check your network connection.",
+        "NETWORK_ERROR",
+        0,
+        networkError,
+      );
+    }
+  }
+
+  throw lastError || new ApiError("Voice synthesis unavailable", "VOICE_ERROR", 500);
 }
 
 export async function addQrToCredential(

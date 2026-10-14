@@ -173,5 +173,19 @@ describe("Phase 5 — Verdict Card Component Tests (All 3 Tiers & Evidence Rows)
 
       expect(html).toContain("Scan Another QR Sticker");
     });
+
+    it("renders translated Hindi verdict label and subtitle when lang is hi-IN", () => {
+      const html = renderToStaticMarkup(<VerdictCard result={baseVerifiedResult} lang="hi-IN" />);
+
+      expect(html).toContain("सत्यापित");
+      expect(html).toContain("सत्यापित व्यापारी • भुगतान सुरक्षित है");
+    });
+
+    it("renders translated Kannada verdict label and subtitle when lang is kn-IN", () => {
+      const html = renderToStaticMarkup(<VerdictCard result={baseWarningResult} lang="kn-IN" />);
+
+      expect(html).toContain("ಎಚ್ಚರಿಕೆ");
+      expect(html).toContain("ಅನುಮಾನಾಸ್ಪದ ಕ್ಯೂಆರ್ ಕೋಡ್ • ಪಾವತಿ ಮಾಡಬೇಡಿ");
+    });
   });
 });
