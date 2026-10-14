@@ -3,4 +3,6 @@ export * from "./schemas/merchant.js";
 export * from "./schemas/audit.js";
 export * from "./schemas/dispute.js";
 export * from "./schemas/auth.js";
+export * from "./schemas/voice.js";
+export * from "./voice/messages.js";
 export * from "./utils/ai-boundary-guard.js";

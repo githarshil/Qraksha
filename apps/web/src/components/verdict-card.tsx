@@ -1,7 +1,6 @@
-"use client";
-
 import React from "react";
 import { ShieldCheck, ShieldWarning, Shield, Check, Warning, X } from "@phosphor-icons/react";
+import { VoiceLanguageCode, VoiceVerdictType, VERDICT_DISPLAY_LABELS } from "@qraksha/shared";
 import { AuditResult } from "../lib/api";
 
 export interface VerdictCardProps {
@@ -9,6 +8,7 @@ export interface VerdictCardProps {
   onReset?: () => void;
   title?: string;
   isCustomerView?: boolean;
+  lang?: VoiceLanguageCode;
 }
 
 export function VerdictCard({
@@ -16,6 +16,7 @@ export function VerdictCard({
   onReset,
   title = "Audit Verdict",
   isCustomerView = false,
+  lang = "en-IN",
 }: VerdictCardProps) {
   const { verdict, reason, message, agentOutputs, degradedCheck, isUnregistered } = result;
 
@@ -45,6 +46,20 @@ export function VerdictCard({
   } else {
     // RECENTLY_REGISTERED / UNVERIFIED
     verdictDisplayLabel = isUnregistered ? "NOT ENROLLED" : "BUILDING TRUST";
+  }
+
+  const voiceVerdictKey: VoiceVerdictType =
+    verdict === "VERIFIED"
+      ? "VERIFIED"
+      : verdict === "WARNING"
+        ? "WARNING"
+        : isUnregistered
+          ? "UNVERIFIED"
+          : "RECENTLY_REGISTERED";
+
+  const localizedLabels = VERDICT_DISPLAY_LABELS[lang]?.[voiceVerdictKey];
+  if (lang !== "en-IN" && localizedLabels) {
+    verdictDisplayLabel = localizedLabels.title;
   }
 
   // Evidence breakdown extraction
@@ -80,7 +95,11 @@ export function VerdictCard({
             <h2 className={`text-2xl font-mono font-medium tracking-tight mt-0.5 ${textColor}`}>
               {verdictDisplayLabel}
             </h2>
-            <div className="flex items-center gap-2 mt-1">
+            {lang !== "en-IN" && localizedLabels?.subtitle && (
+              <p className="text-xs font-sans text-muted mt-0.5">{localizedLabels.subtitle}</p>
+            )}
+
+            <div className="flex items-center gap-2 mt-1.5">
               <span className={`text-[10px] font-mono px-2 py-0.5 rounded-[4px] border ${bgBadge}`}>
                 REASON // {reason}
               </span>

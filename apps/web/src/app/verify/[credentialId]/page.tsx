@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -17,8 +17,16 @@ import {
   QrCode,
   ArrowsClockwise,
 } from "@phosphor-icons/react";
-import { VerifyCredentialResult } from "@qraksha/shared";
+import {
+  VerifyCredentialResult,
+  VoiceLanguageCode,
+  VoiceVerdictType,
+  formatVoiceScript,
+} from "@qraksha/shared";
 import { getCredentialVerification, ApiError } from "@/lib/api";
+import { VoiceOrb } from "@/components/voice-orb";
+import { LanguageSelector, getInitialVoiceLanguage } from "@/components/language-selector";
+import { VoicePlayer, VoiceState } from "@/lib/voice-player";
 
 interface Props {
   params: Promise<{ credentialId: string }>;
@@ -33,18 +41,53 @@ export default function VerifyCredentialPage({ params }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [copiedHash, setCopiedHash] = useState(false);
 
+  // Voice state
+  const [voiceLang, setVoiceLang] = useState<VoiceLanguageCode>("en-IN");
+  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
+  const [amplitude, setAmplitude] = useState<number>(0);
+  const playerRef = useRef<VoicePlayer | null>(null);
+
+  useEffect(() => {
+    setVoiceLang(getInitialVoiceLanguage());
+  }, []);
+
+  useEffect(() => {
+    const player = new VoicePlayer({
+      onStateChange: (state) => setVoiceState(state),
+      onAmplitudeChange: (amp) => setAmplitude(amp),
+      onError: () => setVoiceState("error"),
+    });
+    playerRef.current = player;
+    return () => {
+      player.stop();
+    };
+  }, []);
+
+  const getVoiceVerdict = (item: VerifyCredentialResult): VoiceVerdictType => {
+    if (item.status === "suspended") return "WARNING";
+    if (item.verifiedOnChain) return "VERIFIED";
+    return "RECENTLY_REGISTERED";
+  };
+
   const fetchVerification = async () => {
     setIsLoading(true);
     setError(null);
+    setVoiceState("thinking");
     try {
       const result = await getCredentialVerification(credentialId);
       setData(result);
+
+      // Trigger automatic audio playback right after credential verdict renders
+      const verdictKey = getVoiceVerdict(result);
+      playerRef.current?.playVerdict(verdictKey, voiceLang, result.displayName);
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
         setError("Unable to load credential verification details. Please try again.");
       }
+      playerRef.current?.stop();
+      setVoiceState("idle");
     } finally {
       setIsLoading(false);
     }
@@ -54,31 +97,62 @@ export default function VerifyCredentialPage({ params }: Props) {
     fetchVerification();
   }, [credentialId]);
 
+  const handleTogglePlay = () => {
+    if (!data) return;
+    if (voiceState === "speaking") {
+      playerRef.current?.stop();
+    } else {
+      const verdictKey = getVoiceVerdict(data);
+      playerRef.current?.playVerdict(verdictKey, voiceLang, data.displayName);
+    }
+  };
+
+  const handleLanguageChange = (newLang: VoiceLanguageCode) => {
+    setVoiceLang(newLang);
+    if (data) {
+      const verdictKey = getVoiceVerdict(data);
+      playerRef.current?.playVerdict(verdictKey, newLang, data.displayName);
+    }
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedHash(true);
     setTimeout(() => setCopiedHash(false), 2000);
   };
 
+  const voiceVerdict = data ? getVoiceVerdict(data) : "UNVERIFIED";
+  const spokenAriaText = data ? formatVoiceScript(voiceVerdict, voiceLang, data.displayName) : "";
+
   return (
     <main className="flex-1 flex flex-col p-6 max-w-[540px] mx-auto w-full">
       {/* Top Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <Link
-          href="/"
-          className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors text-text"
-          aria-label="Back to home"
-        >
-          <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
-        </Link>
-        <div>
-          <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
-            <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
-            <span>PUBLIC AUDIT // ON-CHAIN ANCHOR</span>
+      <div className="flex items-center justify-between pb-3 border-b border-border mb-4">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/"
+            className="p-2 rounded-[4px] bg-ink-2 border border-border hover:border-brand transition-colors text-text"
+            aria-label="Back to home"
+          >
+            <ArrowLeft className="w-4 h-4 text-text" weight="bold" />
+          </Link>
+          <div>
+            <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-brand">
+              <ShieldCheck className="w-3.5 h-3.5" weight="duotone" />
+              <span>PUBLIC AUDIT // ON-CHAIN ANCHOR</span>
+            </div>
+            <h1 className="text-base font-medium text-text">Credential Audit Record</h1>
           </div>
-          <h1 className="text-lg font-medium text-text">Credential Audit Record</h1>
         </div>
+        <LanguageSelector currentLang={voiceLang} onSelectLang={handleLanguageChange} />
       </div>
+
+      {/* Accessible Live Region */}
+      {data && (
+        <div aria-live="assertive" className="sr-only">
+          {spokenAriaText}
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (
@@ -117,6 +191,27 @@ export default function VerifyCredentialPage({ params }: Props) {
       {/* Verification Details */}
       {!isLoading && data && (
         <div className="flex flex-col gap-5 animate-in fade-in duration-300">
+          {/* Prominent Thinking Orb Voice Section */}
+          <div className="p-4 rounded-[4px] bg-ink-2 border border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col text-center sm:text-left">
+              <span className="text-[10px] font-mono uppercase text-muted tracking-wider">
+                Audible Security Verdict
+              </span>
+              <span className="text-sm font-medium text-text mt-0.5">{data.displayName}</span>
+              <span className="text-xs text-muted">
+                Tap the orb to hear merchant verification in your chosen language
+              </span>
+            </div>
+            <VoiceOrb
+              voiceState={voiceState}
+              verdict={voiceVerdict}
+              lang={voiceLang}
+              amplitude={amplitude}
+              onTogglePlay={handleTogglePlay}
+              size={64}
+            />
+          </div>
+
           {/* Status Banner Card */}
           <div
             className={`p-5 rounded-[4px] bg-ink-2 border-t border-r border-b border-border flex flex-col gap-3 ${

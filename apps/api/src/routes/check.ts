@@ -4,6 +4,7 @@ import { CustomerCheckSchema } from "@qraksha/shared";
 import { validateBody } from "../middleware/validate.middleware.js";
 import { scanRateLimiter } from "../middleware/rate-limit.middleware.js";
 import { runAgentPipeline } from "../agents/orchestrator.js";
+import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 
 export const checkRouter = Router();
 
@@ -45,8 +46,41 @@ checkRouter.post(
         return;
       }
 
+      // Fetch verified merchant display name ONLY from the trusted database registry
+      // (NEVER from the untrusted scanned QR payload)
+      let merchantDisplayName: string | undefined;
+      if (
+        verdictResult.credentialId &&
+        (verdictResult.verdict === "VERIFIED" || verdictResult.verdict === "RECENTLY_REGISTERED") &&
+        isSupabaseConfigured()
+      ) {
+        try {
+          const { data: cred } = await supabaseAdmin
+            .schema("comparison")
+            .from("merchant_credential")
+            .select("merchant_id")
+            .eq("id", verdictResult.credentialId)
+            .maybeSingle();
+
+          if (cred?.merchant_id) {
+            const { data: m } = await supabaseAdmin
+              .from("merchant")
+              .select("display_name")
+              .eq("id", cred.merchant_id)
+              .maybeSingle();
+
+            merchantDisplayName = m?.display_name || undefined;
+          }
+        } catch {
+          // Best effort non-blocking
+        }
+      }
+
       res.status(200).json({
-        data: verdictResult,
+        data: {
+          ...verdictResult,
+          merchantDisplayName,
+        },
       });
     } catch (err) {
       next(err);

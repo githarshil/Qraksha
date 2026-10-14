@@ -144,3 +144,23 @@ export const otpRateLimiter = createRateLimiter("otp", {
   message:
     "Too many OTP attempts for this phone number. Please wait 15 minutes before trying again.",
 });
+
+/**
+ * Voice synthesis rate limiter: max 5 requests per 10 seconds per client.
+ * Protects POST /api/v1/voice/verdict from spamming the external Sarvam API.
+ */
+export const voiceRateLimiter = createRateLimiter("voice", {
+  windowMs: 10 * 1000,
+  max: 5,
+  keyGenerator: (req: Request) => {
+    const clientIp = req.ip || req.socket.remoteAddress || "127.0.0.1";
+    const clientId =
+      (req.headers["x-test-client-id"] as string) ||
+      req.user?.id ||
+      (req.headers["x-client-session"] as string) ||
+      clientIp;
+    return `${clientIp}:${clientId}`;
+  },
+  message:
+    "Voice synthesis rate limit exceeded. Please wait a moment before requesting audio again.",
+});
