@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { normalizeQrPayload } from "@qraksha/shared";
 
 import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 
@@ -19,6 +20,7 @@ export interface RegisteredQrLookupResult {
 interface CacheEntry {
   result: RegisteredQrLookupResult | null;
   cachedAt: number;
+  ttlMs: number;
 }
 
 /**
@@ -27,26 +29,38 @@ interface CacheEntry {
  */
 export class PayloadLookupService {
   private cache = new Map<string, CacheEntry>();
-  private readonly cacheTtlMs: number;
+  private readonly positiveTtlMs: number;
+  private readonly negativeTtlMs: number;
 
   constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     private db: any = supabaseAdmin,
-    ttlMs = 5 * 60 * 1000,
+    positiveTtlMs = 5 * 60 * 1000, // 5 minutes for positive hits
+    negativeTtlMs = 15 * 1000, // 15 seconds for negative "not found" cache
   ) {
-    this.cacheTtlMs = ttlMs;
+    this.positiveTtlMs = positiveTtlMs;
+    this.negativeTtlMs = negativeTtlMs;
   }
 
   /**
-   * Computes SHA-256 hash of a raw QR payload.
+   * Computes SHA-256 hash of a string payload.
    */
   hashPayload(qrPayload: string): string {
     return crypto.createHash("sha256").update(qrPayload).digest("hex");
   }
 
   /**
+   * Computes canonical normalized hash of a QR payload.
+   */
+  hashNormalizedPayload(qrPayload: string): string {
+    return this.hashPayload(normalizeQrPayload(qrPayload));
+  }
+
+  /**
    * Looks up a registered QR record by its raw payload string or precomputed hash.
-   * Checks the hot-path in-memory cache first, then falls back to Postgres.
+   * Performs dual-lookup:
+   * 1. Normalized hash lookup first
+   * 2. Fall back to raw-payload hash (preserves compatibility with legacy rows)
    * Returns null cleanly for unrecognized payloads.
    */
   async lookupByPayload(
@@ -55,27 +69,90 @@ export class PayloadLookupService {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     dbOverride?: any,
   ): Promise<RegisteredQrLookupResult | null> {
-    const hash = isAlreadyHashed ? qrPayload : this.hashPayload(qrPayload);
+    if (!qrPayload) return null;
 
-    // 1. Hot-path in-memory cache lookup (<1ms)
+    if (isAlreadyHashed) {
+      return this.lookupByHash(qrPayload, dbOverride);
+    }
+
+    const trimmed = qrPayload.trim();
+    const normalized = normalizeQrPayload(trimmed);
+    const normalizedHash = this.hashPayload(normalized);
+    const rawHash = this.hashPayload(trimmed);
+
+    // 1. Hot-path in-memory cache lookup: normalized first, then raw
+    const cachedNormalized = this.getCached(normalizedHash);
+    if (cachedNormalized !== undefined) {
+      return cachedNormalized;
+    }
+    if (rawHash !== normalizedHash) {
+      const cachedRaw = this.getCached(rawHash);
+      if (cachedRaw !== undefined) {
+        return cachedRaw;
+      }
+    }
+
+    // 2. Query database for registered_qr record
+    let result: RegisteredQrLookupResult | null = null;
+    let dbSuccess = false;
+
+    if (isSupabaseConfigured()) {
+      try {
+        // Try normalized hash first
+        result = await this.queryDatabase(normalizedHash, dbOverride);
+        if (!result && rawHash !== normalizedHash) {
+          // Fall back to raw payload hash for existing legacy registrations
+          result = await this.queryDatabase(rawHash, dbOverride);
+        }
+        dbSuccess = true;
+      } catch (_dbError) {
+        // DB error occurred - do NOT cache failures caused by connectivity/query errors!
+        result = null;
+        dbSuccess = false;
+      }
+    }
+
+    // 3. Cache result: only cache if DB query succeeded cleanly
+    if (dbSuccess) {
+      this.setCache(normalizedHash, result);
+      if (rawHash !== normalizedHash) {
+        this.setCache(rawHash, result);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Lookup directly by SHA-256 hash
+   */
+  async lookupByHash(
+    hash: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dbOverride?: any,
+  ): Promise<RegisteredQrLookupResult | null> {
     const cached = this.getCached(hash);
     if (cached !== undefined) {
       return cached;
     }
 
-    // 2. Query database for registered_qr record
     let result: RegisteredQrLookupResult | null = null;
+    let dbSuccess = false;
+
     if (isSupabaseConfigured()) {
       try {
         result = await this.queryDatabase(hash, dbOverride);
+        dbSuccess = true;
       } catch (_dbError) {
-        // Graceful fallback: unrecognized/unreachable record treated as null
         result = null;
+        dbSuccess = false;
       }
     }
 
-    // 3. Cache result (including null for negative cache with shorter TTL)
-    this.setCache(hash, result);
+    if (dbSuccess) {
+      this.setCache(hash, result);
+    }
+
     return result;
   }
 
@@ -83,7 +160,7 @@ export class PayloadLookupService {
     const entry = this.cache.get(hash);
     if (!entry) return undefined;
 
-    const isExpired = Date.now() - entry.cachedAt > this.cacheTtlMs;
+    const isExpired = Date.now() - entry.cachedAt > entry.ttlMs;
     if (isExpired) {
       this.cache.delete(hash);
       return undefined;
@@ -93,9 +170,11 @@ export class PayloadLookupService {
   }
 
   public setCache(hash: string, result: RegisteredQrLookupResult | null): void {
+    const ttlMs = result === null ? this.negativeTtlMs : this.positiveTtlMs;
     this.cache.set(hash, {
       result,
       cachedAt: Date.now(),
+      ttlMs,
     });
   }
 
@@ -131,13 +210,13 @@ export class PayloadLookupService {
 
     // Fetch associated credential metadata and embedding
     const [credResult, embResult] = await Promise.all([
-      this.db
+      dbClient
         .schema("comparison")
         .from("merchant_credential")
         .select("id, merchant_id, status, trust_tier, trust_score")
         .eq("id", qrData.credential_id)
         .maybeSingle(),
-      this.db
+      dbClient
         .schema("comparison")
         .from("reference_embedding")
         .select("embedding")
@@ -186,6 +265,17 @@ export class PayloadLookupService {
       this.cache.delete(qrPayloadHash);
     } else {
       this.cache.clear();
+    }
+  }
+
+  /**
+   * Invalidates any cached entries matching a credential ID (e.g. after suspend/revoke).
+   */
+  invalidateCredential(credentialId: string): void {
+    for (const [hash, entry] of this.cache.entries()) {
+      if (entry.result?.credentialId === credentialId) {
+        this.cache.delete(hash);
+      }
     }
   }
 

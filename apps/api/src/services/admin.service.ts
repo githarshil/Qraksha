@@ -188,6 +188,9 @@ export class AdminService {
       throw new Error(`Failed to update target credential: ${updateCredError.message}`);
     }
 
+    // Invalidate in-memory cache for all QRs of this credential
+    payloadLookupService.invalidateCredential(credential.id);
+
     // 4. Update dispute record
     const resolvedAt = new Date().toISOString();
     const resolvedByAdminId = adminId || "admin-system";

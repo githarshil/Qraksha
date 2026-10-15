@@ -18,6 +18,7 @@
     "verify:security": "tsx src/scripts/verify-security-checklist.ts",
     "benchmark:perf": "tsx src/scripts/benchmark-performance.ts",
     "verify:prod": "tsx src/scripts/verify-production.ts",
+    "verify:stats": "tsx src/scripts/verify-stats-consistency.ts",
     "rehearse:rollback": "tsx src/scripts/rehearse-rollback.ts"
   },
   "dependencies": {

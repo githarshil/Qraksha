@@ -14,6 +14,7 @@ import {
 import dynamic from "next/dynamic";
 import { CameraCaptureSkeleton } from "../../../components/camera-capture-skeleton";
 import { addQrToCredential, getRegisteredQrs, getMyCredentials, ApiError } from "../../../lib/api";
+import { getActiveCredentialId } from "../../../lib/constants";
 
 const CameraCapture = dynamic(
   () => import("../../../components/camera-capture").then((m) => m.CameraCapture),
@@ -39,7 +40,7 @@ interface RegisteredQrItem {
 }
 
 export default function CredentialQrsPage() {
-  const [credentialId, setCredentialId] = useState("550e8400-e29b-41d4-a716-446655440000"); // Demo merchant credential default
+  const [credentialId, setCredentialId] = useState(getActiveCredentialId()); // Canonical demo credential default
   const [qrs, setQrs] = useState<RegisteredQrItem[]>([
     {
       id: "qr-primary",
@@ -90,7 +91,7 @@ export default function CredentialQrsPage() {
 
   useEffect(() => {
     async function init() {
-      let resolvedId = "550e8400-e29b-41d4-a716-446655440000";
+      let resolvedId = getActiveCredentialId();
       if (typeof window !== "undefined") {
         const queryParam = new URLSearchParams(window.location.search).get("credentialId");
         if (queryParam) {
@@ -168,6 +169,9 @@ export default function CredentialQrsPage() {
           ? "Additional QR registered successfully! Inherited abbreviated trust ramp (starts at 2 clean audits)."
           : "Additional QR registered successfully! Anchored to blockchain.",
       });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("qraksha-stats-invalidate"));
+      }
     } catch (err) {
       const error = err as ApiError;
       setFeedback({

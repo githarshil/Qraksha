@@ -57,13 +57,29 @@ auditRouter.get(
       const limit = Math.min(50, Math.max(1, parseInt((req.query.limit as string) || "10", 10)));
       const offset = (page - 1) * limit;
 
-      const credentialId = req.query.credentialId as string | undefined;
+      // Resolve current merchant/credential scope (server-side scoped per Rule 7)
+      const resolvedMerchantId =
+        req.user?.id || (req.query.merchantId as string) || "550e8400-e29b-41d4-a716-446655440000";
 
       let data: Record<string, unknown>[] = [];
       let count = 0;
 
       if (isSupabaseConfigured()) {
         try {
+          const { data: creds } = await supabaseAdmin
+            .schema("comparison")
+            .from("merchant_credential")
+            .select("id")
+            .eq("merchant_id", resolvedMerchantId);
+
+          const merchantCredIds = (creds || []).map((c) => c.id);
+          const requestedCredId = req.query.credentialId as string | undefined;
+
+          // If client passes a credentialId, only allow it if it belongs to this merchant
+          const targetCredIds = requestedCredId
+            ? merchantCredIds.filter((id) => id === requestedCredId)
+            : merchantCredIds;
+
           let query = supabaseAdmin
             .schema("comparison")
             .from("audit_run")
@@ -84,8 +100,11 @@ auditRouter.get(
             .order("created_at", { ascending: false })
             .range(offset, offset + limit - 1);
 
-          if (credentialId) {
-            query = query.eq("credential_id", credentialId);
+          if (targetCredIds.length > 0) {
+            query = query.in("credential_id", targetCredIds);
+          } else {
+            // No credentials for this merchant -> return empty set safely
+            query = query.eq("credential_id", "00000000-0000-0000-0000-000000000000");
           }
 
           const queryRes = await query;

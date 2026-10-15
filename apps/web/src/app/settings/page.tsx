@@ -15,8 +15,9 @@ import {
   CaretDown,
   CaretRight,
 } from "@phosphor-icons/react";
-import { getMyCredentials } from "@/lib/api";
+import { getMyCredentials, getMerchantStats } from "@/lib/api";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
+import { DEFAULT_DEMO_CREDENTIAL_ID, getActiveMerchantId } from "@/lib/constants";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -34,12 +35,12 @@ export default function SettingsPage() {
     displayName: "Sharma Canteen",
     contactPhone: "+91 98765 43210",
     identityTier: "gst_verified",
-    credentialId: "550e8400-e29b-41d4-a716-446655440000",
+    credentialId: DEFAULT_DEMO_CREDENTIAL_ID,
     trustTier: "verified",
     trustScore: 96,
     status: "active",
-    qrCount: 1,
-    activatedAt: "2026-09-15T08:00:00.000Z",
+    qrCount: 0,
+    activatedAt: null,
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -49,23 +50,26 @@ export default function SettingsPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const storedMerchantId = localStorage.getItem("qraksha_merchant_id");
+        const storedMerchantId = getActiveMerchantId();
         const storedName = localStorage.getItem("qraksha_merchant_name");
         const storedPhone = localStorage.getItem("qraksha_merchant_phone");
         const storedTier = localStorage.getItem("qraksha_identity_tier");
 
-        const data = await getMyCredentials(storedMerchantId || undefined);
+        const [data, stats] = await Promise.all([
+          getMyCredentials(storedMerchantId).catch(() => null),
+          getMerchantStats(storedMerchantId).catch(() => null),
+        ]);
         const active = data?.activeCredential;
 
-        if (active) {
+        if (active || stats) {
           setProfile((prev) => ({
             ...prev,
-            credentialId: active.id,
-            trustTier: active.trust_tier || "unverified",
-            trustScore: active.trust_score ?? 0,
-            status: active.status || "active",
-            qrCount: data.qrs?.length || 1,
-            activatedAt: active.activated_at,
+            credentialId: active?.id || prev.credentialId,
+            trustTier: active?.trust_tier || "unverified",
+            trustScore: active?.trust_score ?? 0,
+            status: active?.status || "active",
+            qrCount: stats?.activeQrs ?? (data?.qrs?.length || 0),
+            activatedAt: active?.activated_at || null,
             displayName: storedName || prev.displayName,
             contactPhone: storedPhone || prev.contactPhone,
             identityTier:
@@ -75,7 +79,7 @@ export default function SettingsPage() {
           }));
         }
       } catch (_err) {
-        // Fallback to default demo profile
+        // Fallback
       } finally {
         setIsLoading(false);
       }

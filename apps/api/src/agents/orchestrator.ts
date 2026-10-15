@@ -1,4 +1,3 @@
-import { roundGpsForAi } from "@qraksha/shared";
 import type { AuditVerdict, VerdictReason, PipelineAgentOutputs } from "@qraksha/shared";
 
 import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
@@ -72,10 +71,10 @@ export async function runAgentPipeline(
     lookupResult,
   });
 
-  // Context Agent
+  // Context Agent (uses exact GPS coordinates for distance calculation)
   const contextOutput = await runContextAgent({
-    liveLatitude: latitude !== undefined ? roundGpsForAi(latitude) : undefined,
-    liveLongitude: longitude !== undefined ? roundGpsForAi(longitude) : undefined,
+    liveLatitude: latitude,
+    liveLongitude: longitude,
     boundLat: lookupResult?.boundLat,
     boundLng: lookupResult?.boundLng,
     boundRadiusM: lookupResult?.boundRadiusM,

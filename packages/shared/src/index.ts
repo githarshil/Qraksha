@@ -6,3 +6,4 @@ export * from "./schemas/auth.js";
 export * from "./schemas/voice.js";
 export * from "./voice/messages.js";
 export * from "./utils/ai-boundary-guard.js";
+export * from "./utils/qr-normalizer.js";

@@ -42,16 +42,31 @@ export async function runTrustAgent(input: TrustAgentInput): Promise<TrustAgentO
     };
   }
 
-  // 1. Unknown QR Check (Swapped fake QR attack)
+  // 1a. Suspended / Revoked Credential Check
+  if (
+    identity &&
+    identity.status === "fail" &&
+    (identity.reason?.toLowerCase().includes("suspended") ||
+      identity.reason?.toLowerCase().includes("revoked"))
+  ) {
+    return {
+      status: "fail",
+      verdict: "WARNING",
+      reasonCode: "CREDENTIAL_SUSPENDED",
+      reason:
+        identity.reason ||
+        "Credential has been suspended or revoked. Payments to this QR are disabled.",
+    };
+  }
+
+  // 1b. Unknown QR Check (Swapped fake QR attack)
   if (identity && (!identity.isRegistered || identity.status === "fail")) {
-    if (!identity.isRegistered || identity.reason?.toLowerCase().includes("unknown")) {
-      return {
-        status: "fail",
-        verdict: "WARNING",
-        reasonCode: "UNKNOWN_QR",
-        reason: "Unknown QR sticker: This payload is not registered to any merchant in QRaksha",
-      };
-    }
+    return {
+      status: "fail",
+      verdict: "WARNING",
+      reasonCode: "UNKNOWN_QR",
+      reason: "Unknown QR sticker: This payload is not registered to any merchant in QRaksha",
+    };
   }
 
   // 2. Location Mismatch Check (Relocated sticker attack - flagship differentiator)
