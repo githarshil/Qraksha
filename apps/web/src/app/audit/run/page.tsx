@@ -9,8 +9,22 @@ import {
   WarningCircle,
   ClockCounterClockwise,
 } from "@phosphor-icons/react";
-import { CameraCapture } from "../../../components/camera-capture";
+import dynamic from "next/dynamic";
+import { CameraCaptureSkeleton } from "../../../components/camera-capture-skeleton";
 import { VerdictCard } from "../../../components/verdict-card";
+
+const CameraCapture = dynamic(
+  () => import("../../../components/camera-capture").then((m) => m.CameraCapture),
+  {
+    ssr: false,
+    loading: () => (
+      <CameraCaptureSkeleton
+        title="Capture Daily Audit Photo"
+        helperText="Snap a clear photo of your counter UPI QR stand in your store."
+      />
+    ),
+  },
+);
 import { runSelfAudit, AuditResult, ApiError } from "../../../lib/api";
 
 export default function AuditRunPage() {

@@ -11,8 +11,22 @@ import {
   X,
   MapPin,
 } from "@phosphor-icons/react";
-import { CameraCapture } from "../../../components/camera-capture";
+import dynamic from "next/dynamic";
+import { CameraCaptureSkeleton } from "../../../components/camera-capture-skeleton";
 import { addQrToCredential, getRegisteredQrs, getMyCredentials, ApiError } from "../../../lib/api";
+
+const CameraCapture = dynamic(
+  () => import("../../../components/camera-capture").then((m) => m.CameraCapture),
+  {
+    ssr: false,
+    loading: () => (
+      <CameraCaptureSkeleton
+        title="Capture Additional Storefront QR"
+        helperText="Align the new QR sticker on your counter to register its visual baseline."
+      />
+    ),
+  },
+);
 
 interface RegisteredQrItem {
   id: string;

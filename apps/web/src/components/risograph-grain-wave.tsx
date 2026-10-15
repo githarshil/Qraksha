@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useEffect, useState, useId } from "react";
-import { GrainGradient } from "@paper-design/shaders-react";
+import dynamic from "next/dynamic";
+
+const GrainGradient = dynamic(
+  () => import("@paper-design/shaders-react").then((m) => m.GrainGradient),
+  { ssr: false },
+);
 
 interface RisographGrainWaveProps {
   className?: string;
