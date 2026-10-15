@@ -16,10 +16,10 @@ export interface VoiceServiceOptions {
 }
 
 export class VoiceService {
-  private apiKey: string | undefined;
-  private baseUrl: string;
-  private model: string;
-  private speaker: string;
+  private explicitApiKey: string | undefined;
+  private explicitBaseUrl: string | undefined;
+  private explicitModel: string | undefined;
+  private explicitSpeaker: string | undefined;
   private timeoutMs: number;
 
   // Cache for static no-name phrases (4 verdicts x 3 languages)
@@ -35,15 +35,31 @@ export class VoiceService {
   private dynamicAudioCache = new Map<string, VoiceVerdictResponse>();
 
   constructor(options: VoiceServiceOptions = {}) {
-    this.apiKey = options.apiKey ?? process.env.SARVAM_API_KEY;
-    this.baseUrl = options.baseUrl ?? process.env.SARVAM_BASE_URL ?? "https://api.sarvam.ai";
-    this.model = options.model ?? process.env.SARVAM_TTS_MODEL ?? "bulbul:v3";
-    this.speaker = options.speaker ?? process.env.SARVAM_SPEAKER ?? "shubh";
+    this.explicitApiKey = options.apiKey;
+    this.explicitBaseUrl = options.baseUrl;
+    this.explicitModel = options.model;
+    this.explicitSpeaker = options.speaker;
     this.timeoutMs = options.timeoutMs ?? 5000;
   }
 
+  get apiKey(): string | undefined {
+    return this.explicitApiKey ?? process.env.SARVAM_API_KEY;
+  }
+
+  get baseUrl(): string {
+    return this.explicitBaseUrl ?? process.env.SARVAM_BASE_URL ?? "https://api.sarvam.ai";
+  }
+
+  get model(): string {
+    return this.explicitModel ?? process.env.SARVAM_TTS_MODEL ?? "bulbul:v3";
+  }
+
+  get speaker(): string {
+    return this.explicitSpeaker ?? process.env.SARVAM_SPEAKER ?? "shubh";
+  }
+
   public setApiKey(key: string | undefined): void {
-    this.apiKey = key;
+    this.explicitApiKey = key;
   }
 
   public clearCache(): void {

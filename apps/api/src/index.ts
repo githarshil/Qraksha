@@ -1,8 +1,7 @@
-import dotenv from "dotenv";
+import "dotenv/config";
 import { app } from "./app.js";
 import { initSentry } from "./config/sentry.js";
 
-dotenv.config();
 initSentry();
 
 const port = process.env.PORT || 4000;
