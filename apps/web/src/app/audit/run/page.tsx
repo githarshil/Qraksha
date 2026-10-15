@@ -94,6 +94,9 @@ export default function AuditRunPage() {
 
         clearInterval(interval);
         setVerdictResult(result);
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("qraksha-stats-invalidate"));
+        }
       } catch (err) {
         clearInterval(interval);
         const error = err as ApiError;

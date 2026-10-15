@@ -121,6 +121,32 @@ describe("Phase 5 — Verdict Card Component Tests (All 3 Tiers & Evidence Rows)
       // The card container background badge must not be brand
       expect(html).toContain("bg-danger/15 text-[#FF6B81] border-danger/40");
     });
+
+    it("renders distinct SUSPENDED label when reason is CREDENTIAL_SUSPENDED", () => {
+      const suspendedResult: AuditResult = {
+        ...baseWarningResult,
+        reason: "CREDENTIAL_SUSPENDED",
+        message: "Credential has been suspended or revoked. Payments to this QR are disabled.",
+      };
+      const html = renderToStaticMarkup(<VerdictCard result={suspendedResult} />);
+
+      expect(html).toContain("SUSPENDED");
+      expect(html).toContain("border-l-danger");
+      expect(html).toContain("REASON // CREDENTIAL_SUSPENDED");
+    });
+
+    it("renders distinct LOCATION MISMATCH label when reason is LOCATION_MISMATCH", () => {
+      const locationMismatchResult: AuditResult = {
+        ...baseWarningResult,
+        reason: "LOCATION_MISMATCH",
+        message: "QR relocation detected: scan outside authorized radius",
+      };
+      const html = renderToStaticMarkup(<VerdictCard result={locationMismatchResult} />);
+
+      expect(html).toContain("LOCATION MISMATCH");
+      expect(html).toContain("border-l-danger");
+      expect(html).toContain("REASON // LOCATION_MISMATCH");
+    });
   });
 
   describe("Degraded Check Badge & Evidence Variations", () => {

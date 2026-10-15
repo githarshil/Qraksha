@@ -10,13 +10,13 @@ import {
   Scan,
 } from "@phosphor-icons/react";
 
-import { useEffect, useState } from "react";
-import { getCredentialVerification } from "@/lib/api";
+import { useEffect, useState, useCallback } from "react";
+import { getCredentialVerification, getMerchantStats, MerchantStatsResult } from "@/lib/api";
 import { ThemeToggleButton } from "@/components/theme-toggle-button";
+import { getActiveCredentialId, getActiveMerchantId } from "@/lib/constants";
 
 export default function DashboardPage() {
-  // Demo credential data for MVP merchant view
-  const demoCredentialId = "550e8400-e29b-41d4-a716-446655440000";
+  const [credentialId, setCredentialId] = useState<string>(getActiveCredentialId());
   const [txHash, setTxHash] = useState<string>(
     "0x5934f0384053daf1e88539c6cbd5b940efbe1f683c4b51e49a12bbce8c0be6dc",
   );
@@ -24,10 +24,31 @@ export default function DashboardPage() {
     "https://amoy.polygonscan.com/tx/0x5934f0384053daf1e88539c6cbd5b940efbe1f683c4b51e49a12bbce8c0be6dc",
   );
 
+  // Canonical database stats
+  const [stats, setStats] = useState<MerchantStatsResult | null>(null);
+  const [statsLoading, setStatsLoading] = useState<boolean>(true);
+  const [statsError, setStatsError] = useState<boolean>(false);
+
+  const loadStats = useCallback(async () => {
+    try {
+      const merchantId = getActiveMerchantId();
+      const res = await getMerchantStats(merchantId);
+      setStats(res);
+      setStatsError(false);
+    } catch {
+      setStatsError(true);
+    } finally {
+      setStatsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
+    const credId = getActiveCredentialId();
+    setCredentialId(credId);
+
     async function loadAnchor() {
       try {
-        const res = await getCredentialVerification(demoCredentialId);
+        const res = await getCredentialVerification(credId);
         if (res?.anchor?.txHash) {
           setTxHash(res.anchor.txHash);
           if (res.anchor.explorerUrl) {
@@ -41,7 +62,19 @@ export default function DashboardPage() {
       }
     }
     loadAnchor();
-  }, [demoCredentialId]);
+    loadStats();
+
+    // Refetch stats on focus, visibilitychange, or mutation events for realtime freshness
+    const onFocus = () => loadStats();
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("visibilitychange", onFocus);
+    window.addEventListener("qraksha-stats-invalidate", onFocus);
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("visibilitychange", onFocus);
+      window.removeEventListener("qraksha-stats-invalidate", onFocus);
+    };
+  }, [loadStats]);
 
   return (
     <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))]">
@@ -123,7 +156,7 @@ export default function DashboardPage() {
             <ArrowSquareOut className="w-3.5 h-3.5 text-[var(--text-secondary)]" weight="bold" />
           </a>
           <Link
-            href={`/verify/${demoCredentialId}`}
+            href={`/verify/${credentialId}`}
             className="btn-pill-secondary h-9 px-3 text-xs font-medium flex items-center justify-center gap-1.5"
           >
             <span>Public Audit</span>
@@ -141,9 +174,15 @@ export default function DashboardPage() {
           <span className="text-xs text-[var(--text-secondary)] font-medium block">
             Active QRs:
           </span>
-          <span className="text-base font-semibold text-[var(--text-primary)] mt-1 block">
-            1 Registered
-          </span>
+          {statsLoading ? (
+            <div className="h-6 w-24 bg-white/10 dark:bg-white/5 animate-pulse rounded mt-1" />
+          ) : statsError ? (
+            <span className="text-xs text-[var(--text-muted)] mt-1 block">Unavailable</span>
+          ) : (
+            <span className="text-base font-semibold text-[var(--text-primary)] mt-1 block">
+              {stats?.activeQrs ?? 0} Registered
+            </span>
+          )}
           {/* Green indicator bar on right edge */}
           <span
             className="w-1.5 h-6 bg-[#2FBF71] rounded-full absolute right-4 top-1/2 -translate-y-1/2"
@@ -157,9 +196,15 @@ export default function DashboardPage() {
           <span className="text-xs text-[var(--text-secondary)] font-medium block">
             Clean Audits:
           </span>
-          <span className="text-base font-semibold text-[var(--text-primary)] mt-1 block">
-            14 Clean Runs
-          </span>
+          {statsLoading ? (
+            <div className="h-6 w-24 bg-white/10 dark:bg-white/5 animate-pulse rounded mt-1" />
+          ) : statsError ? (
+            <span className="text-xs text-[var(--text-muted)] mt-1 block">Unavailable</span>
+          ) : (
+            <span className="text-base font-semibold text-[var(--text-primary)] mt-1 block">
+              {stats?.cleanAudits ?? 0} Clean Runs
+            </span>
+          )}
           {/* Green indicator bar on right edge */}
           <span
             className="w-1.5 h-6 bg-[#2FBF71] rounded-full absolute right-4 top-1/2 -translate-y-1/2"

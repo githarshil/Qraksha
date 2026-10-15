@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Info } from "@phosphor-icons/react";
+import { ArrowLeft, Info, MapPin } from "@phosphor-icons/react";
 
 import dynamic from "next/dynamic";
 import { VoiceVerdictType, VoiceLanguageCode, formatVoiceScript } from "@qraksha/shared";
@@ -56,6 +56,58 @@ export default function CustomerCheckPage() {
     };
   }, []);
 
+  // Geolocation state requested on mount per Requirement 5
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [locationStatus, setLocationStatus] = useState<
+    "prompting" | "granted" | "denied" | "timeout" | "unavailable"
+  >("prompting");
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const requestLocation = useCallback(() => {
+    if (typeof window === "undefined" || !("geolocation" in navigator)) {
+      setLocationStatus("unavailable");
+      setLocationError("Geolocation is not supported by your browser.");
+      return;
+    }
+
+    setLocationStatus("prompting");
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCoords({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+        setLocationStatus("granted");
+        setLocationError(null);
+      },
+      (err) => {
+        if (err.code === 1) {
+          setLocationStatus("denied");
+          setLocationError(
+            "Location permission denied. QRaksha needs your physical location to detect relocated or swapped stickers.",
+          );
+        } else if (err.code === 3) {
+          setLocationStatus("timeout");
+          setLocationError("Location request timed out. Please ensure GPS is enabled and retry.");
+        } else {
+          setLocationStatus("unavailable");
+          setLocationError("Unable to acquire location coordinates. Please tap Retry.");
+        }
+      },
+      {
+        timeout: 10000,
+        enableHighAccuracy: true,
+      },
+    );
+  }, []);
+
+  // Request location on mount
+  useEffect(() => {
+    requestLocation();
+  }, [requestLocation]);
+
   // Compute VoiceVerdictType from AuditResult
   const getVoiceVerdictKey = useCallback((result: AuditResult): VoiceVerdictType => {
     if (result.verdict === "VERIFIED") return "VERIFIED";
@@ -68,6 +120,14 @@ export default function CustomerCheckPage() {
     async (data: { photoBase64: string; qrPayload?: string }) => {
       if (!data.qrPayload) return;
 
+      // Location is strictly required to verify physical QR location binding
+      if (!coords) {
+        setApiError(
+          "Location needed: Please allow location access to verify this merchant sticker against its registered address.",
+        );
+        return;
+      }
+
       // Prime AudioContext from the user gesture
       playerRef.current?.primeAudioContext();
 
@@ -77,29 +137,10 @@ export default function CustomerCheckPage() {
       setVoiceState("thinking");
 
       try {
-        // Best-effort optional geolocation capture without blocking the user
-        let latitude: number | undefined;
-        let longitude: number | undefined;
-
-        if ("geolocation" in navigator) {
-          try {
-            const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-              navigator.geolocation.getCurrentPosition(resolve, reject, {
-                timeout: 3000,
-                enableHighAccuracy: false,
-              });
-            });
-            latitude = pos.coords.latitude;
-            longitude = pos.coords.longitude;
-          } catch {
-            // Geolocation optional for customer check
-          }
-        }
-
         const result = await runCustomerCheck({
           qrPayload: data.qrPayload,
-          latitude,
-          longitude,
+          latitude: coords.latitude,
+          longitude: coords.longitude,
           photoBase64: data.photoBase64,
         });
 
@@ -119,7 +160,7 @@ export default function CustomerCheckPage() {
         setIsVerifying(false);
       }
     },
-    [getVoiceVerdictKey, voiceLang],
+    [coords, getVoiceVerdictKey, voiceLang],
   );
 
   const resetCheck = useCallback(() => {
@@ -196,6 +237,31 @@ export default function CustomerCheckPage() {
             who you are paying and whether the sticker is verified before you leave for your UPI
             app.
           </p>
+        </div>
+      )}
+
+      {/* Explicit Location Needed State per Requirement 5 */}
+      {!verdictResult && !isVerifying && locationStatus !== "granted" && (
+        <div className="card-glass mb-4 p-4 rounded-[20px] border border-amber-500/40 bg-amber-500/10 flex flex-col gap-3">
+          <div className="flex items-start gap-3">
+            <MapPin className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" weight="duotone" />
+            <div className="flex-1">
+              <h3 className="text-xs font-semibold text-[var(--text-primary)] uppercase tracking-wider">
+                Location Needed for Sticker Verification
+              </h3>
+              <p className="text-xs text-[var(--text-secondary)] mt-1 leading-relaxed">
+                {locationError ||
+                  "QRaksha verifies that this physical QR sticker is at the merchant's genuine registered storefront and has not been relocated or swapped."}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={requestLocation}
+            className="self-end px-4 py-1.5 rounded-full bg-amber-500 hover:bg-amber-600 text-black font-semibold text-xs cursor-pointer transition-colors"
+          >
+            Retry Location Access
+          </button>
         </div>
       )}
 

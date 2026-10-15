@@ -39,8 +39,16 @@ export function calculateHaversineDistanceMeters(
 export async function runContextAgent(input: ContextAgentInput): Promise<AgentOutput> {
   const { liveLatitude, liveLongitude, boundLat, boundLng, boundRadiusM = 100 } = input;
 
-  // 1. If live GPS wasn't provided (e.g. optional customer check without geolocation)
+  // 1. If live GPS wasn't provided (e.g. customer check without geolocation)
   if (liveLatitude === undefined || liveLongitude === undefined) {
+    if (boundLat !== undefined && boundLng !== undefined) {
+      return {
+        status: "fail",
+        reason:
+          "Location required: This QR has a registered physical location but scan coordinates were missing",
+        metadata: { missingLocation: true, requiresLocation: true },
+      };
+    }
     return {
       status: "warn",
       reason: "Geolocation was not provided for this scan",

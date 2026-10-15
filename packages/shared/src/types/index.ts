@@ -7,7 +7,15 @@ export type TrustTier = "verified" | "unverified" | "warning";
 
 export type AuditVerdict = "VERIFIED" | "RECENTLY_REGISTERED" | "WARNING";
 
-export type VerdictReason = "OK" | "UNKNOWN_QR" | "LOCATION_MISMATCH" | "MISBINDING";
+export type VerdictReason =
+  "OK" | "UNKNOWN_QR" | "LOCATION_MISMATCH" | "MISBINDING" | "CREDENTIAL_SUSPENDED";
+
+export interface MerchantStatsResult {
+  activeQrs: number;
+  cleanAudits: number;
+  totalAudits: number;
+  flaggedAudits: number;
+}
 
 export type AnchorStatus = "pending" | "confirmed" | "failed";
 

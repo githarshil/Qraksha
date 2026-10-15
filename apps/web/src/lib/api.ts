@@ -16,9 +16,13 @@ import {
   SeedRegistryResult,
   VoiceVerdictInput,
   VoiceVerdictResponse,
+  MerchantStatsResult,
+  VerdictReason,
 } from "@qraksha/shared";
+import { getActiveMerchantId } from "./constants";
 
 export type {
+  MerchantStatsResult,
   FileDisputeResult,
   Dispute,
   AdminDisputeItem,
@@ -194,7 +198,7 @@ export async function getCredentialVerification(
 
 export interface AuditResult {
   verdict: "VERIFIED" | "RECENTLY_REGISTERED" | "WARNING";
-  reason: "OK" | "UNKNOWN_QR" | "LOCATION_MISMATCH" | "MISBINDING";
+  reason: VerdictReason;
   message: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   agentOutputs: any;
@@ -211,7 +215,7 @@ export interface AuditHistoryItem {
   registered_qr_id: string | null;
   initiated_by: string;
   verdict: "VERIFIED" | "RECENTLY_REGISTERED" | "WARNING";
-  verdict_reason: "OK" | "UNKNOWN_QR" | "LOCATION_MISMATCH" | "MISBINDING";
+  verdict_reason: VerdictReason;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   agent_outputs: any;
   degraded_check: boolean;
@@ -712,4 +716,31 @@ export async function getMyCredentials(merchantId?: string): Promise<{
   }
 
   return json.data;
+}
+
+export async function getMerchantStats(merchantId?: string): Promise<MerchantStatsResult> {
+  const activeId = merchantId || getActiveMerchantId();
+  const url = `${API_BASE_URL}/merchants/${encodeURIComponent(activeId)}/stats`;
+
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (networkError) {
+    throw new ApiError("Unable to fetch merchant statistics.", "NETWORK_ERROR", 0, networkError);
+  }
+
+  const json = await response.json().catch(() => null);
+  if (!response.ok) {
+    const errorPayload = json?.error;
+    throw new ApiError(
+      errorPayload?.message || "Failed to fetch merchant stats",
+      errorPayload?.code || "UNKNOWN_ERROR",
+      response.status,
+    );
+  }
+
+  return json.data as MerchantStatsResult;
 }

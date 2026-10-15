@@ -252,11 +252,19 @@ describe("Phase 5 — Unit Tests for the Five Verification Agents", () => {
       expect(output.reason).toContain("QR relocation detected");
     });
 
-    it("returns warn when GPS is omitted", async () => {
+    it("returns fail when live GPS is omitted for a QR with bound location", async () => {
       const output = await runContextAgent({
         boundLat: 12.9716,
         boundLng: 77.5946,
       });
+
+      expect(output.status).toBe("fail");
+      expect(output.metadata?.requiresLocation).toBe(true);
+      expect(output.reason).toContain("Location required");
+    });
+
+    it("returns warn when live GPS is omitted for an unbound QR", async () => {
+      const output = await runContextAgent({});
 
       expect(output.status).toBe("warn");
       expect(output.metadata?.missingLocation).toBe(true);
@@ -368,6 +376,22 @@ describe("Phase 5 — Unit Tests for the Five Verification Agents", () => {
       expect(output.verdict).toBe("WARNING");
       expect(output.reasonCode).toBe("MISBINDING");
       expect(output.status).toBe("fail");
+    });
+
+    it("returns WARNING with CREDENTIAL_SUSPENDED when credential is suspended or revoked", async () => {
+      const output = await runTrustAgent({
+        agentOutputs: {
+          identity: {
+            status: "fail",
+            reason: "Credential has been suspended or revoked. Payments to this QR are disabled.",
+            isRegistered: true,
+          },
+          context: { status: "pass", reason: "OK" },
+        },
+      });
+
+      expect(output.verdict).toBe("WARNING");
+      expect(output.reasonCode).toBe("CREDENTIAL_SUSPENDED");
     });
 
     it("returns WARNING with UNKNOWN_QR when identity is unregistered", async () => {

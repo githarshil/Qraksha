@@ -42,10 +42,20 @@ export function VerdictCard({
     textColor = "text-danger";
     bgBadge = "bg-danger/15 text-[#FF6B81] border-danger/40";
     ShieldIcon = ShieldWarning;
-    verdictDisplayLabel = "WARNING";
+    if (reason === "CREDENTIAL_SUSPENDED") {
+      verdictDisplayLabel = "SUSPENDED";
+    } else if (reason === "LOCATION_MISMATCH") {
+      verdictDisplayLabel = "LOCATION MISMATCH";
+    } else {
+      verdictDisplayLabel = "WARNING";
+    }
   } else {
-    // RECENTLY_REGISTERED / UNVERIFIED
-    verdictDisplayLabel = isUnregistered ? "NOT ENROLLED" : "BUILDING TRUST";
+    // RECENTLY_REGISTERED / UNVERIFIED / NOT_ENROLLED (Tier 2 warn styling per DESIGN.md Section 2)
+    if (isUnregistered || (reason as string) === "UNKNOWN_QR") {
+      verdictDisplayLabel = "NOT ENROLLED";
+    } else {
+      verdictDisplayLabel = "BUILDING TRUST";
+    }
   }
 
   const voiceVerdictKey: VoiceVerdictType =

@@ -85,3 +85,23 @@ merchantRouter.post(
     }
   },
 );
+
+/**
+ * GET /api/v1/merchants/:id/stats
+ * Returns canonical merchant stats from comparison.get_merchant_stats SQL function.
+ * Single source of truth for active QRs and clean audits.
+ */
+merchantRouter.get(
+  "/:id/stats",
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const merchantId = String(req.params.id);
+      const stats = await merchantService.getMerchantStats(merchantId);
+      res.status(200).json({
+        data: stats,
+      });
+    } catch (err) {
+      next(err);
+    }
+  },
+);
