@@ -4,9 +4,23 @@ import { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Info } from "@phosphor-icons/react";
 
+import dynamic from "next/dynamic";
 import { VoiceVerdictType, VoiceLanguageCode, formatVoiceScript } from "@qraksha/shared";
-import { CameraCapture } from "../../components/camera-capture";
+import { CameraCaptureSkeleton } from "../../components/camera-capture-skeleton";
 import { VerdictCard } from "../../components/verdict-card";
+
+const CameraCapture = dynamic(
+  () => import("../../components/camera-capture").then((m) => m.CameraCapture),
+  {
+    ssr: false,
+    loading: () => (
+      <CameraCaptureSkeleton
+        title="Scan Storefront QR"
+        helperText="Point your camera at the merchant QR stand before payment."
+      />
+    ),
+  },
+);
 import { VoiceOrb } from "../../components/voice-orb";
 import { LanguageSelector, getInitialVoiceLanguage } from "../../components/language-selector";
 import { runCustomerCheck, AuditResult, ApiError } from "../../lib/api";

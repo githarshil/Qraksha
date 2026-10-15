@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import {
   AnimatedHomeIcon,
   AnimatedQrIcon,
@@ -10,7 +11,11 @@ import {
   AnimatedUserIcon,
 } from "@/components/icons/animated";
 import { AIAssistantButton } from "@/components/ai-assistant-button";
-import { AIAssistantSheet } from "@/components/ai-assistant-sheet";
+
+const AIAssistantSheet = dynamic(
+  () => import("@/components/ai-assistant-sheet").then((m) => m.AIAssistantSheet),
+  { ssr: false },
+);
 
 interface NavItem {
   label: string;
@@ -156,7 +161,9 @@ export function BottomNav() {
       </div>
 
       {/* AI Assistant Placeholder Sheet */}
-      <AIAssistantSheet isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
+      {isAssistantOpen && (
+        <AIAssistantSheet isOpen={isAssistantOpen} onClose={() => setIsAssistantOpen(false)} />
+      )}
     </>
   );
 }

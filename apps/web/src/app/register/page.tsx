@@ -30,8 +30,22 @@ import {
   RegisterReferenceResult,
   ProofOfPossessionResult,
 } from "@qraksha/shared";
+import dynamic from "next/dynamic";
 import { registerIdentity, registerReference, confirmProofOfPossession, ApiError } from "@/lib/api";
-import { CameraCapture } from "@/components/camera-capture";
+import { CameraCaptureSkeleton } from "@/components/camera-capture-skeleton";
+
+const CameraCapture = dynamic(
+  () => import("@/components/camera-capture").then((m) => m.CameraCapture),
+  {
+    ssr: false,
+    loading: () => (
+      <CameraCaptureSkeleton
+        title="Capture Reference Photo"
+        helperText="Take a baseline photo of your physical QR sticker in standard store lighting."
+      />
+    ),
+  },
+);
 
 type PathType = "gst_udyam" | "penny_drop";
 type Step1SubStep = "form" | "otp" | "penny_drop_confirm";
