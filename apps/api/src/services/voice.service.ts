@@ -39,7 +39,9 @@ export class VoiceService {
     this.explicitBaseUrl = options.baseUrl;
     this.explicitModel = options.model;
     this.explicitSpeaker = options.speaker;
-    this.timeoutMs = options.timeoutMs ?? 5000;
+    this.timeoutMs =
+      options.timeoutMs ??
+      (process.env.SARVAM_TIMEOUT_MS ? parseInt(process.env.SARVAM_TIMEOUT_MS, 10) : 10000);
   }
 
   get apiKey(): string | undefined {
