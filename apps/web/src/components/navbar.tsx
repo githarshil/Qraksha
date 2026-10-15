@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowUpRight, List, X } from "@phosphor-icons/react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 
 interface NavLinkItem {
   label: string;
@@ -131,10 +131,13 @@ export function Navbar() {
           <div className="hidden md:flex items-center">
             <Link
               href="/audit/run"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand text-ink text-[14px] font-semibold hover:bg-brand-soft hover:shadow-[0_0_20px_rgba(255,75,31,0.4)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+              className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-brand text-ink text-[14px] font-semibold hover:bg-brand-soft hover:shadow-[0_0_20px_rgba(255,75,31,0.4)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             >
               <span>Run Self-Audit</span>
-              <ArrowUpRight size={14} weight="bold" />
+              <ArrowUpRight
+                size={14}
+                className="transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
             </Link>
           </div>
 
@@ -146,7 +149,11 @@ export function Navbar() {
             aria-expanded={mobileMenuOpen}
             className="md:hidden p-1.5 rounded-lg text-neutral-400 hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black"
           >
-            {mobileMenuOpen ? <X size={22} weight="bold" /> : <List size={22} weight="bold" />}
+            {mobileMenuOpen ? (
+              <X size={22} className="transition-transform duration-200 rotate-90 scale-105" />
+            ) : (
+              <Menu size={22} className="transition-transform duration-200" />
+            )}
           </button>
         </div>
       </header>
@@ -190,7 +197,7 @@ export function Navbar() {
               className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-brand text-ink font-semibold text-sm hover:bg-brand-soft transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black"
             >
               <span>Run Self-Audit</span>
-              <ArrowUpRight size={14} weight="bold" />
+              <ArrowUpRight size={14} className="transition-transform duration-200" />
             </Link>
 
             {/* Customer Check in mobile menu only */}

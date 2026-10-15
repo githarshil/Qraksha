@@ -44,7 +44,7 @@ export default function DashboardPage() {
   }, [demoCredentialId]);
 
   return (
-    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-[calc(7.5rem+env(safe-area-inset-bottom,0px))]">
       {/* Top Header */}
       <header className="flex justify-between items-center mb-5">
         <div>
@@ -72,7 +72,7 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Action Banner: Self-Audit */}
-      <div className="card-glass p-5 flex flex-col gap-3 mb-4">
+      <div className="card-glass card-glow p-5 flex flex-col gap-3 mb-4">
         <div>
           <span className="text-xs font-medium text-[var(--text-secondary)]">
             Daily Verification Loop
@@ -91,7 +91,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Blockchain Anchor Status Card */}
-      <div className="card-glass p-5 flex flex-col gap-3.5 mb-4">
+      <div className="card-glass card-glow p-5 flex flex-col gap-3.5 mb-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-[var(--text-primary)]">
             Blockchain Anchor <br className="sm:hidden" />
@@ -136,7 +136,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-2 gap-3 mb-4">
         <Link
           href="/credential/qrs"
-          className="card-glass p-4 relative overflow-hidden group hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
+          className="card-glass card-glow p-4 relative group hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
         >
           <span className="text-xs text-[var(--text-secondary)] font-medium block">
             Active QRs:
@@ -152,7 +152,7 @@ export default function DashboardPage() {
         </Link>
         <Link
           href="/audit/history"
-          className="card-glass p-4 relative overflow-hidden group hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
+          className="card-glass card-glow p-4 relative group hover:shadow-[0_12px_28px_rgba(0,0,0,0.08)] transition-all"
         >
           <span className="text-xs text-[var(--text-secondary)] font-medium block">
             Clean Audits:

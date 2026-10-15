@@ -347,6 +347,108 @@ svg path[opacity="0.2"] {
     box-shadow 200ms ease;
 }
 
+/* Animated Flowing Red Gradient Halo on Main Cards */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes glow-spin {
+  0% {
+    --glow-angle: 0deg;
+  }
+  100% {
+    --glow-angle: 360deg;
+  }
+}
+
+@keyframes glow-flow {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: var(--glow-opacity-min, 0.45);
+  }
+  50% {
+    opacity: var(--glow-opacity-max, 0.58);
+  }
+}
+
+.card-glow {
+  position: relative;
+  isolation: isolate;
+  --glow-opacity-min: 0.45;
+  --glow-opacity-max: 0.58;
+  --glow-blur: 22px;
+}
+
+.card-glow::before {
+  content: "";
+  position: absolute;
+  inset: 8px 12px -14px 12px;
+  z-index: -1;
+  border-radius: inherit;
+  filter: blur(var(--glow-blur));
+  pointer-events: none;
+  will-change: transform, filter;
+
+  /* Approach B: Flowing linear gradient fallback for browsers without @property */
+  background: linear-gradient(
+    120deg,
+    rgba(255, 107, 94, 0.55),
+    rgba(224, 38, 47, 0.35),
+    rgba(255, 140, 120, 0.45),
+    rgba(224, 38, 47, 0.3),
+    rgba(255, 107, 94, 0.55)
+  );
+  background-size: 300% 300%;
+  animation:
+    glow-flow 10s ease-in-out infinite,
+    glow-pulse 6s ease-in-out infinite;
+}
+
+/* Approach A: Rotating conic gradient with @property when supported */
+@supports (background: conic-gradient(from 0deg, red, blue)) {
+  .card-glow::before {
+    background: conic-gradient(
+      from var(--glow-angle),
+      rgba(255, 107, 94, 0.55),
+      rgba(224, 38, 47, 0.35),
+      rgba(255, 140, 120, 0.45),
+      rgba(224, 38, 47, 0.3),
+      rgba(255, 107, 94, 0.55)
+    );
+    background-size: 100% 100%;
+    animation:
+      glow-spin 8s linear infinite,
+      glow-pulse 6s ease-in-out infinite;
+  }
+}
+
+/* Dark mode: softer halo (~0.30 opacity, 26px blur) to prevent neon wash */
+[data-theme="dark"] .card-glow,
+.dark .card-glow {
+  --glow-opacity-min: 0.25;
+  --glow-opacity-max: 0.32;
+  --glow-blur: 26px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-glow::before {
+    animation: none !important;
+    opacity: var(--glow-opacity-min, 0.45) !important;
+  }
+}
+
 .btn-red-glass {
   background: linear-gradient(135deg, rgba(255, 107, 94, 0.95) 0%, rgba(224, 38, 47, 0.95) 100%);
   background-color: #e0262f; /* solid fallback */

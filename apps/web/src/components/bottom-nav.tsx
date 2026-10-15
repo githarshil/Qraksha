@@ -3,7 +3,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { House, QrCode, ClockCounterClockwise, User } from "@phosphor-icons/react";
+import {
+  AnimatedHomeIcon,
+  AnimatedQrIcon,
+  AnimatedHistoryIcon,
+  AnimatedUserIcon,
+} from "@/components/icons/animated";
 import { AIAssistantButton } from "@/components/ai-assistant-button";
 import { AIAssistantSheet } from "@/components/ai-assistant-sheet";
 
@@ -12,21 +17,24 @@ interface NavItem {
   displayLabel: string;
   href: string;
   icon: React.ComponentType<{
+    size?: number;
     className?: string;
-    weight?: "bold" | "duotone" | "regular" | "fill" | "light" | "thin";
+    isActive?: boolean;
+    isHovered?: boolean;
+    strokeWidth?: number;
   }>;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "Home", displayLabel: "Home", href: "/dashboard", icon: House },
-  { label: "Verify", displayLabel: "QR", href: "/audit/run", icon: QrCode },
+  { label: "Home", displayLabel: "Home", href: "/dashboard", icon: AnimatedHomeIcon },
+  { label: "Verify", displayLabel: "QR", href: "/audit/run", icon: AnimatedQrIcon },
   {
     label: "History",
     displayLabel: "History",
     href: "/audit/history",
-    icon: ClockCounterClockwise,
+    icon: AnimatedHistoryIcon,
   },
-  { label: "Merchant", displayLabel: "Profile", href: "/settings", icon: User },
+  { label: "Merchant", displayLabel: "Profile", href: "/settings", icon: AnimatedUserIcon },
 ];
 
 /**
@@ -48,6 +56,7 @@ function getActiveIndex(pathname: string): number {
 export function BottomNav() {
   const pathname = usePathname();
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Hide bottom nav on admin routes and landing page
   if (pathname.startsWith("/admin") || pathname === "/") {
@@ -99,6 +108,7 @@ export function BottomNav() {
               {NAV_ITEMS.map((item, index) => {
                 const Icon = item.icon;
                 const isActive = activeIndex === index;
+                const isHovered = hoveredIndex === index;
 
                 return (
                   <Link
@@ -107,15 +117,20 @@ export function BottomNav() {
                     aria-label={item.label}
                     title={item.displayLabel}
                     aria-current={isActive ? "page" : undefined}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    onMouseLeave={() => setHoveredIndex(null)}
                     className="group relative flex flex-col items-center justify-center w-full h-full min-h-[44px] rounded-[16px] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-[#E0262F] focus-visible:outline-offset-2 select-none"
                   >
                     <Icon
-                      className={`w-4 h-4 transition-colors ${
+                      size={18}
+                      isActive={isActive}
+                      isHovered={isHovered}
+                      strokeWidth={isActive ? 2.25 : 2}
+                      className={`transition-colors duration-200 ${
                         isActive
                           ? "text-white"
                           : "text-[var(--nav-item-inactive)] group-hover:text-[var(--nav-item-inactive-hover)]"
                       }`}
-                      weight={isActive ? "bold" : "regular"}
                     />
                     <span
                       className={`text-[10px] tracking-tight leading-none mt-1 transition-colors ${
