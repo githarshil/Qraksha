@@ -2,7 +2,8 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import Link from "next/link";
-import { X, Sparkle, QrCode, Play, Stop } from "@phosphor-icons/react";
+import { X, Play, Square } from "lucide-react";
+import { AnimatedSparklesIcon, AnimatedQrIcon } from "@/components/icons/animated";
 import { VoiceVerdictType, VoiceLanguageCode, formatVoiceScript } from "@qraksha/shared";
 import { VoiceOrb } from "@/components/voice-orb";
 import { LanguageSelector, getInitialVoiceLanguage } from "@/components/language-selector";
@@ -184,7 +185,7 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
         <div className="flex items-center justify-between">
           <div className="flex flex-col gap-0.5">
             <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-widest text-[#E0262F] font-semibold">
-              <Sparkle className="w-3.5 h-3.5" weight="bold" />
+              <AnimatedSparklesIcon size={14} isHovered={true} className="w-3.5 h-3.5" />
               <span>AI ASSISTANT</span>
             </div>
             <h2 id="assistant-title" className="text-lg font-bold text-[var(--text-primary)]">
@@ -197,9 +198,9 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
             type="button"
             onClick={onClose}
             aria-label="Close assistant"
-            className="flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-[#E0262F] focus-visible:outline-offset-2 cursor-pointer"
+            className="group flex items-center justify-center min-w-[44px] min-h-[44px] w-11 h-11 rounded-full text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-black/5 dark:hover:bg-white/5 transition-colors focus-visible:outline-2 focus-visible:outline-[#E0262F] focus-visible:outline-offset-2 cursor-pointer"
           >
-            <X className="w-5 h-5" weight="bold" />
+            <X className="w-5 h-5 transition-transform duration-200 group-hover:rotate-90 group-hover:scale-110" />
           </button>
         </div>
 
@@ -234,12 +235,12 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
             >
               {voiceState === "speaking" ? (
                 <>
-                  <Stop className="w-3.5 h-3.5 text-[#E0262F]" weight="fill" />
+                  <Square className="w-3.5 h-3.5 text-[#E0262F] fill-current" />
                   <span>Stop Speech</span>
                 </>
               ) : (
                 <>
-                  <Play className="w-3.5 h-3.5 text-[#E0262F]" weight="fill" />
+                  <Play className="w-3.5 h-3.5 text-[#E0262F] fill-current" />
                   <span>Tap to Speak</span>
                 </>
               )}
@@ -305,9 +306,9 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
           <Link
             href="/check"
             onClick={onClose}
-            className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-[16px] bg-[#E0262F] text-white font-medium text-xs hover:bg-[#E0262F]/90 transition-colors shadow-sm"
+            className="group flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-[16px] bg-[#E0262F] text-white font-medium text-xs hover:bg-[#E0262F]/90 transition-colors shadow-sm"
           >
-            <QrCode className="w-4 h-4" weight="bold" />
+            <AnimatedQrIcon size={16} isHovered={true} />
             <span>Scan & Check QR</span>
           </Link>
         </div>

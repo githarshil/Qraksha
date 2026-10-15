@@ -459,69 +459,84 @@ export function CameraCapture({
 
       {/* Live Camera Viewfinder (Persistent Video Element) */}
       {!capturedPhoto && hasCameraPermission !== false && (
-        <div className="relative w-full aspect-[4/3] bg-black/90 rounded-[20px] overflow-hidden border border-[var(--surface-border)] flex items-center justify-center">
-          {/* <video> is ALWAYS in DOM to prevent hardware encoder thrashing */}
-          <video
-            ref={videoRef}
-            playsInline
-            autoPlay
-            muted
-            className={`w-full h-full object-cover transition-opacity duration-200 ${
-              isCameraActive ? "opacity-100" : "opacity-0"
-            }`}
-          />
-
-          {/* Loading overlay while camera initializes */}
-          {!isCameraActive && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[var(--surface)] text-[var(--text-secondary)]">
-              <SpinnerGap className="w-5 h-5 animate-spin text-[#E0262F]" weight="bold" />
-              <span className="text-xs font-mono">Initializing camera feed…</span>
-            </div>
-          )}
-
-          {/* Live QR Detection Status Indicator */}
-          <div className="absolute top-3 left-3 right-3 flex justify-center pointer-events-none z-10">
+        <div className="card-glass card-glow rounded-[24px] p-3.5 sm:p-4 flex flex-col w-full relative">
+          {/* Top Zone: Status Pill */}
+          <div className="w-full flex justify-center pb-3 pt-1 px-2">
             {hasLiveQrDetected ? (
-              <div className="px-3 py-1 rounded-full bg-ok/90 backdrop-blur-md border border-ok text-white text-[11px] font-mono font-medium flex items-center gap-1.5 shadow-md">
-                <Check className="w-3.5 h-3.5 text-white" weight="bold" />
-                <span>QR DETECTED // READY</span>
+              <div className="max-w-[calc(100%-32px)] px-3.5 py-1.5 rounded-full bg-ok/90 backdrop-blur-md border border-ok text-white text-[clamp(10px,2.5vw,11px)] font-mono font-medium flex items-center justify-center gap-1.5 shadow-md truncate">
+                <Check className="w-3.5 h-3.5 text-white shrink-0" weight="bold" />
+                <span className="truncate">QR DETECTED // READY</span>
               </div>
             ) : (
-              <div className="px-3 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white text-[11px] font-mono flex items-center gap-1.5">
-                <SpinnerGap className="w-3.5 h-3.5 text-[#FF6B5E] animate-spin" weight="bold" />
-                <span>HOLD STEADY // DETECTING QR</span>
+              <div className="max-w-[calc(100%-32px)] px-3.5 py-1.5 rounded-full bg-black/70 backdrop-blur-md border border-white/20 text-white text-[clamp(10px,2.5vw,11px)] font-mono flex items-center justify-center gap-1.5 shadow-sm truncate">
+                <SpinnerGap
+                  className="w-3.5 h-3.5 text-[#FF6B5E] animate-spin shrink-0"
+                  weight="bold"
+                />
+                <span className="truncate">HOLD STEADY // DETECTING QR</span>
               </div>
             )}
           </div>
 
-          {/* Technical Framing Overlay per DESIGN.md */}
-          <div className="absolute inset-6 pointer-events-none border border-[#FF6B5E]/60 rounded-[14px] flex flex-col justify-between p-2">
-            <div className="flex justify-between items-start text-[10px] font-mono text-[#FF6B5E]">
-              <span>┌ FRAME ▸ ALIGN QR</span>
-              <span>FIG. 01 ┐</span>
-            </div>
-            <div className="flex justify-between items-end text-[10px] font-mono text-[#FF6B5E]">
-              <span>└ TRACKING ACTIVE</span>
-              <span>100M RADIUS ┘</span>
+          {/* Middle Zone: Video Preview with Red Corner-Bracket Viewfinder */}
+          <div className="relative w-full aspect-[4/3] bg-black/95 rounded-[18px] overflow-hidden border border-[var(--surface-border)] flex items-center justify-center flex-1">
+            {/* <video> is ALWAYS in DOM to prevent hardware encoder thrashing */}
+            <video
+              ref={videoRef}
+              playsInline
+              autoPlay
+              muted
+              className={`w-full h-full object-cover transition-opacity duration-200 ${
+                isCameraActive ? "opacity-100" : "opacity-0"
+              }`}
+            />
+
+            {/* Loading overlay while camera initializes */}
+            {!isCameraActive && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[var(--surface)] text-[var(--text-secondary)]">
+                <SpinnerGap className="w-5 h-5 animate-spin text-[#E0262F]" weight="bold" />
+                <span className="text-xs font-mono">Initializing camera feed…</span>
+              </div>
+            )}
+
+            {/* Technical Framing Overlay per DESIGN.md with safe interior padding */}
+            <div className="absolute inset-3.5 sm:inset-4 pointer-events-none border border-[#FF6B5E]/50 rounded-[12px] flex flex-col justify-between p-2">
+              <div className="flex justify-between items-start">
+                <span className="text-[clamp(9px,2.2vw,11px)] font-mono text-[#FF6B5E] bg-black/60 px-1.5 py-0.5 rounded [text-shadow:0_1px_2px_rgba(0,0,0,0.9)] backdrop-blur-[2px]">
+                  ┌ FRAME ▸ ALIGN QR
+                </span>
+                <span className="text-[clamp(9px,2.2vw,11px)] font-mono text-[#FF6B5E] bg-black/60 px-1.5 py-0.5 rounded [text-shadow:0_1px_2px_rgba(0,0,0,0.9)] backdrop-blur-[2px]">
+                  FIG. 01 ┐
+                </span>
+              </div>
+              <div className="flex justify-between items-end">
+                <span className="text-[clamp(9px,2.2vw,11px)] font-mono text-[#FF6B5E] bg-black/60 px-1.5 py-0.5 rounded [text-shadow:0_1px_2px_rgba(0,0,0,0.9)] backdrop-blur-[2px]">
+                  └ TRACK // ACTIVE
+                </span>
+                <span className="text-[clamp(9px,2.2vw,11px)] font-mono text-[#FF6B5E] bg-black/60 px-1.5 py-0.5 rounded [text-shadow:0_1px_2px_rgba(0,0,0,0.9)] backdrop-blur-[2px]">
+                  FOCUS ┘
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Shutter Button Overlay */}
-          <div className="absolute bottom-3 left-0 right-0 flex justify-center items-center gap-3 px-4">
+          {/* Bottom Zone: Action Bar in normal flow */}
+          <div className="pt-3.5 px-0.5 flex items-center gap-3 w-full">
             <button
               type="button"
               onClick={takeSnapshot}
-              className="btn-red-glass h-11 px-5 rounded-[16px] font-medium text-xs flex items-center justify-center gap-2 shadow-sm"
+              className="btn-red-glass flex-1 h-12 px-4 rounded-[16px] font-medium text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm min-h-[48px]"
             >
-              <Camera className="w-4 h-4" weight="bold" />
-              <span>Capture Reference Photo</span>
+              <Camera className="w-4 h-4 shrink-0" weight="bold" />
+              <span className="truncate">Capture Reference Photo</span>
             </button>
 
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               aria-label="Upload from files"
-              className="h-11 w-11 rounded-[14px] bg-black/60 backdrop-blur-sm border border-white/30 text-white flex items-center justify-center hover:border-white transition-colors"
+              title="Upload photo from files"
+              className="w-12 h-12 min-w-[48px] min-h-[48px] rounded-[14px] bg-[var(--surface)] hover:bg-[var(--surface-hover,#201917)] border border-[var(--surface-border)] text-[var(--text-primary)] flex items-center justify-center transition-colors shrink-0 shadow-sm"
             >
               <UploadSimple className="w-4 h-4" weight="bold" />
             </button>
@@ -531,8 +546,8 @@ export function CameraCapture({
 
       {/* Captured Photo Preview */}
       {capturedPhoto && (
-        <div className="flex flex-col gap-3">
-          <div className="relative w-full aspect-[4/3] bg-[var(--surface)] rounded-[20px] overflow-hidden border border-ok/50">
+        <div className="card-glass card-glow p-3.5 sm:p-4 rounded-[24px] flex flex-col gap-3.5 w-full relative">
+          <div className="relative w-full aspect-[4/3] bg-[var(--surface)] rounded-[18px] overflow-hidden border border-ok/50">
             <img
               src={capturedPhoto}
               alt="Reference QR Sticker"
@@ -544,16 +559,16 @@ export function CameraCapture({
             </div>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between pt-1">
             <span className="text-[11px] font-mono text-[var(--text-muted)]">
               Zero raw bytes will be stored
             </span>
             <button
               type="button"
               onClick={retakePhoto}
-              className="btn-pill-secondary h-8 px-3 text-xs flex items-center gap-1.5"
+              className="btn-pill-secondary h-10 px-3.5 text-xs flex items-center gap-1.5 font-medium min-h-[44px]"
             >
-              <ArrowsClockwise className="w-3 h-3" weight="bold" />
+              <ArrowsClockwise className="w-3.5 h-3.5" weight="bold" />
               <span>Retake Photo</span>
             </button>
           </div>

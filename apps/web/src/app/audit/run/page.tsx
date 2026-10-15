@@ -100,7 +100,7 @@ export default function AuditRunPage() {
   }, []);
 
   return (
-    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-28">
+    <main className="flex-1 flex flex-col p-5 sm:p-6 max-w-[440px] mx-auto w-full pb-[calc(8rem+env(safe-area-inset-bottom,0px))]">
       {/* Top Header */}
       <header className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
