@@ -35,9 +35,57 @@ export type {
   VoiceVerdictResponse,
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ||
-  (typeof window !== "undefined" ? "/api/v1" : "http://localhost:4000/api/v1");
+/**
+ * Normalizes backend API base URL:
+ * - Uses NEXT_PUBLIC_API_URL (or legacy NEXT_PUBLIC_API_BASE_URL)
+ * - Strips any trailing slashes
+ * - Appends /api/v1 if not already present
+ * - Prevents double slashes and double /api/v1
+ */
+export function normalizeApiBaseUrl(rawUrl?: string): string {
+  const url = (rawUrl || "").trim();
+  if (!url) {
+    return typeof window !== "undefined" ? "/api/v1" : "http://localhost:4000/api/v1";
+  }
+  const trimmed = url.replace(/\/+$/, "");
+  if (trimmed.endsWith("/api/v1")) {
+    return trimmed;
+  }
+  return `${trimmed}/api/v1`;
+}
+
+export const API_BASE_URL = normalizeApiBaseUrl(
+  process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_BASE_URL,
+);
+
+let warmUpAttempted = false;
+
+/**
+ * Fires a lightweight non-blocking warm-up call to wake sleeping Render free-tier instances.
+ * Non-blocking, short timeout (3s), all errors/timeouts swallowed silently.
+ */
+export function warmUpBackend(): void {
+  if (typeof window === "undefined" || warmUpAttempted) return;
+  warmUpAttempted = true;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000);
+    const healthUrl = `${API_BASE_URL}/health`;
+
+    fetch(healthUrl, {
+      method: "GET",
+      signal: controller.signal,
+      cache: "no-store",
+    })
+      .then(() => clearTimeout(timeoutId))
+      .catch(() => {
+        // Silently swallow; warm-up must never block or degrade UI
+      });
+  } catch {
+    // Silently swallow
+  }
+}
 
 export class ApiError extends Error {
   code: string;
@@ -345,48 +393,38 @@ export async function runCustomerCheck(input: {
 }
 
 export async function getVoiceVerdict(input: VoiceVerdictInput): Promise<VoiceVerdictResponse> {
-  const endpoints = [
-    `${API_BASE_URL}/voice/verdict`,
-    ...(API_BASE_URL.includes("localhost:4000")
-      ? []
-      : ["http://localhost:4000/api/v1/voice/verdict"]),
-  ];
-
-  let lastError: Error | null = null;
-
-  for (const endpoint of endpoints) {
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(input),
-      });
-
-      if (response.ok) {
-        const json = await response.json();
-        if (json?.data) {
-          return json.data as VoiceVerdictResponse;
-        }
-      } else {
-        const json = await response.json().catch(() => null);
-        const errorPayload = json?.error;
-        lastError = new ApiError(
-          errorPayload?.message || `Voice synthesis failed with HTTP ${response.status}`,
-          errorPayload?.code || "VOICE_ERROR",
-          response.status,
-        );
-      }
-    } catch (networkError) {
-      lastError = new ApiError(
-        "Unable to fetch voice verdict. Please check your network connection.",
-        "NETWORK_ERROR",
-        0,
-        networkError,
-      );
-    }
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/voice/verdict`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+  } catch (networkError) {
+    throw new ApiError(
+      "Unable to fetch voice verdict. Please check your network connection.",
+      "NETWORK_ERROR",
+      0,
+      networkError,
+    );
   }
 
-  throw lastError || new ApiError("Voice synthesis unavailable", "VOICE_ERROR", 500);
+  if (response.ok) {
+    const json = await response.json();
+    if (json?.data) {
+      return json.data as VoiceVerdictResponse;
+    }
+  } else {
+    const json = await response.json().catch(() => null);
+    const errorPayload = json?.error;
+    throw new ApiError(
+      errorPayload?.message || `Voice synthesis failed with HTTP ${response.status}`,
+      errorPayload?.code || "VOICE_ERROR",
+      response.status,
+    );
+  }
+
+  throw new ApiError("Voice synthesis unavailable", "VOICE_ERROR", 500);
 }
 
 export async function addQrToCredential(

@@ -19,10 +19,16 @@ const nextConfig = {
     optimizePackageImports: ["@phosphor-icons/react", "lucide-react"],
   },
   async rewrites() {
+    const rawApiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "http://localhost:4000";
+    const apiHost = rawApiUrl.replace(/\/api\/v1\/?$/, "").replace(/\/+$/, "");
+
     return [
       {
         source: "/api/v1/:path*",
-        destination: "http://localhost:4000/api/v1/:path*",
+        destination: `${apiHost}/api/v1/:path*`,
       },
     ];
   },

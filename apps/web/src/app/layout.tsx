@@ -6,6 +6,7 @@ import "./globals.css";
 import { BottomNav } from "@/components/bottom-nav";
 import { IconProvider } from "@/components/icon-provider";
 import { ThemeProvider } from "@/context/theme-context";
+import { Warmup } from "@/components/warmup";
 
 // Satoshi (Fontshare, ITF Free Font License) is self-hosted as a single variable woff2 so the
 // 400/500/600/700 weights all resolve without extra requests.
@@ -74,6 +75,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen bg-[var(--bg-app)] text-[var(--text-primary)] font-sans flex flex-col items-center w-full antialiased selection:bg-[#FF6B5E]/20 selection:text-[#E0262F]">
         <ThemeProvider>
+          <Warmup />
           <IconProvider>
             <div className="w-full min-h-screen flex flex-col bg-[var(--bg-app)] relative">
               {children}
