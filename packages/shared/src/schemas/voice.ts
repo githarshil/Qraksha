@@ -15,3 +15,18 @@ export interface VoiceVerdictResponse {
   cached: boolean;
   transliteratedName?: string;
 }
+
+export const TtsRequestSchema = z.object({
+  text: z.string().trim().min(1).max(2500),
+  lang: z.string().trim().default("en-IN"),
+  voice: z.string().trim().optional(),
+});
+
+export type TtsRequest = z.infer<typeof TtsRequestSchema>;
+
+export interface TtsResponse {
+  audio_url: string;
+  url: string;
+  cached: boolean;
+  hash: string;
+}

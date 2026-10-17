@@ -103,6 +103,7 @@ export interface VerifyCredentialResult {
   canonicalCredentialHash: string;
   anchor: BlockchainAnchor | null;
   verifiedOnChain: boolean;
+  voiceClips?: Record<string, string>;
 }
 
 export interface Dispute {

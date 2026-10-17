@@ -33,6 +33,12 @@ services:
         sync: false
       - key: SENTRY_ENVIRONMENT
         value: staging
+      - key: SARVAM_API_KEY
+        sync: false
+      - key: SARVAM_TTS_MODEL
+        value: bulbul:v3
+      - key: SARVAM_SPEAKER
+        value: shubh
 
   # Production (Pilot) Backend API - Manual approval gated per ARCHITECTURE.md Section 13
   - type: web
@@ -68,3 +74,9 @@ services:
         sync: false
       - key: SENTRY_ENVIRONMENT
         value: production
+      - key: SARVAM_API_KEY
+        sync: false
+      - key: SARVAM_TTS_MODEL
+        value: bulbul:v3
+      - key: SARVAM_SPEAKER
+        value: shubh

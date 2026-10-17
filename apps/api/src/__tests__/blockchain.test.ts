@@ -339,13 +339,16 @@ describe("GET /api/v1/verify/:credentialId (API Route)", () => {
   });
 
   it("returns 404 when credential does not exist", async () => {
+    const mockQueryBuilder = {
+      eq: () => mockQueryBuilder,
+      order: () => mockQueryBuilder,
+      limit: () => mockQueryBuilder,
+      maybeSingle: async () => ({ data: null, error: null }),
+    };
+
     vi.spyOn(supabaseAdmin, "schema").mockReturnValue({
       from: () => ({
-        select: () => ({
-          eq: () => ({
-            maybeSingle: async () => ({ data: null, error: null }),
-          }),
-        }),
+        select: () => mockQueryBuilder,
       }),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);

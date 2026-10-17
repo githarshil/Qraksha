@@ -7,7 +7,7 @@ import { AnimatedSparklesIcon, AnimatedQrIcon } from "@/components/icons/animate
 import { VoiceVerdictType, VoiceLanguageCode, formatVoiceScript } from "@qraksha/shared";
 import { VoiceOrb } from "@/components/voice-orb";
 import { LanguageSelector, getInitialVoiceLanguage } from "@/components/language-selector";
-import { VoicePlayer, VoiceState } from "@/lib/voice-player";
+import { useVerdictAudio } from "@/hooks/use-verdict-audio";
 
 export interface AIAssistantSheetProps {
   isOpen: boolean;
@@ -79,37 +79,26 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
   // Voice Assistant State
   const [selectedVerdict, setSelectedVerdict] = useState<VoiceVerdictType>("VERIFIED");
   const [voiceLang, setVoiceLang] = useState<VoiceLanguageCode>("en-IN");
-  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
-  const [amplitude, setAmplitude] = useState<number>(0);
-  const playerRef = useRef<VoicePlayer | null>(null);
+  const {
+    voiceState,
+    amplitude,
+    isPlaying,
+    playVerdict,
+    stop: stopVoice,
+    primeAudioContext,
+  } = useVerdictAudio(voiceLang);
 
   // Initialize language from preferences
   useEffect(() => {
     setVoiceLang(getInitialVoiceLanguage());
   }, []);
 
-  // Initialize VoicePlayer
-  useEffect(() => {
-    const player = new VoicePlayer({
-      onStateChange: (state) => setVoiceState(state),
-      onAmplitudeChange: (amp) => setAmplitude(amp),
-      onError: () => setVoiceState("error"),
-    });
-    playerRef.current = player;
-
-    return () => {
-      player.stop();
-    };
-  }, []);
-
   // Stop audio and reset state when sheet is closed
   useEffect(() => {
     if (!isOpen) {
-      playerRef.current?.stop();
-      setVoiceState("idle");
-      setAmplitude(0);
+      stopVoice();
     }
-  }, [isOpen]);
+  }, [isOpen, stopVoice]);
 
   // Focus trap / keyboard accessibility (Escape closes modal)
   useEffect(() => {
@@ -129,17 +118,20 @@ export function AIAssistantSheet({ isOpen, onClose }: AIAssistantSheetProps) {
 
   const handlePlayVoice = useCallback(
     (verdictKey: VoiceVerdictType = selectedVerdict, langKey: VoiceLanguageCode = voiceLang) => {
-      playerRef.current?.primeAudioContext();
+      primeAudioContext();
 
-      if (voiceState === "speaking" && verdictKey === selectedVerdict && langKey === voiceLang) {
-        playerRef.current?.stop();
-        setVoiceState("idle");
+      if (isPlaying && verdictKey === selectedVerdict && langKey === voiceLang) {
+        stopVoice();
         return;
       }
 
-      playerRef.current?.playVerdict(verdictKey, langKey, SAMPLE_MERCHANTS[langKey]?.[verdictKey]);
+      playVerdict({
+        verdict: verdictKey,
+        lang: langKey,
+        merchantDisplayName: SAMPLE_MERCHANTS[langKey]?.[verdictKey],
+      });
     },
-    [selectedVerdict, voiceLang, voiceState],
+    [isPlaying, playVerdict, primeAudioContext, selectedVerdict, stopVoice, voiceLang],
   );
 
   const handleSelectVerdict = useCallback(

@@ -1,11 +1,14 @@
+import crypto from "crypto";
 import {
   formatVoiceScript,
   VoiceLanguageCode,
   VoiceVerdictType,
   VoiceVerdictResponse,
   assertSarvamVoiceDataBoundary,
+  TtsResponse,
 } from "@qraksha/shared";
 import { logger } from "../middleware/logger.middleware.js";
+import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 
 export interface VoiceServiceOptions {
   apiKey?: string;
@@ -144,6 +147,265 @@ export class VoiceService {
       });
       return cleanName;
     }
+  }
+
+  /**
+   * Formats the merchant name announcement script (e.g. "You are about to pay Sharma Kirana.")
+   */
+  formatMerchantNameAnnouncement(displayName: string, lang: VoiceLanguageCode): string {
+    const cleanName = displayName.trim();
+    if (lang === "hi-IN") {
+      return `आप ${cleanName} को भुगतान करने जा रहे हैं।`;
+    }
+    if (lang === "kn-IN") {
+      return `ನೀವು ${cleanName} ಅವರಿಗೆ ಪಾವತಿ ಮಾಡಲಿದ್ದೀರಿ.`;
+    }
+    return `You are about to pay ${cleanName}.`;
+  }
+
+  /**
+   * Generates audio for a merchant name announcement clip in the requested Indic language.
+   * Transliterates the merchant name to native script for Hindi and Kannada before TTS synthesis.
+   * Returns audio buffer (MP3 or WAV), mimeType, and spoken text.
+   */
+  async generateMerchantNameClip(
+    displayName: string,
+    lang: VoiceLanguageCode,
+    correlationId?: string,
+  ): Promise<{ audioBuffer: Buffer; mimeType: string; textSpoken: string }> {
+    const cleanName = displayName.trim();
+    let transliteratedName = cleanName;
+    if (lang !== "en-IN") {
+      transliteratedName = await this.transliterateMerchantName(cleanName, lang, correlationId);
+    }
+
+    const spokenText = this.formatMerchantNameAnnouncement(transliteratedName || cleanName, lang);
+
+    if (!this.apiKey) {
+      const mockWavBase64 = this.createSilentWavBase64();
+      return {
+        audioBuffer: Buffer.from(mockWavBase64, "base64"),
+        mimeType: "audio/wav",
+        textSpoken: spokenText,
+      };
+    }
+
+    const payload = {
+      text: spokenText,
+      target_language_code: lang,
+      speaker: this.speaker,
+      model: this.model,
+      speech_sample_rate: 24000,
+      enable_preprocessing: true,
+      output_audio_codec: "mp3",
+      merchantDisplayName: cleanName,
+    };
+
+    assertSarvamVoiceDataBoundary(payload);
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+
+    try {
+      const resp = await fetch(`${this.baseUrl}/text-to-speech`, {
+        method: "POST",
+        headers: {
+          "api-subscription-key": this.apiKey,
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          text: spokenText,
+          target_language_code: lang,
+          speaker: this.speaker,
+          model: this.model,
+          speech_sample_rate: 24000,
+          enable_preprocessing: true,
+          output_audio_codec: "mp3",
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timer);
+
+      if (!resp.ok) {
+        const errorText = await resp.text().catch(() => "");
+        throw new Error(`Sarvam TTS error (${resp.status}): ${errorText}`);
+      }
+
+      const data = (await resp.json()) as { audios?: string[] };
+      const audioBase64 = data.audios?.[0];
+      if (!audioBase64) {
+        throw new Error("Sarvam TTS returned empty audio payload");
+      }
+
+      return {
+        audioBuffer: Buffer.from(audioBase64, "base64"),
+        mimeType: "audio/mpeg",
+        textSpoken: spokenText,
+      };
+    } catch (err) {
+      clearTimeout(timer);
+      logger.warn(
+        `Failed to synthesize merchant name clip for ${cleanName} in ${lang}`,
+        correlationId,
+        {
+          error: (err as Error).message,
+        },
+      );
+      throw err;
+    }
+  }
+
+  /**
+   * Lazy cache for misses (Step 3).
+   * Takes { text, lang, voice }, computes sha256(text + lang + voice),
+   * checks Supabase table tts_cache (hash, audio_url, created_at),
+   * and returns cached URL on hit.
+   * On miss, calls Sarvam with 2-second timeout, uploads audio to Supabase Storage,
+   * inserts the row, and returns the public URL.
+   */
+  async getOrSynthesizeTts(
+    text: string,
+    lang: string = "en-IN",
+    voice?: string,
+    correlationId?: string,
+  ): Promise<TtsResponse> {
+    const cleanText = text.trim();
+    const cleanLang = lang.trim() || "en-IN";
+    const selectedVoice = (voice || this.speaker || "shubh").trim();
+
+    // 1. Compute sha256(text + lang + voice)
+    const hash = crypto
+      .createHash("sha256")
+      .update(cleanText + cleanLang + selectedVoice)
+      .digest("hex");
+
+    // 2. Check Supabase table tts_cache (hash, audio_url, created_at)
+    if (isSupabaseConfigured()) {
+      try {
+        const { data: cached, error: cacheErr } = await supabaseAdmin
+          .schema("comparison")
+          .from("tts_cache")
+          .select("hash, audio_url")
+          .eq("hash", hash)
+          .maybeSingle();
+
+        if (!cacheErr && cached?.audio_url) {
+          return {
+            hash,
+            audio_url: cached.audio_url,
+            url: cached.audio_url,
+            cached: true,
+          };
+        }
+      } catch (err) {
+        logger.warn("Failed checking Supabase tts_cache", correlationId, {
+          error: (err as Error).message,
+        });
+      }
+    }
+
+    // 3. On miss: Call Sarvam once with a strict 2-second timeout
+    const payload = {
+      text: cleanText,
+      target_language_code: cleanLang,
+      speaker: selectedVoice,
+      model: this.model,
+      speech_sample_rate: 24000,
+      enable_preprocessing: true,
+      output_audio_codec: "mp3",
+    };
+
+    assertSarvamVoiceDataBoundary(payload);
+
+    let audioBuffer: Buffer;
+    if (!this.apiKey) {
+      const mockWavBase64 = this.createSilentWavBase64();
+      audioBuffer = Buffer.from(mockWavBase64, "base64");
+    } else {
+      const controller = new AbortController();
+      // Strict 2-second timeout per requirement 3
+      const timer = setTimeout(() => controller.abort(), 2000);
+
+      try {
+        const resp = await fetch(`${this.baseUrl}/text-to-speech`, {
+          method: "POST",
+          headers: {
+            "api-subscription-key": this.apiKey,
+            "content-type": "application/json",
+          },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timer);
+
+        if (!resp.ok) {
+          const errText = await resp.text().catch(() => "");
+          throw new Error(`Sarvam TTS error (${resp.status}): ${errText}`);
+        }
+
+        const data = (await resp.json()) as { audios?: string[] };
+        const audioBase64 = data.audios?.[0];
+        if (!audioBase64) {
+          throw new Error("Sarvam TTS returned empty audio payload");
+        }
+
+        audioBuffer = Buffer.from(audioBase64, "base64");
+      } catch (err) {
+        clearTimeout(timer);
+        const isAbort = (err as Error).name === "AbortError";
+        logger.warn(
+          isAbort ? "Sarvam TTS call aborted due to 2s timeout" : "Sarvam TTS call failed",
+          correlationId,
+          { error: (err as Error).message },
+        );
+        throw err;
+      }
+    }
+
+    // 4. Upload audio to Supabase Storage voice-clips bucket
+    let audioUrl = "";
+    if (isSupabaseConfigured() && supabaseAdmin?.storage) {
+      try {
+        const objectPath = `cache/${hash}.mp3`;
+        const uploadRes = await supabaseAdmin.storage
+          .from("voice-clips")
+          .upload(objectPath, audioBuffer, {
+            contentType: "audio/mpeg",
+            upsert: true,
+          });
+
+        if (!uploadRes?.error) {
+          const urlData = supabaseAdmin.storage.from("voice-clips").getPublicUrl(objectPath);
+          audioUrl = urlData?.data?.publicUrl || "";
+        }
+
+        if (audioUrl) {
+          // 5. Insert row into Supabase table tts_cache (hash, audio_url, created_at)
+          await supabaseAdmin.schema("comparison").from("tts_cache").upsert({
+            hash,
+            audio_url: audioUrl,
+            created_at: new Date().toISOString(),
+          });
+        }
+      } catch (storageErr) {
+        logger.warn("Failed uploading to voice-clips storage or saving tts_cache", correlationId, {
+          error: (storageErr as Error).message,
+        });
+      }
+    }
+
+    if (!audioUrl) {
+      audioUrl = `data:audio/mpeg;base64,${audioBuffer.toString("base64")}`;
+    }
+
+    return {
+      hash,
+      audio_url: audioUrl,
+      url: audioUrl,
+      cached: false,
+    };
   }
 
   /**

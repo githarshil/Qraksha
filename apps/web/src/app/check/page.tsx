@@ -24,7 +24,7 @@ const CameraCapture = dynamic(
 import { VoiceOrb } from "../../components/voice-orb";
 import { LanguageSelector, getInitialVoiceLanguage } from "../../components/language-selector";
 import { runCustomerCheck, AuditResult, ApiError } from "../../lib/api";
-import { VoicePlayer, VoiceState } from "../../lib/voice-player";
+import { useVerdictAudio } from "../../hooks/use-verdict-audio";
 
 export default function CustomerCheckPage() {
   const [isVerifying, setIsVerifying] = useState(false);
@@ -33,27 +33,18 @@ export default function CustomerCheckPage() {
 
   // Voice Assistant state
   const [voiceLang, setVoiceLang] = useState<VoiceLanguageCode>("en-IN");
-  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
-  const [amplitude, setAmplitude] = useState<number>(0);
-  const playerRef = useRef<VoicePlayer | null>(null);
+  const {
+    voiceState,
+    amplitude,
+    preloadMerchantClip,
+    playVerdict,
+    stop: stopVoice,
+    primeAudioContext,
+  } = useVerdictAudio(voiceLang);
 
   // Initialize language preference from localStorage / browser
   useEffect(() => {
     setVoiceLang(getInitialVoiceLanguage());
-  }, []);
-
-  // Initialize VoicePlayer instance
-  useEffect(() => {
-    const player = new VoicePlayer({
-      onStateChange: (state) => setVoiceState(state),
-      onAmplitudeChange: (amp) => setAmplitude(amp),
-      onError: () => setVoiceState("error"),
-    });
-    playerRef.current = player;
-
-    return () => {
-      player.stop();
-    };
   }, []);
 
   // Geolocation state requested on mount per Requirement 5
@@ -129,12 +120,10 @@ export default function CustomerCheckPage() {
       }
 
       // Prime AudioContext from the user gesture
-      playerRef.current?.primeAudioContext();
+      primeAudioContext();
 
       setIsVerifying(true);
       setApiError(null);
-      // Voice orb starts "thinking" the moment the check begins
-      setVoiceState("thinking");
 
       try {
         const result = await runCustomerCheck({
@@ -144,43 +133,70 @@ export default function CustomerCheckPage() {
           photoBase64: data.photoBase64,
         });
 
+        // 1. Visual verdict renders immediately with 0 delay on audio
         setVerdictResult(result);
 
-        // TRIGGER: Speak automatically right after verdict renders
+        // 2. Preload merchant audio clip if present
+        const shortLang = voiceLang.startsWith("hi")
+          ? "hi"
+          : voiceLang.startsWith("kn")
+            ? "kn"
+            : "en";
+        const merchantClipUrl = result.voiceClips?.[shortLang] || result.voiceClips?.[voiceLang];
+        if (merchantClipUrl) {
+          preloadMerchantClip(merchantClipUrl);
+        }
+
+        // 3. Play voice announcement: [merchant name] then [verdict]
         const verdictKey = getVoiceVerdictKey(result);
-        playerRef.current?.playVerdict(verdictKey, voiceLang, result.merchantDisplayName);
+        playVerdict({
+          verdict: verdictKey,
+          merchantDisplayName: result.merchantDisplayName,
+          voiceClips: result.voiceClips,
+          lang: voiceLang,
+        });
       } catch (err) {
         const error = err as ApiError;
         setApiError(
           error.message || "Failed to check merchant sticker. Please check your connection.",
         );
-        playerRef.current?.stop();
-        setVoiceState("idle");
+        stopVoice();
       } finally {
         setIsVerifying(false);
       }
     },
-    [coords, getVoiceVerdictKey, voiceLang],
+    [
+      coords,
+      getVoiceVerdictKey,
+      playVerdict,
+      preloadMerchantClip,
+      primeAudioContext,
+      stopVoice,
+      voiceLang,
+    ],
   );
 
   const resetCheck = useCallback(() => {
-    playerRef.current?.stop();
+    stopVoice();
     setVerdictResult(null);
     setApiError(null);
-    setVoiceState("idle");
-    setAmplitude(0);
-  }, []);
+  }, [stopVoice]);
 
   const handleTogglePlay = useCallback(() => {
     if (!verdictResult) return;
 
     if (voiceState === "speaking") {
-      playerRef.current?.stop();
+      stopVoice();
     } else {
       const verdictKey = getVoiceVerdictKey(verdictResult);
-      playerRef.current?.playVerdict(verdictKey, voiceLang, verdictResult.merchantDisplayName);
+      playVerdict({
+        verdict: verdictKey,
+        merchantDisplayName: verdictResult.merchantDisplayName,
+        voiceClips: verdictResult.voiceClips,
+        lang: voiceLang,
+      });
     }
-  }, [verdictResult, voiceState, getVoiceVerdictKey, voiceLang]);
+  }, [verdictResult, voiceState, stopVoice, getVoiceVerdictKey, playVerdict, voiceLang]);
 
   // Re-trigger voice if language changes while viewing a verdict
   const handleLanguageChange = useCallback(
@@ -188,10 +204,15 @@ export default function CustomerCheckPage() {
       setVoiceLang(newLang);
       if (verdictResult) {
         const verdictKey = getVoiceVerdictKey(verdictResult);
-        playerRef.current?.playVerdict(verdictKey, newLang, verdictResult.merchantDisplayName);
+        playVerdict({
+          verdict: verdictKey,
+          merchantDisplayName: verdictResult.merchantDisplayName,
+          voiceClips: verdictResult.voiceClips,
+          lang: newLang,
+        });
       }
     },
-    [verdictResult, getVoiceVerdictKey],
+    [verdictResult, getVoiceVerdictKey, playVerdict],
   );
 
   const voiceVerdict = verdictResult ? getVoiceVerdictKey(verdictResult) : "UNVERIFIED";

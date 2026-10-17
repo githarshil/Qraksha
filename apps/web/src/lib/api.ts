@@ -255,6 +255,7 @@ export interface AuditResult {
   auditRunId?: string;
   isUnregistered?: boolean;
   merchantDisplayName?: string;
+  voiceClips?: Record<string, string>;
 }
 
 export interface AuditHistoryItem {
@@ -425,6 +426,51 @@ export async function getVoiceVerdict(input: VoiceVerdictInput): Promise<VoiceVe
   }
 
   throw new ApiError("Voice synthesis unavailable", "VOICE_ERROR", 500);
+}
+
+/**
+ * Calls backend POST /api/tts for lazy audio misses.
+ * Enforces a strict 2-second timeout (AbortController).
+ */
+export async function fetchLiveTts(input: {
+  text: string;
+  lang: string;
+  voice?: string;
+  timeoutMs?: number;
+}): Promise<string> {
+  const controller = new AbortController();
+  const timeoutMs = input.timeoutMs ?? 2000;
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const url = typeof window !== "undefined" ? "/api/tts" : `${API_BASE_URL}/tts`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        text: input.text,
+        lang: input.lang,
+        voice: input.voice,
+      }),
+      signal: controller.signal,
+    });
+
+    clearTimeout(timer);
+
+    if (!response.ok) {
+      throw new Error(`TTS HTTP error ${response.status}`);
+    }
+
+    const json = await response.json();
+    const audioUrl = json?.data?.audio_url || json?.data?.url || json?.audio_url || json?.url;
+    if (!audioUrl) {
+      throw new Error("No audio URL returned from TTS");
+    }
+    return audioUrl;
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
 }
 
 export async function addQrToCredential(

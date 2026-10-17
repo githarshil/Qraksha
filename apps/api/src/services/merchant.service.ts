@@ -5,15 +5,18 @@ import type {
   RegisterReferenceResult,
   ProofOfPossessionResult,
   MerchantStatsResult,
+  VoiceLanguageCode,
 } from "@qraksha/shared";
 
 import { supabaseAdmin, isSupabaseConfigured } from "../db/client.js";
 import { ConflictError, NotFoundError } from "../middleware/error.middleware.js";
+import { logger } from "../middleware/logger.middleware.js";
 import { visionService } from "./vision.service.js";
 import { geocodingService } from "./geocoding.service.js";
 import { paymentProofService } from "./payment-proof.service.js";
 import { blockchainService } from "./blockchain.service.js";
 import { payloadLookupService } from "./payload-lookup.service.js";
+import { voiceService } from "./voice.service.js";
 
 export {
   RegisterIdentityResult,
@@ -498,6 +501,14 @@ export class MerchantService {
       // 5. Asynchronously trigger blockchain credential anchoring
       blockchainService.enqueueAnchor(credentialId);
 
+      // 6. Asynchronously trigger generation of merchant name voice clips (Step 2)
+      this.generateAndStoreMerchantVoiceClips(credentialId).catch((err) => {
+        logger.warn("Asynchronous voice clips generation failed", undefined, {
+          credentialId,
+          error: (err as Error).message,
+        });
+      });
+
       return {
         credentialId,
         status: "recently_registered",
@@ -517,6 +528,87 @@ export class MerchantService {
       simulationPassed: false,
       message: verification.message,
     };
+  }
+
+  /**
+   * Generates and stores merchant name audio clips for 3 Indic languages in Supabase Storage.
+   * Updates comparison.merchant_credential with the public audio URLs in voice_clips.
+   * Called asynchronously at registration or demo pre-generation.
+   */
+  async generateAndStoreMerchantVoiceClips(
+    credentialId: string,
+    correlationId?: string,
+  ): Promise<Record<string, string>> {
+    const { data: cred, error: credError } = await this.db
+      .schema("comparison")
+      .from("merchant_credential")
+      .select("id, merchant_id, voice_clips")
+      .eq("id", credentialId)
+      .maybeSingle();
+
+    if (credError || !cred) {
+      logger.warn(`Could not find credential ${credentialId} for voice clips`, correlationId);
+      return {};
+    }
+
+    const { data: merchant } = await this.db
+      .from("merchant")
+      .select("display_name")
+      .eq("id", cred.merchant_id)
+      .maybeSingle();
+
+    const displayName = merchant?.display_name || "Merchant";
+    const voiceClips: Record<string, string> = { ...(cred.voice_clips || {}) };
+    const languages: { code: VoiceLanguageCode; short: string }[] = [
+      { code: "en-IN", short: "en" },
+      { code: "hi-IN", short: "hi" },
+      { code: "kn-IN", short: "kn" },
+    ];
+
+    for (const { code, short } of languages) {
+      try {
+        const { audioBuffer, mimeType } = await voiceService.generateMerchantNameClip(
+          displayName,
+          code,
+          correlationId,
+        );
+
+        if (this.db?.storage) {
+          const objectPath = `merchants/${credentialId}/${short}.mp3`;
+          const uploadRes = await this.db.storage
+            .from("voice-clips")
+            .upload(objectPath, audioBuffer, {
+              contentType: mimeType || "audio/mpeg",
+              upsert: true,
+            });
+
+          if (!uploadRes?.error) {
+            const urlData = this.db.storage.from("voice-clips").getPublicUrl(objectPath);
+            const publicUrl = urlData?.data?.publicUrl;
+            if (publicUrl) {
+              voiceClips[short] = publicUrl;
+              voiceClips[code] = publicUrl;
+            }
+          }
+        }
+      } catch (err) {
+        logger.warn(
+          `Failed to generate voice clip for ${credentialId} in ${short}`,
+          correlationId,
+          { error: (err as Error).message },
+        );
+      }
+    }
+
+    if (Object.keys(voiceClips).length > 0) {
+      await this.db
+        .schema("comparison")
+        .from("merchant_credential")
+        .update({ voice_clips: voiceClips })
+        .eq("id", credentialId);
+    }
+
+    return voiceClips;
   }
 
   /**

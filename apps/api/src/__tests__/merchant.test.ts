@@ -65,6 +65,9 @@ function createMockDb(initialState?: {
           data: storageObjects.map((name) => ({ name })),
           error: null,
         }),
+        getPublicUrl: (path: string) => ({
+          data: { publicUrl: `https://storage.supabase.co/voice-clips/${path}` },
+        }),
       }),
     },
     from: (table: string) => {
@@ -187,16 +190,20 @@ function createMockDb(initialState?: {
                 }),
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 update: (updates: any) => ({
-                  eq: (col: string, val: string) => ({
-                    select: () => ({
-                      single: async () => {
-                        const found = credentials.find((c) => c.id === val);
-                        if (!found) return { data: null, error: new Error("Not found") };
-                        Object.assign(found, updates);
-                        return { data: found, error: null };
-                      },
-                    }),
-                  }),
+                  eq: (col: string, val: string) => {
+                    const found = credentials.find((c) => c.id === val);
+                    if (found) Object.assign(found, updates);
+                    return {
+                      select: () => ({
+                        single: async () => {
+                          if (!found) return { data: null, error: new Error("Not found") };
+                          return { data: found, error: null };
+                        },
+                      }),
+                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                      then: (resolve: any) => resolve({ data: found, error: null }),
+                    };
+                  },
                 }),
               };
             }
@@ -811,5 +818,38 @@ describe("POST /api/v1/merchants/register/proof-of-possession (API Route)", () =
     expect(res.body.data.simulationPassed).toBe(false);
 
     spy.mockRestore();
+  });
+
+  describe("Merchant Voice Clips Pre-Generation (Step 2)", () => {
+    it("generates and stores merchant name audio clips for en, hi, and kn in Supabase Storage", async () => {
+      const { db } = createMockDb({
+        merchants: [
+          {
+            id: "m-100",
+            display_name: "Sharma Sweets",
+            contact_phone: "+919876543210",
+            created_at: new Date().toISOString(),
+          },
+        ],
+        credentials: [
+          {
+            id: "c-100",
+            merchant_id: "m-100",
+            status: "recently_registered",
+            trust_tier: "unverified",
+            trust_score: 0,
+            location_variance: false,
+            voice_clips: {},
+          },
+        ],
+      });
+
+      const service = new MerchantService(db);
+      const clips = await service.generateAndStoreMerchantVoiceClips("c-100");
+
+      expect(clips.en).toContain("https://storage.supabase.co/voice-clips/merchants/c-100/en.mp3");
+      expect(clips.hi).toContain("https://storage.supabase.co/voice-clips/merchants/c-100/hi.mp3");
+      expect(clips.kn).toContain("https://storage.supabase.co/voice-clips/merchants/c-100/kn.mp3");
+    });
   });
 });

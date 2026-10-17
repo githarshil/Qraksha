@@ -246,4 +246,50 @@ describe("Voice API & Service (/api/v1/voice/verdict)", () => {
       expect(limitedRes.body.error.code).toBe("RATE_LIMITED");
     });
   });
+
+  describe("Lazy TTS Cache (Step 3: POST /api/tts)", () => {
+    it("validates input and rejects empty text with 400 VALIDATION_ERROR", async () => {
+      const res = await request(app).post("/api/tts").send({
+        text: "",
+        lang: "en-IN",
+      });
+
+      expect(res.status).toBe(400);
+      expect(res.body.error.code).toBe("VALIDATION_ERROR");
+    });
+
+    it("synthesizes, uploads, and caches audio on miss, returning cached URL on second hit", async () => {
+      const res1 = await request(app).post("/api/tts").set("x-bypass-rate-limit", "true").send({
+        text: "Welcome to QRaksha verified merchant store",
+        lang: "en-IN",
+        voice: "shubh",
+      });
+
+      expect(res1.status).toBe(200);
+      expect(res1.body.url || res1.body.audio_url).toBeTruthy();
+      expect(res1.body.hash).toBeTruthy();
+
+      // Second call: Hits cache
+      const res2 = await request(app).post("/api/tts").set("x-bypass-rate-limit", "true").send({
+        text: "Welcome to QRaksha verified merchant store",
+        lang: "en-IN",
+        voice: "shubh",
+      });
+
+      expect(res2.status).toBe(200);
+      expect(res2.body.cached).toBe(true);
+      expect(res2.body.hash).toBe(res1.body.hash);
+      expect(res2.body.url).toBe(res1.body.url);
+    });
+
+    it("is also accessible via /api/v1/tts", async () => {
+      const res = await request(app).post("/api/v1/tts").set("x-bypass-rate-limit", "true").send({
+        text: "Test phrase for v1 route",
+        lang: "en-IN",
+      });
+
+      expect(res.status).toBe(200);
+      expect(res.body.url).toBeTruthy();
+    });
+  });
 });

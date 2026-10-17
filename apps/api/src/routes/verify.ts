@@ -30,7 +30,7 @@ verifyRouter.get(
       const { data: credById, error: credError } = await supabaseAdmin
         .schema("comparison")
         .from("merchant_credential")
-        .select("id, merchant_id, status, trust_tier, trust_score, activated_at")
+        .select("id, merchant_id, status, trust_tier, trust_score, activated_at, voice_clips")
         .eq("id", credentialId)
         .maybeSingle();
 
@@ -43,7 +43,7 @@ verifyRouter.get(
         const { data: credByMerchant, error: merchErr } = await supabaseAdmin
           .schema("comparison")
           .from("merchant_credential")
-          .select("id, merchant_id, status, trust_tier, trust_score, activated_at")
+          .select("id, merchant_id, status, trust_tier, trust_score, activated_at, voice_clips")
           .eq("merchant_id", credentialId)
           .order("created_at", { ascending: false })
           .limit(1)
@@ -114,6 +114,7 @@ verifyRouter.get(
         canonicalCredentialHash,
         anchor,
         verifiedOnChain,
+        voiceClips: cred.voice_clips || undefined,
       };
 
       res.status(200).json({

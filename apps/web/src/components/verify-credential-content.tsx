@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -25,7 +25,7 @@ import {
 import { getCredentialVerification, ApiError } from "@/lib/api";
 import { VoiceOrb } from "@/components/voice-orb";
 import { LanguageSelector, getInitialVoiceLanguage } from "@/components/language-selector";
-import { VoicePlayer, VoiceState } from "@/lib/voice-player";
+import { useVerdictAudio } from "@/hooks/use-verdict-audio";
 
 export function VerifyCredentialContent({ credentialId }: { credentialId: string }) {
   const [data, setData] = useState<VerifyCredentialResult | null>(null);
@@ -35,24 +35,17 @@ export function VerifyCredentialContent({ credentialId }: { credentialId: string
 
   // Voice state
   const [voiceLang, setVoiceLang] = useState<VoiceLanguageCode>("en-IN");
-  const [voiceState, setVoiceState] = useState<VoiceState>("idle");
-  const [amplitude, setAmplitude] = useState<number>(0);
-  const playerRef = useRef<VoicePlayer | null>(null);
+  const {
+    voiceState,
+    amplitude,
+    preloadMerchantClip,
+    playVerdict,
+    stop: stopVoice,
+    primeAudioContext,
+  } = useVerdictAudio(voiceLang);
 
   useEffect(() => {
     setVoiceLang(getInitialVoiceLanguage());
-  }, []);
-
-  useEffect(() => {
-    const player = new VoicePlayer({
-      onStateChange: (state) => setVoiceState(state),
-      onAmplitudeChange: (amp) => setAmplitude(amp),
-      onError: () => setVoiceState("error"),
-    });
-    playerRef.current = player;
-    return () => {
-      player.stop();
-    };
   }, []);
 
   const getVoiceVerdict = (item: VerifyCredentialResult): VoiceVerdictType => {
@@ -64,22 +57,37 @@ export function VerifyCredentialContent({ credentialId }: { credentialId: string
   const fetchVerification = async () => {
     setIsLoading(true);
     setError(null);
-    setVoiceState("thinking");
     try {
       const result = await getCredentialVerification(credentialId);
+      // 1. Visual verdict renders immediately with 0 delay on audio
       setData(result);
 
-      // Trigger automatic audio playback right after credential verdict renders
+      // 2. Preload merchant name audio clip if present
+      const shortLang = voiceLang.startsWith("hi")
+        ? "hi"
+        : voiceLang.startsWith("kn")
+          ? "kn"
+          : "en";
+      const merchantClipUrl = result.voiceClips?.[shortLang] || result.voiceClips?.[voiceLang];
+      if (merchantClipUrl) {
+        preloadMerchantClip(merchantClipUrl);
+      }
+
+      // 3. Play voice announcement: [merchant name] then [verdict]
       const verdictKey = getVoiceVerdict(result);
-      playerRef.current?.playVerdict(verdictKey, voiceLang, result.displayName);
+      playVerdict({
+        verdict: verdictKey,
+        merchantDisplayName: result.displayName,
+        voiceClips: result.voiceClips,
+        lang: voiceLang,
+      });
     } catch (err) {
       if (err instanceof ApiError) {
         setError(err.message);
       } else {
         setError("Unable to load credential verification details. Please try again.");
       }
-      playerRef.current?.stop();
-      setVoiceState("idle");
+      stopVoice();
     } finally {
       setIsLoading(false);
     }
@@ -91,11 +99,17 @@ export function VerifyCredentialContent({ credentialId }: { credentialId: string
 
   const handleTogglePlay = () => {
     if (!data) return;
+    primeAudioContext();
     if (voiceState === "speaking") {
-      playerRef.current?.stop();
+      stopVoice();
     } else {
       const verdictKey = getVoiceVerdict(data);
-      playerRef.current?.playVerdict(verdictKey, voiceLang, data.displayName);
+      playVerdict({
+        verdict: verdictKey,
+        merchantDisplayName: data.displayName,
+        voiceClips: data.voiceClips,
+        lang: voiceLang,
+      });
     }
   };
 
@@ -103,7 +117,12 @@ export function VerifyCredentialContent({ credentialId }: { credentialId: string
     setVoiceLang(newLang);
     if (data) {
       const verdictKey = getVoiceVerdict(data);
-      playerRef.current?.playVerdict(verdictKey, newLang, data.displayName);
+      playVerdict({
+        verdict: verdictKey,
+        merchantDisplayName: data.displayName,
+        voiceClips: data.voiceClips,
+        lang: newLang,
+      });
     }
   };
 

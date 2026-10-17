@@ -8,6 +8,7 @@ import { credentialsRouter } from "./credentials.js";
 import { disputesRouter } from "./disputes.js";
 import { adminRouter } from "./admin.js";
 import { voiceRouter } from "./voice.js";
+import { ttsRouter } from "./tts.js";
 
 export const apiRouter = Router();
 
@@ -20,3 +21,4 @@ apiRouter.use("/credentials", credentialsRouter);
 apiRouter.use("/disputes", disputesRouter);
 apiRouter.use("/admin", adminRouter);
 apiRouter.use("/voice", voiceRouter);
+apiRouter.use("/tts", ttsRouter);

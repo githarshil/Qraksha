@@ -58,7 +58,7 @@ checkRouter.post(
           const { data: cred } = await supabaseAdmin
             .schema("comparison")
             .from("merchant_credential")
-            .select("merchant_id")
+            .select("merchant_id, voice_clips")
             .eq("id", verdictResult.credentialId)
             .maybeSingle();
 
@@ -71,6 +71,15 @@ checkRouter.post(
 
             merchantDisplayName = m?.display_name || undefined;
           }
+
+          res.status(200).json({
+            data: {
+              ...verdictResult,
+              merchantDisplayName,
+              voiceClips: cred?.voice_clips || undefined,
+            },
+          });
+          return;
         } catch {
           // Best effort non-blocking
         }

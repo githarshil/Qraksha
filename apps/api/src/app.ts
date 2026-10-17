@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { apiRouter } from "./routes/index.js";
+import { ttsRouter } from "./routes/tts.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 import { requestLogger } from "./middleware/logger.middleware.js";
 
@@ -47,6 +48,7 @@ app.get("/health", (_req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
+app.use("/api/tts", ttsRouter);
 app.use("/api/v1", apiRouter);
 
 // 404 handler
