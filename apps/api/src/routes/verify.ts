@@ -26,8 +26,8 @@ verifyRouter.get(
         throw new ValidationError("credentialId parameter is required");
       }
 
-      // 1. Fetch credential
-      const { data: cred, error: credError } = await supabaseAdmin
+      // 1. Fetch credential by credentialId, or fallback to merchantId
+      const { data: credById, error: credError } = await supabaseAdmin
         .schema("comparison")
         .from("merchant_credential")
         .select("id, merchant_id, status, trust_tier, trust_score, activated_at")
@@ -36,6 +36,21 @@ verifyRouter.get(
 
       if (credError) {
         throw credError;
+      }
+      let cred = credById;
+      if (!cred) {
+        // Fallback: check if credentialId parameter is actually a merchant_id
+        const { data: credByMerchant, error: merchErr } = await supabaseAdmin
+          .schema("comparison")
+          .from("merchant_credential")
+          .select("id, merchant_id, status, trust_tier, trust_score, activated_at")
+          .eq("merchant_id", credentialId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (merchErr) throw merchErr;
+        cred = credByMerchant;
       }
       if (!cred) {
         throw new NotFoundError(`Merchant credential ${credentialId} not found`);
