@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import VerifyCredentialPage from "@/app/verify/[credentialId]/page";
 import { getMyCredentials } from "@/lib/api";
 import { SpinnerGap } from "@phosphor-icons/react";
@@ -42,7 +42,13 @@ export default function MerchantNfcRoute({ params }: Props) {
     };
   }, [merchantId]);
 
-  if (isResolving || !resolvedCredentialId) {
+  // Memoize the promise so React 19's use() hook receives a stable reference across renders
+  const stableParams = useMemo(() => {
+    if (!resolvedCredentialId) return null;
+    return Promise.resolve({ credentialId: resolvedCredentialId });
+  }, [resolvedCredentialId]);
+
+  if (isResolving || !stableParams) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
         <SpinnerGap className="w-8 h-8 animate-spin text-[#E0262F] mb-3" />
@@ -53,5 +59,5 @@ export default function MerchantNfcRoute({ params }: Props) {
     );
   }
 
-  return <VerifyCredentialPage params={Promise.resolve({ credentialId: resolvedCredentialId })} />;
+  return <VerifyCredentialPage params={stableParams} />;
 }

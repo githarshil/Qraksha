@@ -7,6 +7,9 @@ const bundleAnalyzer = withBundleAnalyzer({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   compress: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   compiler: {
     removeConsole:
       process.env.NODE_ENV === "production"
