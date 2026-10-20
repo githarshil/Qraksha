@@ -1,0 +1,5 @@
+# SPA & Dynamic Route fallback for static hosting providers (Netlify, Cloudflare Pages)
+# Ensures cold NFC taps to /t/:tagId resolve reliably
+/t/reg      /t/reg.html     200
+/t/unreg    /t/unreg.html   200
+/t/*        /t/reg.html     200
